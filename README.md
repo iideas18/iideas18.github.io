@@ -1,0 +1,2 @@
+# iideas.github.io
+Hexo
