@@ -1,0 +1,6 @@
+deploy:
+  type: git
+  repo: https://github.com/iideas18/iideas.github.io
+  # example, https://github.com/hexojs/hexojs.github.io
+  #   branch: master
+  #
