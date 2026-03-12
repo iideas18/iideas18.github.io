@@ -207,11 +207,17 @@
 const LANG_COLORS={JavaScript:'#f1e05a',TypeScript:'#3178c6',Python:'#3572A5',Java:'#b07219','C++':'#f34b7d',C:'#555555','C#':'#178600',Go:'#00ADD8',Rust:'#dea584',Shell:'#89e051',HTML:'#e34c26',CSS:'#563d7c',Vue:'#41b883',Ruby:'#701516',PHP:'#4F5D95',Kotlin:'#A97BFF',Swift:'#F05138'};
 function langColor(l){return LANG_COLORS[l]||'#ccc'}
 let currentData=[],activeLang='',currentPeriod='daily';
+function _ssGet(key){try{const v=sessionStorage.getItem(key);return v?JSON.parse(v):null;}catch(e){return null;}}
+function _ssSet(key,val){try{sessionStorage.setItem(key,JSON.stringify(val));}catch(e){}}
 async function init(){
   try{
-    const r=await fetch('/trending/data/index.json');
-    if(!r.ok)throw new Error('no index');
-    const idx=await r.json();
+    let idx=_ssGet('tr_index');
+    if(!idx){
+      const r=await fetch('/trending/data/index.json');
+      if(!r.ok)throw new Error('no index');
+      idx=await r.json();
+      _ssSet('tr_index',idx);
+    }
     const sel=document.getElementById('tr-date-select');
     idx.dates.sort((a,b)=>b.localeCompare(a));
     idx.dates.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;sel.appendChild(o)});
@@ -231,11 +237,15 @@ function setPeriod(btn,period){
 async function loadDate(date){
   if(!date)return;
   document.getElementById('tr-date-select').value=date;
+  const cacheKey=`tr_data_${date}_${currentPeriod}`;
+  const cached=_ssGet(cacheKey);
+  if(cached){currentData=cached.repos;renderLangFilter(cached.repos);renderList(cached.repos);return;}
   document.getElementById('tr-list').innerHTML='<div class="tr-loading"><i class="fas fa-spinner fa-spin"></i>&nbsp;Loading…</div>';
   try{
     const r=await fetch(`/trending/data/${date}-${currentPeriod}.json`);
     if(!r.ok)throw new Error('missing');
     const data=await r.json();
+    _ssSet(cacheKey,data);
     currentData=data.repos;
     renderLangFilter(data.repos);
     renderList(data.repos);

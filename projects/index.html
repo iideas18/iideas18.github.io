@@ -191,8 +191,17 @@
 const LANG_COLORS={JavaScript:'#f1e05a',TypeScript:'#3178c6',Python:'#3572A5',Java:'#b07219','C++':'#f34b7d',C:'#555555','C#':'#178600',Go:'#00ADD8',Rust:'#dea584',Shell:'#89e051',HTML:'#e34c26',CSS:'#563d7c',Vue:'#41b883',Ruby:'#701516',PHP:'#4F5D95',Kotlin:'#A97BFF',Swift:'#F05138',Scala:'#c22d40',Jupyter_Notebook:'#DA5B0B'};
 function langColor(l){return LANG_COLORS[l&&l.replace(/ /g,'_')]||'#ccc'}
 function timeAgo(d){const s=Math.floor((Date.now()-new Date(d))/1000);if(s<60)return 'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';if(s<2592000)return Math.floor(s/86400)+'d ago';if(s<31536000)return Math.floor(s/2592000)+'mo ago';return Math.floor(s/31536000)+'y ago'}
+const REPO_CACHE_KEY='gh_repos_iideas18';
+const REPO_CACHE_TTL=3600*1000; // 1 hour
 let allRepos=[];
+function _cacheGet(key){try{const c=JSON.parse(localStorage.getItem(key)||'null');if(c&&Date.now()<c.expiry)return c.data;}catch(e){}return null;}
+function _cacheSet(key,data,ttl){try{localStorage.setItem(key,JSON.stringify({data,expiry:Date.now()+ttl}));}catch(e){}}
+function _cacheGetStale(key){try{const c=JSON.parse(localStorage.getItem(key)||'null');if(c&&c.data)return c.data;}catch(e){}return null;}
 async function loadRepos(){
+  // Serve from fresh cache if available
+  const cached=_cacheGet(REPO_CACHE_KEY);
+  if(cached){allRepos=cached;renderStats(cached);renderLangFilters(cached);renderRepos(cached);return;}
+  // Fetch from GitHub API
   try{
     let page=1,repos=[];
     while(true){
@@ -203,12 +212,20 @@ async function loadRepos(){
       if(d.length<100)break;
       page++;
     }
+    _cacheSet(REPO_CACHE_KEY,repos,REPO_CACHE_TTL);
     allRepos=repos;
     renderStats(repos);
     renderLangFilters(repos);
     renderRepos(repos);
   }catch(e){
-    document.getElementById('pj-grid').innerHTML='<div class="pj-loading" style="color:#e53935"><i class="fas fa-exclamation-triangle"></i>&nbsp;Failed to load repositories. GitHub API rate limit may be exceeded.</div>';
+    // Fall back to stale cache rather than blank screen
+    const stale=_cacheGetStale(REPO_CACHE_KEY);
+    if(stale){
+      allRepos=stale;renderStats(stale);renderLangFilters(stale);renderRepos(stale);
+      document.getElementById('pj-grid').insertAdjacentHTML('beforebegin','<div class="pj-loading" style="color:#f57c00;margin-bottom:.5rem"><i class="fas fa-exclamation-circle"></i>&nbsp;Showing cached data — GitHub API rate limit exceeded. Refresh later for live data.</div>');
+    }else{
+      document.getElementById('pj-grid').innerHTML='<div class="pj-loading" style="color:#e53935"><i class="fas fa-exclamation-triangle"></i>&nbsp;Failed to load repositories. GitHub API rate limit may be exceeded.</div>';
+    }
   }
 }
 function renderStats(repos){
