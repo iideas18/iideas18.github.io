@@ -1,0 +1,40 @@
+name: Fetch GitHub Projects
+
+on:
+  schedule:
+    # 01:00 UTC = 09:00 CST daily
+    - cron: '0 1 * * *'
+  workflow_dispatch: {}   # allow manual trigger
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch repos
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/fetch_projects.py
+
+      - name: Commit and push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add projects/data/
+          git diff --cached --quiet || git commit -m "data: projects snapshot $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push origin gh-pages

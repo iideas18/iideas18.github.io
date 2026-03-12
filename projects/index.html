@@ -154,6 +154,7 @@
 .pj-stat{background:#e8f0fe;border-radius:10px;padding:12px 24px;text-align:center}
 .pj-stat .num{font-size:1.6rem;font-weight:700;color:#1565c0;display:block}
 .pj-stat .lbl{font-size:.78rem;color:#555;text-transform:uppercase;letter-spacing:.06em}
+.pj-updated{align-self:center;font-size:.78rem;color:#888;margin-left:8px}
 .pj-filter{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;align-items:center}
 .pj-filter input{flex:1;min-width:200px;padding:8px 14px;border:1.5px solid #ddd;border-radius:8px;font-size:.9rem;outline:none}
 .pj-filter input:focus{border-color:#1565c0}
@@ -191,52 +192,31 @@
 const LANG_COLORS={JavaScript:'#f1e05a',TypeScript:'#3178c6',Python:'#3572A5',Java:'#b07219','C++':'#f34b7d',C:'#555555','C#':'#178600',Go:'#00ADD8',Rust:'#dea584',Shell:'#89e051',HTML:'#e34c26',CSS:'#563d7c',Vue:'#41b883',Ruby:'#701516',PHP:'#4F5D95',Kotlin:'#A97BFF',Swift:'#F05138',Scala:'#c22d40',Jupyter_Notebook:'#DA5B0B'};
 function langColor(l){return LANG_COLORS[l&&l.replace(/ /g,'_')]||'#ccc'}
 function timeAgo(d){const s=Math.floor((Date.now()-new Date(d))/1000);if(s<60)return 'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';if(s<2592000)return Math.floor(s/86400)+'d ago';if(s<31536000)return Math.floor(s/2592000)+'mo ago';return Math.floor(s/31536000)+'y ago'}
-const REPO_CACHE_KEY='gh_repos_iideas18';
-const REPO_CACHE_TTL=3600*1000; // 1 hour
 let allRepos=[];
-function _cacheGet(key){try{const c=JSON.parse(localStorage.getItem(key)||'null');if(c&&Date.now()<c.expiry)return c.data;}catch(e){}return null;}
-function _cacheSet(key,data,ttl){try{localStorage.setItem(key,JSON.stringify({data,expiry:Date.now()+ttl}));}catch(e){}}
-function _cacheGetStale(key){try{const c=JSON.parse(localStorage.getItem(key)||'null');if(c&&c.data)return c.data;}catch(e){}return null;}
 async function loadRepos(){
-  // Serve from fresh cache if available
-  const cached=_cacheGet(REPO_CACHE_KEY);
-  if(cached){allRepos=cached;renderStats(cached);renderLangFilters(cached);renderRepos(cached);return;}
-  // Fetch from GitHub API
   try{
-    let page=1,repos=[];
-    while(true){
-      const r=await fetch(`https://api.github.com/users/iideas18/repos?per_page=100&sort=updated&page=${page}`);
-      if(!r.ok)throw new Error(r.status);
-      const d=await r.json();
-      repos=repos.concat(d);
-      if(d.length<100)break;
-      page++;
-    }
-    _cacheSet(REPO_CACHE_KEY,repos,REPO_CACHE_TTL);
-    allRepos=repos;
-    renderStats(repos);
-    renderLangFilters(repos);
-    renderRepos(repos);
+    const r=await fetch('/projects/data/repos.json');
+    if(!r.ok)throw new Error(r.status);
+    const d=await r.json();
+    allRepos=d.repos;
+    renderStats(d.repos,d.updated);
+    renderLangFilters(d.repos);
+    renderRepos(d.repos);
   }catch(e){
-    // Fall back to stale cache rather than blank screen
-    const stale=_cacheGetStale(REPO_CACHE_KEY);
-    if(stale){
-      allRepos=stale;renderStats(stale);renderLangFilters(stale);renderRepos(stale);
-      document.getElementById('pj-grid').insertAdjacentHTML('beforebegin','<div class="pj-loading" style="color:#f57c00;margin-bottom:.5rem"><i class="fas fa-exclamation-circle"></i>&nbsp;Showing cached data — GitHub API rate limit exceeded. Refresh later for live data.</div>');
-    }else{
-      document.getElementById('pj-grid').innerHTML='<div class="pj-loading" style="color:#e53935"><i class="fas fa-exclamation-triangle"></i>&nbsp;Failed to load repositories. GitHub API rate limit may be exceeded.</div>';
-    }
+    document.getElementById('pj-grid').innerHTML='<div class="pj-loading" style="color:#e53935"><i class="fas fa-exclamation-triangle"></i>&nbsp;Failed to load repository data.</div>';
   }
 }
-function renderStats(repos){
+function renderStats(repos,updated){
   const langs=[...new Set(repos.map(r=>r.language).filter(Boolean))];
   const stars=repos.reduce((a,r)=>a+r.stargazers_count,0);
   const forks=repos.reduce((a,r)=>a+r.forks_count,0);
+  const updStr=updated?`<span class="pj-updated">Updated ${timeAgo(updated)}</span>`:'';
   document.getElementById('pj-stats').innerHTML=`
     <div class="pj-stat"><span class="num">${repos.length}</span><span class="lbl">Repositories</span></div>
     <div class="pj-stat"><span class="num">${stars}</span><span class="lbl">Total Stars</span></div>
     <div class="pj-stat"><span class="num">${forks}</span><span class="lbl">Total Forks</span></div>
-    <div class="pj-stat"><span class="num">${langs.length}</span><span class="lbl">Languages</span></div>`;
+    <div class="pj-stat"><span class="num">${langs.length}</span><span class="lbl">Languages</span></div>
+    ${updStr}`;
 }
 function renderLangFilters(repos){
   const cnt={};repos.forEach(r=>{if(r.language)cnt[r.language]=(cnt[r.language]||0)+1});
