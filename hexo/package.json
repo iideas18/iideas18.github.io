@@ -1,0 +1,16 @@
+{
+  "name": "iideas18-hexo-reconstructed",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "clean": "node -e \"const fs=require('fs'); fs.rmSync('public', { recursive: true, force: true }); fs.rmSync('db.json', { force: true });\"",
+    "generate": "node tools/generate.js",
+    "publish-root": "node tools/generate.js --sync-root"
+  },
+  "dependencies": {
+    "hexo": "5.4.0",
+    "hexo-cli": "4.3.0",
+    "hexo-server": "3.0.0",
+    "hexo-deployer-git": "3.0.0"
+  }
+}
