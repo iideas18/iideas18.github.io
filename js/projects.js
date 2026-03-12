@@ -189,11 +189,6 @@
     });
   }
 
-  function initPangu() {
-    if (typeof panguFn !== 'function') return;
-    if (GLOBAL_CONFIG_SITE.isPost) panguFn();
-  }
-
   async function loadRepos() {
     try {
       const response = await fetch('/projects/data/repos.json');
@@ -213,6 +208,5 @@
   document.addEventListener('DOMContentLoaded', () => {
     bindEvents();
     loadRepos();
-    initPangu();
   });
 })();

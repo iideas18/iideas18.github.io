@@ -177,14 +177,8 @@
     });
   }
 
-  function initPangu() {
-    if (typeof panguFn !== 'function') return;
-    if (GLOBAL_CONFIG_SITE.isPost) panguFn();
-  }
-
   document.addEventListener('DOMContentLoaded', () => {
     bindEvents();
     initTrending();
-    initPangu();
   });
 })();
