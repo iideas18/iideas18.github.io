@@ -147,7 +147,7 @@
     }
     detectApple()
     })(window)</script><meta name="generator" content="Hexo 5.4.0"><link rel="preload" as="script" href="/js/partials.js"><script defer src="/js/partials.js"></script></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"></div><div class="page" id="body-wrap"><header class="not-home-page" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">iideas's Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div><div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="page-site-info"><h1 id="site-title">My Projects</h1></div></header><main class="layout" id="content-inner"><div id="page"><div id="article-container"><style>
-.pj-wrap{max-width:900px}
+.pj-wrap{width:100%}
 .pj-header{text-align:center;margin-bottom:32px}
 .pj-header p{color:#666;font-size:.95rem;margin:4px 0 0}
 .pj-stats{display:flex;justify-content:center;gap:24px;margin-bottom:28px;flex-wrap:wrap}
@@ -175,17 +175,22 @@
 .pj-archived{background:#f5f5f5;color:#999;border-radius:4px;padding:1px 6px;font-size:.72rem;font-weight:600}
 .pj-loading{text-align:center;padding:60px 0;color:#999;font-size:.95rem}
 .pj-empty{text-align:center;padding:40px 0;color:#bbb;font-size:.9rem;display:none}
+.pj-cat-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.cat-btn{padding:5px 13px;border:1.5px solid #ddd;border-radius:20px;background:#fff;font-size:.8rem;cursor:pointer;color:#555;transition:all .2s}
+.cat-btn.active,.cat-btn:hover{background:#43a047;color:#fff;border-color:#43a047}
+.pj-section-header{font-size:.85rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.08em;margin:24px 0 10px;padding-left:4px;border-left:3px solid #1565c0}
 </style>
 <div class="pj-wrap">
   <div class="pj-header">
-    <p>All public repositories from <a href="https://github.com/iideas18" target="_blank" rel="noopener">@iideas18</a> · data via GitHub API</p>
+    <p>All public repositories from <a href="https://github.com/iideas18" target="_blank" rel="noopener">@iideas18</a> · updated daily</p>
   </div>
   <div class="pj-stats" id="pj-stats"></div>
+  <div class="pj-cat-row" id="cat-filters"></div>
   <div class="pj-filter">
     <input type="text" id="pj-search" placeholder="Search repositories…" oninput="filterRepos()">
     <div id="lang-filters"></div>
   </div>
-  <div class="pj-grid" id="pj-grid"><div class="pj-loading"><i class="fas fa-spinner fa-spin"></i>&nbsp;Loading repositories…</div></div>
+  <div id="pj-grid"><div class="pj-loading"><i class="fas fa-spinner fa-spin"></i>&nbsp;Loading repositories…</div></div>
   <div class="pj-empty" id="pj-empty">No repositories match your search.</div>
 </div>
 <script>
@@ -200,6 +205,7 @@ async function loadRepos(){
     const d=await r.json();
     allRepos=d.repos;
     renderStats(d.repos,d.updated);
+    renderCatFilters(d.repos);
     renderLangFilters(d.repos);
     renderRepos(d.repos);
   }catch(e){
@@ -225,14 +231,33 @@ function renderLangFilters(repos){
   el.innerHTML='<button class="lang-btn active" data-lang="" onclick="setLang(this,\'\')">All</button>'+
     sorted.map(([l,n])=>`<button class="lang-btn" data-lang="${l}" onclick="setLang(this,'${l}')" style="border-color:${langColor(l)}">${l} <span style="opacity:.6">${n}</span></button>`).join('');
 }
-let activeLang='';
+// Category mapping by repo name
+const CAT_MAP={
+  'AI & LLM':      ['worldmonitor','TradingAgents-CN','hello-agents','ai-engineering-hub','FinRobot','deepwiki-open','LLMs-from-scratch','self-llm','ai-hedge-fund','Awesome-Chinese-LLM','EssayKiller_V2','generative-ai-for-beginners','MoneyPrinterTurbo','chatgpt-on-wechat','WeClone','DeepFaceLab','Real-Time-Voice-Cloning','DiffSynth-Studio','pykan','VideoLingo','shannon','deepwiki_markdown','AISystem','mcp-for-beginners','GitNexus'],
+  'Quant Finance': ['nautilus_trader','stock2','stock','gs-quant','easyquotation','wondertrader','hikyuu','easytrader','vnpy','freqtrade','iMaoTai-reserve'],
+  'Tools':         ['Pake','automa','EasySpider','Stirling-PDF','mediago','TikTokDownloader','douyin-downloader','MediaCrawler','MediaCrawler-new','1Panel','scrcpy','JetBrainsActiveCode','Microsoft-Activation-Scripts','miaosha','PyWxDump','hackingtool','unlimited-landeng-for-win','Spark-his-Docker','siyuan','legado'],
+  'Learning':      ['everyone-can-use-english','leetcode','LeetCodeAnimation','90DaysOfCyberSecurity','awesome-software-architecture','GPU-Puzzles','system-design-resources','awesome-python-login-model','awesome','Python','awesome-english-ebooks','GitHub-Chinese-Top-Charts','funNLP','Anime4K','BigDL','scikit-learn-intelex','excelCPU','gpgpu-sim_distribution'],
+};
+const REPO_CAT={};
+for(const[cat,names]of Object.entries(CAT_MAP)){names.forEach(n=>{REPO_CAT[n]=cat;})}
+function getcat(name){return REPO_CAT[name]||'Other'}
+const CAT_ICONS={'AI & LLM':'🤖','Quant Finance':'📈','Tools':'🛠️','Learning':'🎓','Other':'📦'};
+let activeLang='',activeCat='';
+function renderCatFilters(repos){
+  const cats=[...new Set(repos.map(r=>getcat(r.name)))].sort();
+  document.getElementById('cat-filters').innerHTML=
+    '<button class="cat-btn active" onclick="setCat(this,\'\')" >All Categories</button>'+
+    cats.map(c=>`<button class="cat-btn" onclick="setCat(this,'${c}')">${CAT_ICONS[c]||'📦'} ${c}</button>`).join('');
+}
+function setCat(btn,cat){activeCat=cat;document.querySelectorAll('.cat-btn').forEach(b=>b.classList.toggle('active',b===btn));filterRepos()}
 function setLang(btn,lang){activeLang=lang;document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b===btn));filterRepos()}
 function filterRepos(){
   const q=document.getElementById('pj-search').value.toLowerCase();
   const filtered=allRepos.filter(r=>{
+    const matchCat=!activeCat||getcat(r.name)===activeCat;
     const matchLang=!activeLang||r.language===activeLang;
     const matchQ=!q||r.name.toLowerCase().includes(q)||(r.description||'').toLowerCase().includes(q);
-    return matchLang&&matchQ;
+    return matchCat&&matchLang&&matchQ;
   });
   renderRepos(filtered);
 }
@@ -240,21 +265,35 @@ function renderRepos(repos){
   const grid=document.getElementById('pj-grid');
   if(!repos.length){grid.innerHTML='';document.getElementById('pj-empty').style.display='block';return}
   document.getElementById('pj-empty').style.display='none';
-  grid.innerHTML=repos.map(r=>`
-    <div class="pj-card">
-      <a class="pj-card-name" href="${r.html_url}" target="_blank" rel="noopener">
-        <i class="fas fa-${r.fork?'code-branch':'book'}" style="font-size:.8rem;opacity:.6;margin-right:4px"></i>${r.name}
-        ${r.fork?'<span class="pj-fork-badge">fork</span>':''}
-        ${r.archived?'<span class="pj-archived">archived</span>':''}
-      </a>
-      <p class="pj-card-desc">${r.description||'<em style="color:#bbb">No description</em>'}</p>
-      <div class="pj-card-meta">
-        ${r.language?`<span class="pj-lang"><span class="lang-dot" style="background:${langColor(r.language)}"></span>${r.language}</span>`:''}
-        <span class="pj-card-stars"><i class="fas fa-star" style="color:#f4b400;font-size:.8rem"></i>&nbsp;${r.stargazers_count}</span>
-        <span class="pj-card-forks"><i class="fas fa-code-branch" style="font-size:.8rem;opacity:.5"></i>&nbsp;${r.forks_count}</span>
-        <span class="pj-card-updated">${timeAgo(r.pushed_at)}</span>
-      </div>
-    </div>`).join('');
+  // Group by category when no category filter active
+  if(!activeCat){
+    const groups={};
+    repos.forEach(r=>{const c=getcat(r.name);(groups[c]=groups[c]||[]).push(r);});
+    const order=['AI & LLM','Quant Finance','Tools','Learning','Other'];
+    const sorted=order.filter(c=>groups[c]).concat(Object.keys(groups).filter(c=>!order.includes(c)));
+    grid.innerHTML=sorted.map(cat=>{
+      const cards=groups[cat].map(r=>repoCard(r)).join('');
+      return `<div class="pj-section-header">${CAT_ICONS[cat]||'📦'} ${cat} <span style="font-weight:400;color:#bbb">(${groups[cat].length})</span></div><div class="pj-grid" style="margin-bottom:8px">${cards}</div>`;
+    }).join('');
+  }else{
+    grid.innerHTML=`<div class="pj-grid">${repos.map(r=>repoCard(r)).join('')}</div>`;
+  }
+}
+function repoCard(r){
+  return `<div class="pj-card">
+    <a class="pj-card-name" href="${r.html_url}" target="_blank" rel="noopener">
+      <i class="fas fa-${r.fork?'code-branch':'book'}" style="font-size:.8rem;opacity:.6;margin-right:4px"></i>${r.name}
+      ${r.fork?'<span class="pj-fork-badge">fork</span>':''}
+      ${r.archived?'<span class="pj-archived">archived</span>':''}
+    </a>
+    <p class="pj-card-desc">${r.description||'<em style="color:#bbb">No description</em>'}</p>
+    <div class="pj-card-meta">
+      ${r.language?`<span class="pj-lang"><span class="lang-dot" style="background:${langColor(r.language)}"></span>${r.language}</span>`:''}
+      <span class="pj-card-stars"><i class="fas fa-star" style="color:#f4b400;font-size:.8rem"></i>&nbsp;${r.stargazers_count}</span>
+      <span class="pj-card-forks"><i class="fas fa-code-branch" style="font-size:.8rem;opacity:.5"></i>&nbsp;${r.forks_count}</span>
+      <span class="pj-card-updated">${timeAgo(r.pushed_at)}</span>
+    </div>
+  </div>`;
 }
 loadRepos();
 

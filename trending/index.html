@@ -147,7 +147,7 @@
     }
     detectApple()
     })(window)</script><meta name="generator" content="Hexo 5.4.0"><link rel="preload" as="script" href="/js/partials.js"><script defer src="/js/partials.js"></script></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"></div><div class="page" id="body-wrap"><header class="not-home-page" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">iideas's Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div><div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="page-site-info"><h1 id="site-title">GitHub Trending</h1></div></header><main class="layout" id="content-inner"><div id="page"><div id="article-container"><style>
-.tr-wrap{max-width:900px}
+.tr-wrap{width:100%}
 .tr-topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px}
 .tr-topbar h2{margin:0;font-size:1.1rem;color:#333}
 .tr-date-select{padding:7px 14px;border:1.5px solid #ddd;border-radius:8px;font-size:.88rem;outline:none;cursor:pointer}
@@ -274,7 +274,7 @@ function renderList(repos){
           ${r.language?`<span class="tr-lang"><span class="lang-dot" style="background:${langColor(r.language)}"></span>${r.language}</span>`:''}
           <span class="tr-stars"><i class="fas fa-star" style="font-size:.8rem"></i>&nbsp;${(r.stars||0).toLocaleString()}</span>
           <span class="tr-forks"><i class="fas fa-code-branch" style="font-size:.8rem;opacity:.5"></i>&nbsp;${(r.forks||0).toLocaleString()}</span>
-          ${r.stars_today!=null?`<span class="tr-gained"><i class="fas fa-arrow-up" style="font-size:.7rem"></i> ${r.stars_today} today</span>`:''}
+          ${(r.stars_today||r.gained)?`<span class="tr-gained"><i class="fas fa-arrow-up" style="font-size:.7rem"></i> ${r.stars_today||r.gained} today</span>`:''}
         </div>
       </div>
     </div>`).join('');
