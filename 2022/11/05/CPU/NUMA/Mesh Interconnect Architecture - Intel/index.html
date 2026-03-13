@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>**Mesh Interconnect Architecture - Intel** | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="**Mesh Interconnect Architecture - Intel**">
+<meta property="og:url" content="https://iideas18.github.io/2022/11/05/CPU/NUMA/Mesh Interconnect Architecture - Intel/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-11-05T02:46:16.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.176Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/11/05/CPU/NUMA/Mesh Interconnect Architecture - Intel/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '**Mesh Interconnect Architecture - Intel**',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">**Mesh Interconnect Architecture - Intel**</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-11-05T02:46:16.000Z" title="发表于 2022-11-05 10:46:16">2022-11-05</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.176Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/CPU/">CPU</a>
+            
+            <a class="post-meta-categories" href="/categories/NUMA/">NUMA</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="Mesh-Interconnect-Architecture-Intel"><a href="#Mesh-Interconnect-Architecture-Intel" class="headerlink" title="Mesh Interconnect Architecture - Intel"></a><strong>Mesh Interconnect Architecture - Intel</strong></h1><p>Intel’s <strong>mesh interconnect architecture</strong> is a <a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/multi-core">multi-core</a> system <a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/interconnect_architecture">interconnect architecture</a> that implements a <a target="_blank" rel="noopener" href="https://en.wikichip.org/w/index.php?title=synchronous&action=edit&redlink=1">synchronous</a>, high-bandwidth, and <a target="_blank" rel="noopener" href="https://en.wikichip.org/w/index.php?title=scalable&action=edit&redlink=1">scalable</a> 2-dimensional array of half rings. Their mesh architecture has replaced the <a target="_blank" rel="noopener" href="https://en.wikichip.org/w/index.php?title=intel/ring_interconnect_architecture&action=edit&redlink=1">ring interconnect architecture</a> in the server and <a target="_blank" rel="noopener" href="https://en.wikichip.org/w/index.php?title=HPC&action=edit&redlink=1">HPC</a> markets.</p>
+<h2 id="History"><a href="#History" class="headerlink" title="History"></a>History</h2><p>Throughout the 2010s as the number of cores on Intel’s high-end models continue to increase, the ring reached fairly problematic scaling issues, particularly in the area of bandwidth and latency.</p>
+<p>A mesh networking topology in order to reduce the latency between nodes and increase the bandwidth.</p>
+<p>For example, the 80 <a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/many-core">many-core</a> <a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/intel/microarchitectures/polaris">Polaris</a> processor from <a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/2007">2007</a> featured a mesh interconnect architecture with a 5-port router on each tile. Polaris was the very first research chip in the area of teraFLOP computing which eventually resulted in the <a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/intel/xeon_phi">Xeon Phi</a> family of commercial processors. </p>
+<p>In June <a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/2016">2016</a>, Intel launched new <a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/intel/xeon_phi">Xeon Phi</a> <a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/intel/mic_architecture">MIC</a> microprocessors based on <a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/intel/microarchitectures/knights_landing">Knights Landing</a> which was Intel’s first commercialized microarchitecture to implement the new interconnect architecture. </p>
+<p>In mid-<a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/2017">2017</a> Intel launched the <a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/intel/microarchitectures/skylake_(server)">Skylake server microarchitecture</a> which featured also featured the mesh interconnect. This microarchitecture is found in their server (<a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/intel/xeon_scalable">Xeon Scalable</a>) microprocessors and the <a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/intel/core_i7">Core i7</a> and <a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/intel/core_i9">Core i9</a> HEDT parts.</p>
+<h2 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h2><p>Intel’s mesh interconnect architecture consists of a number of related concepts:</p>
+<ul>
+<li><strong>Mesh</strong> - the fabric, a 2-dimensional array of half rings forming a system-wide interconnect grid</li>
+<li>Tile - a modular IP block that can be replicated multiple times across a large grid<ul>
+<li><strong>Core Tile</strong> - a specific kind of tile that incorporates an Intel’s <a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/x86">x86</a> core</li>
+<li><strong>IMC Tile</strong> - a specific kind of tile that incorporates an <a target="_blank" rel="noopener" href="https://en.wikichip.org/w/index.php?title=integrated_memory_controller&action=edit&redlink=1">integrated memory controller</a></li>
+</ul>
+</li>
+<li><strong>Caching&#x2F;Home Agent</strong> (<strong>CHA</strong>) - a unit found inside the core tiles that maintains the cache coherency between tiles. The CHA also interfaces with the CMS</li>
+<li><strong>Converged&#x2F;Common Mesh Stop</strong> (<strong>CMS</strong>) - A mesh stop station, facilitating the interface between a tile and the fabric</li>
+</ul>
+<p><img src="https://en.wikichip.org/w/images/thumb/1/1b/intel_mesh_overview.svg/600px-intel_mesh_overview.svg.png" alt="intel mesh overview.svg"></p>
+<p>Tiles are replicated in the X and Y axis as many times as desired. The type of tile depends on the design goals and target market. In theory any type of IP block can serve as a tile provided it’s modified to interface with the CMS. Each tile is associated with its own CMS which allows the tile to interface with the mesh. Every mesh stop at each tile is directly connected to its immediate four neighbors – north, south, east, and west.</p>
+<p><img src="https://en.wikichip.org/w/images/thumb/c/c9/intel_mesh_cms_links.svg/200px-intel_mesh_cms_links.svg.png" alt="intel mesh cms links.svg"></p>
+<p>he mesh itself consists of a 2-dimensional array of half-rings. Every vertical column of CMSs form a bi-directional half ring. Similarly, every horizontal row forms a bi-directional half ring.</p>
+<p><strong>Horizontal bi-directional half rings</strong><br><a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/File:intel_mesh_cms_links_(horizontal).svg"><img src="https://en.wikichip.org/w/images/thumb/6/69/intel_mesh_cms_links_%28horizontal%29.svg/200px-intel_mesh_cms_links_%28horizontal%29.svg.png" alt="intel mesh cms links (horizontal).svg"></a></p>
+<p><strong>Vertical bi-directional half rings</strong><br><a target="_blank" rel="noopener" href="https://en.wikichip.org/wiki/File:intel_mesh_cms_links_(vertical).svg"><img src="https://en.wikichip.org/w/images/thumb/8/80/intel_mesh_cms_links_%28vertical%29.svg/200px-intel_mesh_cms_links_%28vertical%29.svg.png" alt="intel mesh cms links (vertical).svg"></a></p>
+<h2 id="Operations"><a href="#Operations" class="headerlink" title="Operations"></a>Operations</h2><p>A packet follows a simple routing algorithm:</p>
+<ul>
+<li>Packets are 1st routed vertically</li>
+<li>Packets are then routed horizontally</li>
+</ul>
+<p>A packet originates at a tile (e.g. from the CHA) or some an I&#x2F;O peripheral. It enters the fabric at its local Mesh Stop (CMS). The packet is then routed along the vertical half ring, either north or south, always taking the shortest path. Once the packet reaches its destination row, it will be taken off the vertical half ring and placed on the horizontal half ring where it will continue to the destination tile. Once the packet reaches the destination tile, it will interface back with the tile via Mesh Stop.</p>
+<h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><p>Consider the 5 by 6 example mesh below. For a packet to go from the tile labeled ‘Start’ to the <a target="_blank" rel="noopener" href="https://en.wikichip.org/w/index.php?title=integrated_memory_controller&action=edit&redlink=1">IMC</a>, the packet will leave the core via the CHA and onto the mesh via the CMS. The packet will then be routed through three stops going north. The packet will then be taken off the vertical half ring and placed on the horizontal half ring where it will continue three additional stops going east to the IMC.</p>
+<p><img src="https://en.wikichip.org/w/images/thumb/7/78/intel_mesh_example_start.svg/350px-intel_mesh_example_start.svg.png" alt="intel mesh example start.svg"></p>
+<p>It’s important to note that the return path may not be the same route as before. For example, as in this situation, a response from the IMC will be routed via the vertical half ring first to the very south-east corner tile. The packet will then be taken off the vertical half ring and placed on the horizontal half ring where it will go west until it reaches the destination tile.</p>
+<p><img src="https://en.wikichip.org/w/images/thumb/e/ee/intel_mesh_example_return.svg/350px-intel_mesh_example_return.svg.png" alt="intel mesh example return.svg"></p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

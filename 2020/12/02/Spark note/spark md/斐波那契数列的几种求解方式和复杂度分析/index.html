@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>斐波那契数列的几种求解方式和复杂度分析 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="斐波那契数列的几种求解方式和复杂度分析">
+<meta property="og:url" content="https://iideas18.github.io/2020/12/02/Spark note/spark md/斐波那契数列的几种求解方式和复杂度分析/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2020-12-02T14:40:14.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.277Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2020/12/02/Spark note/spark md/斐波那契数列的几种求解方式和复杂度分析/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '斐波那契数列的几种求解方式和复杂度分析',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">斐波那契数列的几种求解方式和复杂度分析</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2020-12-02T14:40:14.000Z" title="发表于 2020-12-02 22:40:14">2020-12-02</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.277Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Spark note/">Spark note</a>
+            
+            <a class="post-meta-categories" href="/categories/spark md/">spark md</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <p>现在我们去面试，面试官要求我们使用Java写出求解斐波那契数列指定项的函数，可能乍一听很简单，我们在大一的c语言课上就学过递归求解斐波那契数列的指定项，于是大笔一挥，写下如下的第一种解法：</p>
+<p><strong>一、递归求解斐波那契数列</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">long</span> <span class="title function_">fibonacci</span><span class="params">(<span class="type">int</span> n)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(n&lt;<span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;Illegal Index&quot;</span>);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(n == <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(n == <span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> fibonacci(n-<span class="number">1</span>)+fibonacci(n-<span class="number">2</span>);</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+<p> 恩，我们考虑了代码的鲁棒性，考虑了n小于0时候的特殊处理，我们也能通过这个函数算出斐波那契数列指定项，但是面试官一定不会满意。我们来分析以下这个代码的缺点：</p>
+<p>1、递归本质上是栈，当参数达到一定大小的时候会发生栈移出；</p>
+<p>2、从算法实现上来分析，我们要计算fibonacci(n)就需要计算fibonacci(n-1)和fibonacci(n-2)，计算fibonacci(n-1)需要计算fibonacci(n-2)和fibonacci(n-3)，计算fibonacci(n-2)需要计算fibonacci(n-3)和fibonacci(n-4)……实际上把这个递归算法的递归树画出来，我们会发现很多树结点是重复，也就是我们本来可以不重复计算那么多次；</p>
+<p><img src="https://img-blog.csdn.net/20180118142724934"></p>
+<p>3、从时间复杂度上来分析，很明显n时的复杂度：f(n)&#x3D;f(n-1)+f(n-2) 为数学上的二阶常系数差分方程，并且为齐次方程。它的时间复杂度为Ω(ф^n)，其中ф为黄金分割数(√5 + 1)&#x2F;2，Ω表示算法复杂度最小是这么多。也就是说这个算法的复杂度为指数级的复杂度，指数级的时间复杂度我们怎么能容忍？</p>
+<blockquote>
+<p>附录</p>
+<p>设f(n)为参数为n时的时间复杂度，很明显：f(n)&#x3D;f(n-1)+f(n-2)<br>这就转化为了数学上的二阶常系数差分方程，并且为其次方程。<br>即转化为了求f(n)的值，f(n)&#x3D;f(n-1)+f(n-2)且f(0)&#x3D;0; f(1)&#x3D;1;<br>特征方程为：x^2-x-1&#x3D;0<br>得 x&#x3D;(1±√5)&#x2F;2<br>因而f(n)的通解为:<br><img src="https://img-blog.csdn.net/20150902215554039" alt="这里写图片描述"><br>由f(0)&#x3D;0; f(1)&#x3D;1可解得c_1，c_2<br>最终可得，时间复杂度为：<br><img src="https://img-blog.csdn.net/20170812223611585?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvYmVhdXR5b2ZtYXRo/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+</blockquote>
+<p>    因此这样的算法只适合帮助我们理解递归，不适合用来真正求解斐波那契数列。</p>
+<p><strong>二、从下往上计算，根据f(0)和f(1)计算出f(2)，根据f(1)和f(2)计算出f(3)，直到计算出第n项</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">long</span> <span class="title function_">fibonacci</span><span class="params">(<span class="type">int</span> n)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(n &lt; <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;Illegal Index&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(n == <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(n == <span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="type">long</span> <span class="variable">fibnoacciNMinusOne</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">    <span class="type">long</span> <span class="variable">fibnoacciNMinusTwo</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="type">long</span> <span class="variable">fibN</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">2</span>; i&lt;=n; i++)&#123;</span><br><span class="line">        fibN = fibnoacciNMinusOne + fibnoacciNMinusTwo;</span><br><span class="line">        </span><br><span class="line">        fibnoacciNMinusTwo = fibnoacciNMinusOne;</span><br><span class="line">        fibnoacciNMinusOne = fibN;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> fibN;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>    使用这种方式，我们杜绝了大量的重复计算，使用中间值把需要的前两次计算的结果保存起来，下次要用直接查找使用，而不是再次计算。这样优化之后的算法时间复杂度为O(n)，也就是最多为n，明显比递归要好上不少。但是到这里就结束了吗？不是的，我们还有第三种思路。</p>
+<p><strong>三、利用数学公式的时间复杂度O(logn)的算法</strong></p>
+<p>    在代码实现之前，我们需要推导一个公式，首先来看一下斐波那契数列的递推公式：</p>
+<p><img src="https://img-blog.csdn.net/20180118151837225"></p>
+<p>    根据这个公式我们可以得到一个公式：</p>
+<p><img src="https://img-blog.csdn.net/20180118152311842"></p>
+<p>    而且当n&#x3D;2的时候，以上的公式也是成立的，因此上面的公式在n&gt;&#x3D;2的时候总成立，所以我们可以得到另一个公式：</p>
+<p><img src="https://img-blog.csdn.net/20180118152731056"></p>
+<p>    我们可以用这个公式来计算斐波那契数列。如果我们从0开始，直到n-1计算矩阵的n-1次幂，时间复杂度仍然是O(n)，并不比上面的第二种算法快，我们先实现这种O(n)复杂度的算法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">long</span> <span class="title function_">fibonacci</span><span class="params">(<span class="type">int</span> n)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(n&lt;<span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;Illegal Index&quot;</span>);</span><br><span class="line">    <span class="type">long</span>[][] basicMatrix = &#123;&#123;<span class="number">1</span>,<span class="number">1</span>&#125;,&#123;<span class="number">1</span>,<span class="number">0</span>&#125;&#125;;</span><br><span class="line">    <span class="type">long</span>[][] matrix = calPowerOfMatrix(basicMatrix, n-<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> matrix[<span class="number">0</span>][<span class="number">0</span>];</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">long</span>[][] calPowerOfMatrix(<span class="type">long</span>[][] matrix, <span class="type">int</span> n)&#123;</span><br><span class="line"><span class="comment">//计算matrix与&#123;&#123;1,1&#125;,&#123;1,0&#125;&#125;矩阵的n次幂的乘积</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i&lt;n-<span class="number">1</span> ; i++)&#123;</span><br><span class="line">        <span class="type">long</span> <span class="variable">a</span> <span class="operator">=</span> matrix[<span class="number">0</span>][<span class="number">0</span>];</span><br><span class="line">        <span class="type">long</span> <span class="variable">b</span> <span class="operator">=</span> matrix[<span class="number">0</span>][<span class="number">1</span>];</span><br><span class="line">        <span class="type">long</span> <span class="variable">c</span> <span class="operator">=</span> matrix[<span class="number">1</span>][<span class="number">0</span>];</span><br><span class="line">        <span class="type">long</span> <span class="variable">d</span> <span class="operator">=</span> matrix[<span class="number">1</span>][<span class="number">1</span>];</span><br><span class="line">        matrix[<span class="number">0</span>][<span class="number">0</span>] = a + b;</span><br><span class="line">        matrix[<span class="number">0</span>][<span class="number">1</span>] = a;</span><br><span class="line">        matrix[<span class="number">1</span>][<span class="number">0</span>] = c + d;</span><br><span class="line">        matrix[<span class="number">1</span>][<span class="number">1</span>] = c;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> matrix;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>    但是乘方是具有以下性质的：</p>
+<p><img src="https://img-blog.csdn.net/20180118153303859"></p>
+<p>    利用这个性质，我们可以利用这个公式使用二分法来递归实现斐波那契数列的求解，复杂度可以达到O(logn):</p>
+<blockquote>
+<p>计算矩阵的(n-2)次方，我们又可以进行分解，即计算矩阵(n-2)&#x2F;2次方的平方，逐步分解下去，由于折半计算矩阵次方，因而时间复杂度为O(log n)</p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">private <span class="keyword">static</span> long[][] <span class="title function_">calPowerOfMatrix</span>(<span class="params">long[][] matrix, int n</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (n &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;Illegal Index&quot;</span>);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (n == <span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> matrix;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (n % <span class="number">2</span> == <span class="number">0</span>)<span class="comment">// n为偶数</span></span><br><span class="line">        <span class="comment">// 如果n为偶数，就计算matrix的n/2次幂的2次幂</span></span><br><span class="line">        <span class="keyword">return</span> <span class="title function_">calSquareOfMatrix</span>((<span class="title function_">calPowerOfMatrix</span>(matrix, n &gt;&gt; <span class="number">1</span>)));</span><br><span class="line">    <span class="keyword">else</span><span class="comment">// n为奇数</span></span><br><span class="line">        <span class="comment">// 如果n为奇数，就计算matrix的n/2次幂的2次幂再乘以matrix</span></span><br><span class="line">        <span class="keyword">return</span> <span class="title function_">calBasicMutipyOfMatrix</span>(<span class="title function_">calSquareOfMatrix</span>(<span class="title function_">calPowerOfMatrix</span>(matrix, (n - <span class="number">1</span>) &gt;&gt; <span class="number">1</span>)));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private <span class="keyword">static</span> long[][] <span class="title function_">calBasicMutipyOfMatrix</span>(<span class="params">long[][] matrix</span>) &#123;</span><br><span class="line"><span class="comment">// 计算matrix与&#123;&#123;1,1&#125;,&#123;1,0&#125;&#125;的乘积</span></span><br><span class="line">    long a = matrix[<span class="number">0</span>][<span class="number">0</span>];</span><br><span class="line">    long b = matrix[<span class="number">0</span>][<span class="number">1</span>];</span><br><span class="line">    long c = matrix[<span class="number">1</span>][<span class="number">0</span>];</span><br><span class="line">    long d = matrix[<span class="number">1</span>][<span class="number">1</span>];</span><br><span class="line">    matrix[<span class="number">0</span>][<span class="number">0</span>] = a + b;</span><br><span class="line">    matrix[<span class="number">0</span>][<span class="number">1</span>] = a;</span><br><span class="line">    matrix[<span class="number">1</span>][<span class="number">0</span>] = c + d;</span><br><span class="line">    matrix[<span class="number">1</span>][<span class="number">1</span>] = c;</span><br><span class="line">    <span class="keyword">return</span> matrix;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private <span class="keyword">static</span> long[][] <span class="title function_">calSquareOfMatrix</span>(<span class="params">long[][] matrix</span>)&#123;<span class="comment">//计算matrix的平方</span></span><br><span class="line">    long a = matrix[<span class="number">0</span>][<span class="number">0</span>];</span><br><span class="line">    long b = matrix[<span class="number">0</span>][<span class="number">1</span>];</span><br><span class="line">    long c = matrix[<span class="number">1</span>][<span class="number">0</span>];</span><br><span class="line">    long d = matrix[<span class="number">1</span>][<span class="number">1</span>];</span><br><span class="line">    matrix[<span class="number">0</span>][<span class="number">0</span>] = a*a + b*c;</span><br><span class="line">    matrix[<span class="number">0</span>][<span class="number">1</span>] = a*b + b*d;</span><br><span class="line">    matrix[<span class="number">1</span>][<span class="number">0</span>] = a*c + c*d;</span><br><span class="line">    matrix[<span class="number">1</span>][<span class="number">1</span>] = b*c + d*d;</span><br><span class="line">    <span class="keyword">return</span> matrix;</span><br><span class="line">&#125;</span><br><span class="line">public <span class="keyword">static</span> long <span class="title function_">fibonacci</span>(<span class="params">int n</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (n &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;Illegal Index&quot;</span>);</span><br><span class="line">    long[][] basicMatrix = &#123; &#123; <span class="number">1</span>, <span class="number">1</span> &#125;, &#123; <span class="number">1</span>, <span class="number">0</span> &#125; &#125;;</span><br><span class="line">    long[][] matrix = <span class="title function_">calPowerOfMatrix</span>(basicMatrix, n - <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> matrix[<span class="number">0</span>][<span class="number">0</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>    这样就利用乘方的特性和斐波那契递推公式得出的公式写出了基于递归二分法复杂度为O(logn)的算法，这样才应该是最优的解法。</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

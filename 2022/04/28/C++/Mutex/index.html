@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>浅谈Mutex (Lock) | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈Mutex (Lock)">
+<meta property="og:url" content="https://iideas18.github.io/2022/04/28/C++/Mutex/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-04-28T15:29:38.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.159Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/04/28/C++/Mutex/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '浅谈Mutex (Lock)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">浅谈Mutex (Lock)</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-04-28T15:29:38.000Z" title="发表于 2022-04-28 23:29:38">2022-04-28</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.159Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/C++/">C++</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="浅谈Mutex-Lock"><a href="#浅谈Mutex-Lock" class="headerlink" title="浅谈Mutex (Lock)"></a>浅谈Mutex (Lock)</h1><p><a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Mutual_exclusion">Mutex</a>(又叫 Lock),在多线程中,作为同步的基本类型,用来保证没有两个线程或进程同时在他们的关键区域.因为 Mutex 这种排它性,很多人认为 Mutex 开销很大,尽量避免使用它.就如这篇分析完共享数据问题后,进一步分析说明 <a target="_blank" rel="noopener" href="http://courses.cs.washington.edu/courses/cse451/03wi/section/prodcons.htm">Avoiding locks</a> 来解决这个问题.但 Mutex 真的开销如此大,还是被大家误解了?Matthew Dillon <a target="_blank" rel="noopener" href="http://groups.google.com/group/net.micro.mac/msg/752d18de371bd65c?dmode=source">写道</a>,”Most people have the misconception that locks are slow.”, Jeff Preshing 也 <a target="_blank" rel="noopener" href="http://preshing.com/20111118/locks-arent-slow-lock-contention-is/">写了这篇”Locks Aren’t Slow; Lock Contention Is”</a>.</p>
+<p>那么接下来做 3 个关于 Mutex 的 Benchmark,具体分析一下 Mutex 的开销如何,最后并利用原子操作和 semaphore 实现一个 lightweight Mutex.</p>
+<p>一个 Mutex 仅仅从 Lock 到 Unlock 具体开销是多少,是不是占用很多时间,从 <a target="_blank" rel="noopener" href="http://preshing.com/20111124/always-use-a-lightweight-mutex/">Always Use a Lightweight Mutex</a> 从可以看到在 windows 中有两种 Mutex:<a target="_blank" rel="noopener" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms684266(v=vs.85).aspx">Muetx</a> 和 <a target="_blank" rel="noopener" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms682530(v=vs.85).aspx">Critical Section</a>, 重量级和轻量级的区别,两者的时间开销相差 25 倍多,所以一直使用轻量级的 Mutex.</p>
+<p><a target="_blank" rel="noopener" href="http://ridiculousfish.com/blog/posts/barrier.html">这篇文章</a>在高强度下 lock 的性能:每个线程做任何事情都占用 lock(高冲突),lock 占用极短的时间 (高频率).值得一读,但是在实际应用中,基本避免如此使用 locks.这里对 Mutex Contention 和 Mutex Frequency 都做最好和最坏场景的使用测试.</p>
+<p>Mutex 被灌以避免使用也因为其他原因.现在有很多大家熟知的 <a target="_blank" rel="noopener" href="http://dreamrunner.org/blog/2014/06/29/qian-tan-mutex-lock/en.wikipedia.org/wiki/Non-blocking_algorithma">lock-free programming</a> 技术.Lock-free 编程非常具有挑战性,但在实际场景中获得巨大的性能.既然有 lock-free 的技术吸引我们使用它们,那么 locks 就显得索然无味了.</p>
+<p>但也不能因此忽略 lock.因为在实际很多场景,它仍然是利器.</p>
+<h2 id="1-Lightweight-Mutex-Benchmark"><a href="#1-Lightweight-Mutex-Benchmark" class="headerlink" title="1. Lightweight Mutex Benchmark"></a>1. Lightweight Mutex Benchmark</h2><p>Linux 下的 POSIX thread 是轻量级的 Mutex.基于 Linux 特有的 <a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Futex">futex</a> 技术,当没有其他线程竞争锁时它被优化过.使用如下简单的例子,测试一个单线程 lock 和 unlock,所有代码在 <a target="_blank" rel="noopener" href="https://github.com/shishougang/blog_multithreading/tree/master/mutex_time">Github 上</a>.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">pthread_mutex_init</span>(&amp;lock, <span class="literal">NULL</span>);</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> kN = <span class="number">1000000</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; kN; ++i) &#123;</span><br><span class="line">    <span class="built_in">pthread_mutex_lock</span>(&amp;lock);</span><br><span class="line">    <span class="built_in">pthread_mutex_unlock</span>(&amp;lock);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">pthread_mutex_destroy</span>(&amp;lock);</span><br></pre></td></tr></table></figure>
+
+<p>插入相应的时间代码,算出 10 万次的单线程 lock&#x2F;unlock 平均时间.在不同的处理器下,结果如下:</p>
+<p><img src="/mutex_benchmark.png" alt="&#39;mutex_benchmark&#39;"></p>
+<p>如果假设一个线程每分钟获取 1e5 次 mutex,并且没有其他线程与它竞争.基于如下的图,可预计 0.2%到 0.4%的开销.不算差.在比较低频率下,开销基本忽略不计.之后 <a target="_blank" rel="noopener" href="http://dreamrunner.org/blog/2014/06/29/qian-tan-mutex-lock#build-own-lightweight-mutex">Build own lightweight mutex</a>,会利用 <a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Semaphore_(programming)">semaphore</a> 和一个原子操作,实现一个 lightweight mutex.</p>
+<p>POSIX thread 与 Windows Critical Section 不同,它不仅支持线程间的同步, 还支持进程间的同步.实例代码如下:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">pthread_mutex_t</span> mutex;</span><br><span class="line"><span class="type">pthread_mutexattr_t</span> attrmutex;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Initialise attribute to mutex. */</span></span><br><span class="line"><span class="built_in">pthread_mutexattr_init</span>(&amp;attrmutex);</span><br><span class="line"><span class="built_in">pthread_mutexattr_setpshared</span>(&amp;attrmutex, PTHREAD_PROCESS_SHARED);</span><br><span class="line"><span class="built_in">pthread_mutex_init</span>(&amp;mutex, &amp;attrmutex);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Use the mutex. */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Clean up. */</span></span><br><span class="line"><span class="built_in">pthread_mutex_destroy</span>(pmutex);</span><br><span class="line"><span class="built_in">pthread_mutexattr_destroy</span>(&amp;attrmutex);</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-Mutex-Contention-Benchmark"><a href="#2-Mutex-Contention-Benchmark" class="headerlink" title="2. Mutex Contention Benchmark"></a>2. Mutex Contention Benchmark</h2><p>在测试中,产生一个不断生成随机数的线程,使用自己编制的线程安全的 <a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Mersenne_twister">Mersenne Twister</a> 实现代码.每过一段时间,它获取和释放一个锁,获取和释放锁之间的时间每次是随机的,但是总的平均时间是提前设计好的.这个随机的过程就是个泊松分布过程,计算出产生一个随机数的平均时间 6.25 ns 在 2.93 GHz i7 上,把它作为运行单位.利用 [Poisson Process](<a target="_blank" rel="noopener" href="http://wiki.dreamrunner.org/public_html/Algorithms/Theory">http://wiki.dreamrunner.org/public_html/Algorithms/Theory</a> of Algorithms&#x2F;poisson-process.html) 的算法决定运行多少个运行单位在获取和释放锁之间.并利用 <a target="_blank" rel="noopener" href="http://dreamrunner.org/blog/2014/06/24/high-resolution-time/">High Resolution Time</a>API 计算时间.这个线程的代码如下,所有代码在 <a target="_blank" rel="noopener" href="https://github.com/shishougang/blog_multithreading/tree/master/mutex_contention">Github 上</a>:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">GetMonotonicTime</span>(&amp;start);</span><br><span class="line"><span class="keyword">for</span> (;;) &#123;</span><br><span class="line">  work_units = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt; (random.<span class="built_in">PoissonInterval</span>(</span><br><span class="line">      global_state.average_unlock_count) + <span class="number">0.5f</span>);</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; work_units; ++i) &#123;</span><br><span class="line">    random.<span class="built_in">Integer</span>();</span><br><span class="line">  &#125;</span><br><span class="line">  thread_stats.workdone += work_units;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">GetMonotonicTime</span>(&amp;end);</span><br><span class="line">  elapsed_time = <span class="built_in">GetElapsedTime</span>(&amp;start, &amp;end);</span><br><span class="line">  <span class="keyword">if</span> (elapsed_time &gt;= global_state.time_limit) &#123;</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Do some work while holding the lock</span></span><br><span class="line">  <span class="built_in">pthread_mutex_lock</span>(&amp;global_state.thread_mutex);</span><br><span class="line">  work_units = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt; (random.<span class="built_in">PoissonInterval</span>(</span><br><span class="line">      global_state.average_locked_count) + <span class="number">0.5f</span>);</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; work_units; ++i) &#123;</span><br><span class="line">    random.<span class="built_in">Integer</span>();</span><br><span class="line">  &#125;</span><br><span class="line">  thread_stats.workdone += work_units;</span><br><span class="line">  <span class="built_in">pthread_mutex_unlock</span>(&amp;global_state.thread_mutex);</span><br><span class="line"></span><br><span class="line">  thread_stats.iterations++;</span><br><span class="line">  <span class="built_in">GetMonotonicTime</span>(&amp;end);</span><br><span class="line">  elapsed_time = <span class="built_in">GetElapsedTime</span>(&amp;start, &amp;end);</span><br><span class="line">  <span class="keyword">if</span> (elapsed_time &gt;= global_state.time_limit) &#123;</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里模拟获取和释放 15000 次锁每秒,从 1 个线程运行到 2 个线程,最后到 4 个线程.并且验证占用锁的时间,从 0%到 100%的每次运行时间占用锁.把 1 个线程的完成的工作量作为基准数据,其他的去除以它,计算相对增益.基本测试方案如下:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Test 15000 locks per second: thread number, lock_interval</span></span><br><span class="line">    <span class="number">1</span>, <span class="number">1</span>/<span class="number">15000.0f</span>,</span><br><span class="line">    <span class="number">2</span>, <span class="number">1</span>/<span class="number">15000.0f</span>,</span><br><span class="line">    <span class="number">3</span>, <span class="number">1</span>/<span class="number">15000.0f</span>,</span><br><span class="line">    <span class="number">4</span>, <span class="number">1</span>/<span class="number">15000.0f</span>,</span><br></pre></td></tr></table></figure>
+
+<p><img src="/lock_benchmark.png" alt="lock_benchmark&#39;"></p>
+<p>从图中看出,随着锁占用的时间增加,并行性越来越差,直到最后占用 60%以后,单线程运行的更好.可以说,短时间的占用锁的时间,以 10%以内,系统达到很高的并行性.虽然并不是完美的,但是也接近.锁总体很快.</p>
+<p>把这个结果放到实际中,Jeff Preshing 在 <a target="_blank" rel="noopener" href="http://preshing.com/20111118/locks-arent-slow-lock-contention-is/">这篇</a> 提到,实际的游戏程序中,15000 的锁每秒来自 3 个线程,占用锁的时间相对 2%.在图中很适中的区域.</p>
+<h2 id="3-Mutex-Frequency-Benchmark"><a href="#3-Mutex-Frequency-Benchmark" class="headerlink" title="3. Mutex Frequency Benchmark"></a>3. Mutex Frequency Benchmark</h2><p>尽管一个 lightweight mutex 有开销,但如上测试在 2.40GHz i5 上,lock&#x2F;unlock 锁开销约 <strong>34.2ns</strong> ,因此 15000 锁每秒开销很低以致不是严重影响结果.那么把锁的每秒频率提高呢?</p>
+<p>只创建 2 个线程,进行一系列的锁的每秒频率测试在 2.40GHz i5 上,从占用锁时间 10 ns(1e8&#x2F;s)到 100 us(1e4&#x2F;s),用单线程的占用锁时间 10 ms 作为基准工作量,其他与它比较,测试方案如下:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Reference</span></span><br><span class="line"> <span class="number">1</span>, <span class="number">10e-3f</span>,      <span class="comment">// 10 ms        100/s</span></span><br><span class="line"></span><br><span class="line">   <span class="comment">// Test various lock rates with 2 threads</span></span><br><span class="line">   <span class="number">2</span>, <span class="number">10e-9f</span>,      <span class="comment">// 10 ns        100000000/s</span></span><br><span class="line">   <span class="number">2</span>, <span class="number">31.6e-9f</span>,    <span class="comment">// 31.6 ns      31600000/s</span></span><br><span class="line">   <span class="number">2</span>, <span class="number">100e-9f</span>,     <span class="comment">// 100 ns       10000000/s</span></span><br><span class="line">   <span class="number">2</span>, <span class="number">316e-9f</span>,     <span class="comment">// 316 ns       3160000/s</span></span><br><span class="line">   <span class="number">2</span>, <span class="number">1e-6f</span>,       <span class="comment">// 1 us         1000000/s</span></span><br><span class="line">   <span class="number">2</span>, <span class="number">3.16e-6f</span>,    <span class="comment">// 3.16 us      316000/s</span></span><br><span class="line">   <span class="number">2</span>, <span class="number">10e-6f</span>,      <span class="comment">// 10 us        100000/s</span></span><br><span class="line">   <span class="number">2</span>, <span class="number">31.6e-6f</span>,    <span class="comment">// 31.6 us      31600/s</span></span><br><span class="line">   <span class="number">2</span>, <span class="number">100e-6f</span>,     <span class="comment">// 100 us       10000/s</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/frequency_benchmark.png" alt="&#39;frequency_bechmark&#39;"></p>
+<p>如预想一样,对于非常高频率的锁,锁的开销开始减少实际工作量.在网络上,可以找到很多同样的测试.图中下边的线条,对于这样高的频率,也就是占用锁的时间很短,就一些 CPU 的指令,这样的情况下,当锁之间的工作如此简单,那么一个 lock-free 的实现更适合.</p>
+<p>我们获得了一大块关于锁的性能:从它进行很好的情况,到缓慢应用的情况.在考虑实际锁的使用情况,不能说所有锁都是慢的.必须承认,很容易乱用锁,但不用太担心,任何的瓶颈问题都会在细心的 profiling 中发现.当你考虑锁是如何的稳定, 相对容易的理解它们(与 lock-free 技术相比),锁有时候其实很好用.</p>
+<h2 id="4-Build-own-lightweight-mutex"><a href="#4-Build-own-lightweight-mutex" class="headerlink" title="4. Build own lightweight mutex"></a>4. Build own lightweight mutex</h2><p>我们也可以实现自己的简单轻量级的 mutex,但仅仅作为教育手段,理解 mutex 一些内在实现细节,实际现在操作系统都提供轻量级的 mutex,千万不要自己实现一个并实际使用,直接只用操作系统提供的即可.</p>
+<p>网络上有很多种方法在用户层写自己的 mutex:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://preshing.com/20120226/roll-your-own-lightweight-mutex/">roll-your-own-lightweight-mutex</a> 利用 Windows 提供的 semaphore 和 atomic 操作实现的 mutex.</li>
+<li><a target="_blank" rel="noopener" href="http://cbloomrants.blogspot.hk/2011/07/07-15-11-review-of-many-mutex.html">Review of many Mutex implementations</a> 很长的一篇文章,总结了很多种 mutex 的实现细节.</li>
+</ul>
+<p>这里利用 <a target="_blank" rel="noopener" href="http://www.haiku-os.org/legacy-docs/benewsletter/Issue1-26.html#Engineering1-26">Benaphore</a> 技术,在 Linux 平台上利用 <a target="_blank" rel="noopener" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/sem_init.html">semaphore</a> 和 <a target="_blank" rel="noopener" href="https://gcc.gnu.org/onlinedocs/gcc-4.1.2/gcc/Atomic-Builtins.html">atomic</a> 操作实现自己的 C++版本的 lightweight mutex.这里并没有用 <a target="_blank" rel="noopener" href="http://www.open-std.org/JTC1/sc22/wg21/docs/papers/2007/n2427.html">C++11 的原子库</a>.所有代码在 <a target="_blank" rel="noopener" href="https://github.com/shishougang/blog_multithreading/tree/master/benaphore_mutex">Github 上</a>.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">#<span class="keyword">include</span> <span class="string">&lt;semaphore.h&gt;</span></span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Benaphore</span> &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">Benaphore</span>() : <span class="built_in">counter_</span>(<span class="number">0</span>) &#123;</span><br><span class="line">    <span class="built_in">sem_init</span>(&amp;semaphore_, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  ~<span class="built_in">Benaphore</span>() &#123;</span><br><span class="line">    <span class="built_in">sem_destroy</span>(&amp;semaphore_);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">Lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (__sync_add_and_fetch(&amp;counter_, <span class="number">1</span>) &gt; <span class="number">1</span>) &#123;</span><br><span class="line">      <span class="built_in">sem_wait</span>(&amp;semaphore_);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">Unlock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (__sync_sub_and_fetch(&amp;counter_, <span class="number">1</span>) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="built_in">sem_post</span>(&amp;semaphore_);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="type">bool</span> <span class="title">TryLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> __sync_bool_compare_and_swap(&amp;counter_, <span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="type">long</span> counter_;</span><br><span class="line">  <span class="type">sem_t</span> semaphore_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://gcc.gnu.org/onlinedocs/gcc-4.1.2/gcc/Atomic-Builtins.html"><code>__sync_add_and_fetch</code></a> 是一个由 GCC 内部提供的 <em>atomic read-modify-write (RMW)</em> 操作,它把 1 加到某个数并且返回新的数,在同一时间所有操作由一个线程原子操作完成,其他线程不能干涉,只能在后等待.这里<code>counter_</code>初始化为 0,第一个线程调用<code>Lock</code>将得到 1 从<code>__sync_add_and_fetch</code>,然后跳过<code>sem_wait</code>,一旦这个线程占用这个锁, 之后线程都将递增<code>counter_</code>,获得大于 1 的数,从而调用<code>sem_wait</code>等待.</p>
+<p>之后,第一个线程完成自己的操作,调用<code>Unlock</code>,<code>__sync_sub_and_fetch</code>的返回值大于 1 说明有其他线程在等待这个 mutex,调用<code>sem_post</code>唤醒其他线程.</p>
+<h3 id="4-1-底层分析与性能"><a href="#4-1-底层分析与性能" class="headerlink" title="4.1 底层分析与性能"></a>4.1 底层分析与性能</h3><p>上面使用了<code>__sync_add_and_fetch</code>,它编译成<code>lock xadd</code>指令如下.在没有竞争下的 lock&#x2F;unlock 操作性能与 pthread mutex 相当.但是在 mutex 多线程竞争情况下,这个 mutex 性能没有 pthread mutex 好.</p>
+<p><img src="/lightweight_mutex_assembly.png" alt="&#39;lightweight_mutex_assembly&#39;"></p>
+<h3 id="4-2-增强-Mutex-支持递归"><a href="#4-2-增强-Mutex-支持递归" class="headerlink" title="4.2 增强 Mutex 支持递归"></a>4.2 增强 Mutex 支持递归</h3><p>上面简单的 lightweight mutex 的局限性是它不能递归.也就是同一个线程试图获取同样的锁两次以上,将造成死锁(deadlock).递归锁在函数调用自己时很有用.比如在内存管理代码中,可能会遇到如下代码:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"> <span class="built_in">Realloc</span>(<span class="type">void</span>* ptr, <span class="type">size_t</span> size)</span><br><span class="line">&#123;</span><br><span class="line">    LOCK;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (ptr == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Alloc</span>(size);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (size == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">Free</span>(size);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">Alloc</span>(<span class="type">size_t</span> size)</span><br><span class="line">&#123;</span><br><span class="line">    LOCK;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+<p><code>Lock</code>是个封装好的 C++宏,用来获取锁和自动结果当退出函数.</p>
+<p>可以看到,当传递<code>NULL</code>给<code>Realloc</code>,锁被<code>Realloc</code>函数获取,然后第二次被获取当<code>Alloc</code>被调用.</p>
+<p>把它扩展成可递归的锁如下,加入 2 个新成员变量,<code>owner_</code>,存储当前占有线程的 ID(TID),和<code>recursion_</code>,存储递归的层数.基本代码如下:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">#<span class="keyword">include</span> <span class="string">&lt;semaphore.h&gt;</span></span></span><br><span class="line"> <span class="meta">#<span class="keyword">include</span> <span class="string">&lt;pthread.h&gt;</span></span></span><br><span class="line"> <span class="meta">#<span class="keyword">define</span> LIGHT_ASSERT(x) &#123; <span class="keyword">if</span> (!(x)) __builtin_trap(); &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RecursiveBenaphore</span> &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">RecursiveBenaphore</span>() : <span class="built_in">counter_</span>(<span class="number">0</span>), <span class="built_in">owner_</span>(<span class="number">0</span>), <span class="built_in">recursion_</span>(<span class="number">0</span>) &#123;</span><br><span class="line">    <span class="built_in">sem_init</span>(&amp;semaphore_, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  ~<span class="built_in">RecursiveBenaphore</span>() &#123;</span><br><span class="line">    <span class="built_in">sem_destroy</span>(&amp;semaphore_);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">Lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">pthread_t</span> thread_id = <span class="built_in">pthread_self</span>();</span><br><span class="line">    <span class="keyword">if</span> (__sync_add_and_fetch(&amp;counter_, <span class="number">1</span>) &gt; <span class="number">1</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (!<span class="built_in">pthread_equal</span>(thread_id, owner_)) &#123;</span><br><span class="line">        <span class="built_in">sem_wait</span>(&amp;semaphore_);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    owner_ = thread_id;</span><br><span class="line">    recursion_++;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">Unlock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">pthread_t</span> thread_id = <span class="built_in">pthread_self</span>();</span><br><span class="line">    <span class="built_in">LIGHT_ASSERT</span>(<span class="built_in">pthread_equal</span>(thread_id, owner_));</span><br><span class="line">    <span class="type">long</span> recur = --recursion_;</span><br><span class="line">    <span class="keyword">if</span> (recur == <span class="number">0</span>) &#123;</span><br><span class="line">      owner_ = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">long</span> result = __sync_sub_and_fetch(&amp;counter_, <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> (result &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (recur == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="type">int</span> sem_value;</span><br><span class="line">        <span class="built_in">sem_getvalue</span>(&amp;semaphore_, &amp;sem_value);</span><br><span class="line">        <span class="keyword">if</span> (sem_value == <span class="number">0</span>) &#123;</span><br><span class="line">          <span class="built_in">sem_post</span>(&amp;semaphore_);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="type">bool</span> <span class="title">TryLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">pthread_t</span> thread_id = <span class="built_in">pthread_self</span>();</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">pthread_equal</span>(thread_id, owner_)) &#123;</span><br><span class="line">      __sync_add_and_fetch(&amp;counter_, <span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="type">bool</span> result = __sync_bool_compare_and_swap(&amp;counter_, <span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line">      <span class="keyword">if</span> (result == <span class="literal">false</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      owner_ = thread_id;</span><br><span class="line">    &#125;</span><br><span class="line">    recursion_++;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="type">long</span> counter_;</span><br><span class="line">  <span class="type">sem_t</span> semaphore_;</span><br><span class="line">  <span class="type">pthread_t</span> owner_;</span><br><span class="line">  <span class="type">long</span> recursion_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>如之前一样,第一个线程调用<code>Lock</code>,设置<code>owner_</code>为自己的 TID,增加 <code>recursion_</code>到 1.如果同一个线程再次调用<code>Lock</code>,它将同时增加 <code>recursion_</code>和<code>counter_</code>.</p>
+<p>之后,第一个线程完成自己的操作,调用<code>Unlock</code>,同时减少<code>recursion_</code>和<code>counter_</code>, 仅仅调用<code>sem_post</code>唤醒其他线程当<code>recursion_</code>减少到<code>0</code>.如果 <code>recursion_</code>仍然大于 0,意味着当前的线程仍然占有此锁在外层程序.</p>
+<p>最后进行<strong>压力测试</strong>,建立一些线程,每个随机获取锁,随机的递归层次.代码在 <a target="_blank" rel="noopener" href="https://github.com/shishougang/blog_multithreading/tree/master/benaphore_mutex">Github 上</a>.</p>
+<p>一些细节问题: * 在<code>Unlock</code>中,设置<code>owner_</code>为 0 在调用<code>__sync_sub_and_fetch</code>之前,否则可能发生死锁(deadlock).比如,有两个线程 TID 是 111 和 222. 1. 线程 111 完成操作调用<code>Unlock</code>,先调用<code>__sync_sub_and_fetch</code>把<code>counter_</code>减到 0 2. 在设置<code>owner_</code>为 0 被中断,线程 222 得到运行,它调用<code>Lock</code>,发现<code>counter_</code>为 0,跳过<code>sem_wait</code>,设置<code>owner_=222</code>,完成<code>Lock</code>操作. 3. 线程 222 被中断调出,线程 111 重新得到运行,设置<code>owner_</code>为 0,然后完成<code>Unlock</code>操作. 4. 因为此时<code>owner_</code>为 0,线程 222 不能在递归占用锁,一旦它再次获取锁,形成死锁.</p>
+<ul>
+<li>在<code>Unlock</code>中,<code>recursion_</code>被拷贝到本地变量一次,之后只本地变量,比如没有在<code>__sync_sub_and_fetch</code>之后重新读取她.因为在那之后它能被其他线程已经改变.</li>
+<li><code>recursion_</code>和<code>owner_</code>没有原子操作.因为它们在调用<code>Lock</code>的 <code>__sync_add_and_fetch</code>和调用<code>Unlock</code>的<code>__sync_sub_and_fetch</code>之间,线程占有锁,独占<code>recursion_</code>和<code>owner_</code>的读写操作,并拥有所有的 acquire and release semantics.对<code>recursion_</code>和<code>owner_</code>使用原子操作没必要.因为在 X86&#x2F;84 的平台上,<code>__sync_add_and_fetch</code>生成<code>lock xadd</code>的指令,保证全部的 memory barrier,也就保证 acquire and release semantics.</li>
+</ul>
+<h2 id="5-Mutex-VS-Spinlock"><a href="#5-Mutex-VS-Spinlock" class="headerlink" title="5. Mutex VS Spinlock"></a>5. Mutex VS Spinlock</h2><p>提到 Mutex,往往会提到 Spinlock,因为在使用 Lock 时,会遇到如何在 Mutex 与 Spinlock 之间选择.那么接下来对比一下两者.</p>
+<h3 id="5-1-定义"><a href="#5-1-定义" class="headerlink" title="5.1 定义"></a>5.1 定义</h3><p>Mutex: 如果一个线程试图获取一个 mutex,但是没有成功,因为 mutex 已经被占用, 它将进入睡眠,让其他进程运行,直到 mutex 被其他进程释放.</p>
+<p>Spinlock: 如果一个线程试图获取一个 Spinlock, 但是没有成功,它将持续试着去获取它,直到它最终成功获取,因为它将不允许其他线程运行(然而,操作系统将强制调度其他线程).</p>
+<h3 id="5-2-各自缺点"><a href="#5-2-各自缺点" class="headerlink" title="5.2 各自缺点"></a>5.2 各自缺点</h3><p>Mutex: Mutex 将使得线程睡眠,然后再唤醒它们,两者都是开销比较大的操作,也就是 context switch 的开销.如果锁只是被其他线程占用非常短的时间,那么时间花在使的线程睡眠并唤醒它可能超过它使用 spinlock 持续获取锁的时间.</p>
+<p>Spinlock: Spinlock 持续获取锁,浪费很多 CPU 时间,如果锁被其他线程占用很长时间,那么它将浪费很多时间,不如使得线程进入睡眠,让出 CPU.<a target="_blank" rel="noopener" href="http://jfdube.wordpress.com/2011/09/24/lessons-learnt-while-spinning/">Spinlock 的确能优化 context switches</a> 但会在没有 <a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Priority_inversion">threads priority inversion</a> 的平台上产生副作用.(但一个高优先级的线程自旋一个锁来等待一个低优先级的线程释放这个锁,就会造成死锁).在没有 Preemption 的 Uniprocessor,使用 spinlock 是没有意义的,当前只有一个线程运行,没有必要保护关键区域,也没有其他线程同时运行,释放锁给它.</p>
+<p>所以在 Linux 下,Spinlock 在 kernel 这样实现:</p>
+<ul>
+<li>没有打开<code>CONFIG_SMP</code>和<code>CONFIG_PREEMPT</code>,spinlock 实现代码是空的.</li>
+<li>没有打开<code>CONFIG_SMP</code>,打开<code>CONFIG_PREEMPT</code>,spinlock 仅仅是简单的关闭 preemption,足够来防止任何的 <a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Race_condition">races</a>.</li>
+<li>打开<code>CONFIG_SMP</code>,打开<code>CONFIG_PREEMPT</code>,spinlock 实现如下代码,不断检查 lock 是否被其他线程释放:</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">extern</span> <span class="keyword">inline</span> <span class="type">void</span> <span class="title">spin_lock</span><span class="params">(<span class="type">spinlock_t</span> *plock)</span></span></span><br><span class="line"><span class="function"> </span>&#123;</span><br><span class="line">   __asm__ __volatile__(</span><br><span class="line">       spin_lock_string</span><br><span class="line">       :<span class="string">&quot;=m&quot;</span> (__dummy_lock(plock)));</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="comment">// Macro spin_lock_string expand</span></span><br><span class="line"> <span class="function"><span class="keyword">extern</span> <span class="keyword">inline</span> <span class="type">void</span> <span class="title">spin_lock</span><span class="params">(<span class="type">spinlock_t</span> *plock)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> <span class="number">1</span>:</span><br><span class="line">   lock ; btsl ,plock;</span><br><span class="line">   jc <span class="number">2</span>f;</span><br><span class="line">   .section .text.lock,<span class="string">&quot;ax&quot;</span></span><br><span class="line"> <span class="number">2</span>:</span><br><span class="line">   testb ,plock;</span><br><span class="line">   rep;nop;</span><br><span class="line">   jne <span class="number">2</span>b;</span><br><span class="line">   jmp <span class="number">1</span>b;</span><br><span class="line">   .previous</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-3-总结"><a href="#5-3-总结" class="headerlink" title="5.3 总结"></a>5.3 总结</h3><table>
+<thead>
+<tr>
+<th align="left">Criteria</th>
+<th align="left">Muutex</th>
+<th align="left">Spinlock</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">机制</td>
+<td align="left">尝试获取锁.若可得到就占有.若不能,就进入睡眠等待.</td>
+<td align="left">尝试获取锁.若可得到就占有.若不能,持续尝试直到获取.</td>
+</tr>
+<tr>
+<td align="left">什么时候使用</td>
+<td align="left">当线程进入睡眠没有伤害.或需要等待一段足够长的时间才能获取锁.</td>
+<td align="left">当线程不应该进入睡眠如中断处理等.当只需等待非常短的时间就能获取锁.</td>
+</tr>
+<tr>
+<td align="left">缺点</td>
+<td align="left">引起 context switch 和 scheduling 开销.</td>
+<td align="left">线程不做任何事情在获取到锁前.浪费 CPU 运行.</td>
+</tr>
+</tbody></table>
+<p><a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Spinlock#Alternatives">大多数操作系统(包括 Solaris,Mac OS X 和 FreeBSD)使用混合的机制叫”adaptive mutex”或”hybrid mutex”</a>.一个 hybrid mutex 首先行为和 spinlock 一样,如果不能获取锁,持续尝试获取,但过了一定的时间,它就和 mutex 一样,让线程进入睡眠.<a target="_blank" rel="noopener" href="http://dreamrunner.org/blog/2014/06/29/qian-tan-mutex-lock/#fn:f1">1</a>.</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="http://stackoverflow.com/questions/5869825/when-should-one-use-a-spinlock-instead-of-mutex[%E2%86%A9](http://dreamrunner.org/blog/2014/06/29/qian-tan-mutex-lock/#fnref:f1)">http://stackoverflow.com/questions/5869825/when-should-one-use-a-spinlock-instead-of-mutex[↩](http://dreamrunner.org/blog/2014/06/29/qian-tan-mutex-lock/#fnref:f1)</a></li>
+</ol>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

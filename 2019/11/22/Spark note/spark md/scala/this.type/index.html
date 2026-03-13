@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>scala this.type | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="scala this.type">
+<meta property="og:url" content="https://iideas18.github.io/2019/11/22/Spark note/spark md/scala/this.type/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2019-11-22T10:06:12.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.269Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2019/11/22/Spark note/spark md/scala/this.type/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'scala this.type',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">scala this.type</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2019-11-22T10:06:12.000Z" title="发表于 2019-11-22 18:06:12">2019-11-22</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.269Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Spark note/">Spark note</a>
+            
+            <a class="post-meta-categories" href="/categories/spark md/">spark md</a>
+            
+            <a class="post-meta-categories" href="/categories/scala/">scala</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="scala-this-type"><a href="#scala-this-type" class="headerlink" title="scala this.type"></a>scala this.type</h1><p>(<a target="_blank" rel="noopener" href="https://www.jianshu.com/u/b5df6080f221)[Codlife%E4%B8%80%E7%8E%8B%E5%AE%B6%E4%BA%8C%E5%85%AC%E5%AD%90](https://www.jianshu.com/u/b5df6080f221)%E5%85%B3%E6%B3%A8">https://www.jianshu.com/u/b5df6080f221)[Codlife一王家二公子](https://www.jianshu.com/u/b5df6080f221)关注</a></p>
+<p>this.type表示<strong>当前对象（this)的类型</strong>。<strong>this指代当前的对象</strong>。this.type被用于<strong>变量，函数参数和函数返回值的类型声明</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">A</span> &#123;def method1: A = <span class="keyword">this</span> &#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span> <span class="title">extends</span> <span class="title">A</span> (def method2: B = <span class="keyword">this</span>&#125;</span><br><span class="line"><span class="keyword">val</span> b = new B</span><br></pre></td></tr></table></figure>
+
+<p>然后我查看b.method1的类型：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; b.method1.getClass</span><br><span class="line">res29: <span class="type">Class</span>[_ &lt;: <span class="type">A</span>] = <span class="class"><span class="keyword">class</span> <span class="title">B</span></span></span><br></pre></td></tr></table></figure>
+
+<p><strong>res29: Class[_ &lt;: A] &#x3D; class B</strong><br>的意思是结果参数 res29 的类型是 Class[_ &lt;: A]，值为 class B。 _ &lt;: A 表示任意 A 的子类型。</p>
+<p>如果调用b.method2.method1是可以的，但是如果想调用b.method1.method2就不行了。因为method1返回的是A类型的。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; b.method1.method2</span><br><span class="line">&lt;console&gt;:<span class="number">11</span>: error: value method2 is not a member of <span class="type">A</span></span><br><span class="line">              b.method1.method2</span><br></pre></td></tr></table></figure>
+
+<p>当然你可以在B中覆盖method1，以返回正确类型。</p>
+<p>但是scala中解决这个问题的办法就是this.type</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">A</span> &#123; def method1: <span class="keyword">this</span>.type = <span class="keyword">this</span> &#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span> <span class="title">extends</span> <span class="title">A</span> &#123; def method2: <span class="keyword">this</span>.type = <span class="keyword">this</span> &#125;</span><br><span class="line"><span class="keyword">val</span> b = new B</span><br></pre></td></tr></table></figure>
+
+<p>如果调用b.method1则编译器会知道method1返回的是B类型的。</p>
+<p>再查看b.method1的类型：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; b.method1.getClass</span><br><span class="line">res31: <span class="type">Class</span>[_ &lt;: <span class="type">B</span>] = <span class="class"><span class="keyword">class</span> <span class="title">B</span></span></span><br></pre></td></tr></table></figure>
+
+<p>这时可以调用b.method1.method2方法：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; b.method1.method2</span><br><span class="line">res32: b.<span class="keyword">type</span> = <span class="type">B</span>@<span class="number">4</span>ff3ac</span><br></pre></td></tr></table></figure>
+
+<p>主要原因就是：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123; <span class="function"><span class="keyword">def</span> <span class="title">method1</span> </span>= <span class="keyword">this</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>中 method1 返回类型为 A，没有写出来但编译器会推断为 A。确认方法是自己在这里填上 : A 看编译器报错不。<br>所以 b.method1 返回的是 A 类型的对象，A 类型中没有 method2。</p>
+<p>而带上 this.type 后：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123; <span class="function"><span class="keyword">def</span> <span class="title">method1</span></span>: <span class="keyword">this</span>.<span class="keyword">type</span> = <span class="keyword">this</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>this.type 是 method1 的返回值，这个返回值很特殊，得在运行期才会真正计算出具体类型</strong>，所以当对象实际类型是 B 的时候，调用 b.method1 返回的还是子类 B 类型，而不是 A 类型。这个就是 this type 的用途，是 scala 为了满足这类需求专门设计的关键字。</p>
+<p>spark 源码中大量使用了这种方式，比如spark mllib kmeans</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Since(<span class="string">&quot;0.8.0&quot;</span>)</span></span><br><span class="line">def setMaxIterations(maxIterations: <span class="built_in">Int</span>): <span class="keyword">this</span>.type = &#123;</span><br><span class="line">  require(maxIterations &gt;= <span class="number">0</span>,</span><br><span class="line">    s<span class="string">&quot;Maximum of iterations must be nonnegative but got <span class="subst">$&#123;maxIterations&#125;</span>&quot;</span>)</span><br><span class="line">  <span class="keyword">this</span>.maxIterations = maxIterations</span><br><span class="line">  <span class="keyword">this</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The initialization algorithm. This can be either &quot;random&quot; or &quot;k-means||&quot;.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Since(<span class="string">&quot;1.4.0&quot;</span>)</span></span><br><span class="line">def getInitializationMode: String = initializationMode</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Set the initialization algorithm. This can be either &quot;random&quot; to choose random points as</span></span><br><span class="line"><span class="comment"> * initial cluster centers, or &quot;k-means||&quot; to use a parallel variant of k-means++</span></span><br><span class="line"><span class="comment"> * (Bahmani et al., Scalable K-Means++, VLDB 2012). Default: k-means||.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Since(<span class="string">&quot;0.8.0&quot;</span>)</span></span><br><span class="line">def setInitializationMode(initializationMode: String): <span class="keyword">this</span>.type = &#123;</span><br><span class="line">  KMeans.validateInitMode(initializationMode)</span><br><span class="line">  <span class="keyword">this</span>.initializationMode = initializationMode</span><br><span class="line">  <span class="keyword">this</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码片段一：   </p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">trait</span> <span class="title">IC</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">me</span> </span>: <span class="keyword">this</span>.<span class="keyword">type</span> = <span class="keyword">this</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">entity</span></span>: <span class="type">IC</span> = <span class="keyword">this</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> <span class="keyword">extends</span> <span class="title">IC</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">IC</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> a = <span class="keyword">new</span> <span class="type">A</span></span><br><span class="line">:<span class="class"><span class="keyword">type</span> <span class="title">a</span>.<span class="title">me</span>  <span class="comment">// 显示Ａ</span></span></span><br><span class="line">:<span class="class"><span class="keyword">type</span> <span class="title">a</span>.<span class="title">entity　//显示</span> <span class="title">IC</span></span></span><br><span class="line"><span class="keyword">val</span> b = <span class="keyword">new</span> <span class="type">B</span>  </span><br><span class="line">:<span class="class"><span class="keyword">type</span> <span class="title">a</span>.<span class="title">me</span>  <span class="comment">// 显示 B</span></span></span><br><span class="line">:<span class="class"><span class="keyword">type</span> <span class="title">a</span>.<span class="title">entity</span> <span class="comment">// 显示 IC</span></span></span><br></pre></td></tr></table></figure>
+
+<p>   代码片段二：   </p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">trait</span> <span class="title">ActiveRecord</span> </span>&#123;<span class="function"><span class="keyword">def</span> <span class="title">entity</span></span>: <span class="keyword">this</span>.<span class="keyword">type</span> = <span class="keyword">this</span>&#125; </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> <span class="keyword">extends</span> <span class="title">ActiveRecord</span></span>&#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">entity</span> </span>= <span class="keyword">new</span> <span class="type">ActiveRecord</span>()&#123;&#125;  <span class="comment">//编译错误，只能返回当前对象，即this</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>   代码片段三：</p>
+<p><img src="http://static.oschina.net/uploads/space/2012/0101/001428_lkeG_103999.png" alt="img"></p>
+<p>   代码片段四:</p>
+<p><img src="http://static.oschina.net/uploads/space/2012/0101/003802_0DGl_103999.png" alt="img"></p>
+<p>​    简单解释一下。我们平时这么写 val a &#x3D; new A ，我们会说a的类型是A。实际上，在编译这行代码时，编译器会自动生成一个类A的匿名子类（我们不妨把它称为A_$) ，然后用这个匿名子类（A_$)实例化（并且只会实例化）一个对象（a)。我们把这个匿名子类称为single class, 因此对象a的真正类型应该是这个A_$的类型，我们把它叫做singe type。    </p>
+<p>   那this.type有什么作用呢？ <strong>主要是在某些场合下加强类型约束，或者说是为了确保类型的绝对安全。</strong>  以代码片段二为例，假如ActiveRecord的entity方法返回ActiveRecord类型, 那么实现类可以返回任意ActiveRecord类型的子类型。 因此将类型声明为this.type，可以对链式调用提供安全保障。 但这在Java中是无法做到的，除非把该方法声明为final，防止被子类改写，但这样一来就失去了灵活性。Play! 的ScaleModel类便运用了Scala的这种特性。 </p>
+<p>​    另外要说明的是，this.type是路径依赖的。请看下面的例子：</p>
+<p>​    <img src="http://static.oschina.net/uploads/space/2012/0101/010645_w5Ux_103999.png" alt="img"></p>
+<p> <img src="http://static.oschina.net/uploads/space/2012/0101/010943_pK0U_103999.png" alt="img"></p>
+<p>关于路径依赖类型的知识，请看<a target="_blank" rel="noopener" href="http://my.oschina.net/aiguozhe/blog/35964?catalog=115675">http://my.oschina.net/aiguozhe/blog/35964?catalog=115675</a></p>
+<p>参考资料：</p>
+<p> <a target="_blank" rel="noopener" href="http://stackoverflow.com/questions/3926047/debunking-scala-myths/4339557#4339557">http://stackoverflow.com/questions/3926047/debunking-scala-myths/4339557#4339557</a></p>
+<p>[1] <a target="_blank" rel="noopener" href="https://segmentfault.com/q/1010000004155786?_ea=517268">https://segmentfault.com/q/1010000004155786?_ea=517268</a></p>
+<p>[2] <a target="_blank" rel="noopener" href="https://my.oschina.net/aiguozhe/blog/38302">https://my.oschina.net/aiguozhe/blog/38302</a></p>
+<p>[3] <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/d3c243a884c2">https://www.jianshu.com/p/d3c243a884c2</a></p>
+<h1 id="scala类型系统：this别名-自身类型"><a href="#scala类型系统：this别名-自身类型" class="headerlink" title="scala类型系统：this别名&amp;自身类型"></a>scala类型系统：this别名&amp;自身类型</h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/hellojoy/article/details/81077294">https://blog.csdn.net/hellojoy/article/details/81077294</a></p>
+<p>2018-07-17 10:48:52 更多</p>
+<p>看scala的源码的话很发现很多源码开头都有一句：<code>self =&gt;</code> 这句相当于给<code>this</code>起了一个别名为<code>self</code></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;     </span><br><span class="line">    self =&gt;  <span class="comment">//this别名    </span></span><br><span class="line">    <span class="keyword">val</span> x=<span class="number">2</span>     </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">foo</span> </span>= self.x + <span class="keyword">this</span>.x &#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>self</code>不是关键字，可以用除了<code>this</code>外的任何名字命名(除关键字)。就上面的代码，在A内部，可以用<code>this</code>指代当前对象，也可以用<code>self</code>指代，两者是等价的。</p>
+<p>它的一个场景是用在有内部类的情况下：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Outer</span> </span>&#123; outer =&gt;     </span><br><span class="line">    <span class="keyword">val</span> v1 = <span class="string">&quot;here&quot;</span>    </span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Inner</span> </span>&#123;        </span><br><span class="line">        println(outer.v1) <span class="comment">// 用outer表示外部类，相当于Outer.this    </span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于this别名 <code>self =&gt;</code>这种写法形式，是**自身类型(self type)**的一种特殊方式。</p>
+<p><code>self</code>在不声明类型的情况下，只是this的别名，所以不允许用this做this的别名</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="class"><span class="keyword">class</span> <span class="title">C</span> </span>&#123; <span class="keyword">this</span> =&gt; &#125; <span class="comment">//error 不能用this做别名</span></span><br></pre></td></tr></table></figure>
+
+<p>但当声明了类型的时候，就不是别名的用途了，这个时候表示**<code>自身类型</code>**，比如：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="class"><span class="keyword">class</span> <span class="title">C</span> </span>&#123; <span class="keyword">this</span>:<span class="type">X</span> =&gt; &#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>this:X =&gt;</code> 要求C在实例化时或定义C的子类时，必须混入指定的<code>X</code>类型，这个<code>X</code>类型也可以指定为当前类型</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="class"><span class="keyword">class</span> <span class="title">C</span> </span>&#123; <span class="keyword">this</span>:<span class="type">C</span> =&gt; &#125; <span class="comment">// 不会报错</span></span><br></pre></td></tr></table></figure>
+
+<p>自身类型的存在相当于让当前类变得“抽象”了，它假设当前对象(this)也符合指定的类型，因为自身类型 <code>this:X =&gt;</code>的存在，当前类构造实例时需要同时满足<code>X</code>类型</p>
+<figure class="highlight pascal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; new C <span class="comment">// 不满足</span></span><br><span class="line">&lt;console&gt;:<span class="number">10</span>: error: <span class="keyword">class</span> C cannot be instantiated because it does <span class="keyword">not</span> conform <span class="keyword">to</span> its self-<span class="keyword">type</span> C <span class="keyword">with</span> X </span><br><span class="line"><span class="comment">// ok, 相当于构造一个复合类型(C with X)的实例</span></span><br><span class="line">scala&gt; val c = new C <span class="keyword">with</span> X</span><br></pre></td></tr></table></figure>
+
+<p>在定义C的子类时，因为自身类型的约束，也必须满足<code>X</code>类型，即子类必须也混入<code>X</code></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="class"><span class="keyword">class</span> <span class="title">D</span> <span class="keyword">extends</span> <span class="title">C</span> <span class="keyword">with</span> <span class="title">X</span></span></span><br></pre></td></tr></table></figure>
+
+<p>注意上面两种情况下<code>X</code>都为特质(trait)。</p>
+<p>如果自身类型是定义在特质中（大多情况下）：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="class"><span class="keyword">trait</span> <span class="title">T</span> </span>&#123; <span class="keyword">this</span>:<span class="type">X</span> =&gt; &#125; </span><br></pre></td></tr></table></figure>
+
+<p>那么当某个class或object 要继承或混入 T 时，必须也要满足 X 类型，如果该类&#x2F;单例不是X的子类的话就要同时混入X才可以</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="class"><span class="keyword">object</span> <span class="title">A</span> <span class="keyword">extends</span> <span class="title">T</span> <span class="keyword">with</span> <span class="title">X</span></span></span><br></pre></td></tr></table></figure>
+
+<p>最后，自身类型也可以声明为复合类型</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>: <span class="type">X</span> <span class="keyword">with</span> <span class="type">Y</span> <span class="keyword">with</span> <span class="type">Z</span> =&gt; </span><br></pre></td></tr></table></figure>
+
+<p>或声明为结构类型</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>: &#123; <span class="function"><span class="keyword">def</span> <span class="title">close</span></span>:<span class="type">Unit</span>&#125; =&gt; </span><br></pre></td></tr></table></figure>
+
+<p>另外，自身类型中，可以用<code>this</code>也可以用其他名字，如<code>self</code>。</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

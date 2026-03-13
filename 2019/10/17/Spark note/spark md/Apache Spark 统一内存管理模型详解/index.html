@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>[Apache Spark 统一内存管理模型详解](https://www.iteblog.com/archives/2342.html) | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Apache Spark 统一内存管理模型详解](https://www.iteblog.com/archives/2342.html)">
+<meta property="og:url" content="https://iideas18.github.io/2019/10/17/Spark note/spark md/Apache Spark 统一内存管理模型详解/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2019-10-16T22:14:00.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.247Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2019/10/17/Spark note/spark md/Apache Spark 统一内存管理模型详解/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '[Apache Spark 统一内存管理模型详解](https://www.iteblog.com/archives/2342.html)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">[Apache Spark 统一内存管理模型详解](https://www.iteblog.com/archives/2342.html)</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2019-10-16T22:14:00.000Z" title="发表于 2019-10-17 06:14:00">2019-10-17</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.247Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Spark note/">Spark note</a>
+            
+            <a class="post-meta-categories" href="/categories/spark md/">spark md</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="Apache-Spark-统一内存管理模型详解"><a href="#Apache-Spark-统一内存管理模型详解" class="headerlink" title="Apache Spark 统一内存管理模型详解"></a><a target="_blank" rel="noopener" href="https://www.iteblog.com/archives/2342.html">Apache Spark 统一内存管理模型详解</a></h1><p>本文将对 <a target="_blank" rel="noopener" href="https://www.iteblog.com/archives/tag/spark/">Spark</a> 的内存管理模型进行分析，下面的分析全部是基于 Apache <a target="_blank" rel="noopener" href="https://www.iteblog.com/archives/tag/spark/">Spark</a> 2.2.1 进行的。为了让下面的文章看起来不枯燥，我不打算贴出代码层面的东西。文章仅对统一内存管理模块(UnifiedMemoryManager)进行分析，如对之前的静态内存管理感兴趣，请参阅网上其他文章。</p>
+<p>我们都知道 <a target="_blank" rel="noopener" href="https://www.iteblog.com/archives/tag/spark/">Spark</a> 能够有效的利用内存并进行分布式计算，其内存管理模块在整个系统中扮演着非常重要的角色。为了更好地利用 Spark，深入地理解其内存管理模型具有非常重要的意义，这有助于我们对 Spark 进行更好的调优；在出现各种内存问题时，能够摸清头脑，找到哪块内存区域出现问题。下文介绍的内存模型全部指 Executor 端的内存模型， Driver 端的内存模型本文不做介绍。统一内存管理模块包括了堆内内存(On-heap Memory)和堆外内存(Off-heap Memory)两大区域，下面对这两块区域进行详细的说明</p>
+<p>文章目录</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.iteblog.com/archives/2342.html#On-heap_Memory">1 堆内内存(On-heap Memory)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.iteblog.com/archives/2342.html#Off-heap_Memory">2 堆外内存(Off-heap Memory)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.iteblog.com/archives/2342.html#Execution_Storage">3 Execution 内存和 Storage 内存动态调整</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.iteblog.com/archives/2342.html#Task">4 Task 之间内存分布</a></li>
+<li>5 一个示例<ul>
+<li><a target="_blank" rel="noopener" href="https://www.iteblog.com/archives/2342.html#i-2">5.1 只用了堆内内存</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.iteblog.com/archives/2342.html#i-3">5.2 用了堆内和堆外内存</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="堆内内存-On-heap-Memory"><a href="#堆内内存-On-heap-Memory" class="headerlink" title="堆内内存(On-heap Memory)"></a>堆内内存(On-heap Memory)</h2><p>默认情况下，Spark 仅仅使用了堆内内存。Executor 端的堆内内存区域大致可以分为以下四大块：</p>
+<ul>
+<li><strong>Execution 内存</strong>：主要用于存放 Shuffle、Join、Sort、Aggregation 等计算过程中的临时数据</li>
+<li><strong>Storage 内存</strong>：主要用于存储 spark 的 cache 数据，例如RDD的缓存、unroll数据；</li>
+<li><strong>用户内存（User Memory）</strong>：主要用于存储 RDD 转换操作所需要的数据，例如 RDD 依赖等信息。</li>
+<li><strong>预留内存（Reserved Memory）</strong>：系统预留内存，会用来存储Spark内部对象。</li>
+</ul>
+<p>整个 Executor 端堆内内存如果用图来表示的话，可以概括如下：</p>
+<p><a target="_blank" rel="noopener" href="https://s.iteblog.com/pic/spark/spark_on_heap_memory_iteblog.png"><img src="https://s.iteblog.com/pic/spark/spark_on_heap_memory_iteblog.png" alt="Spark 内存管理"></a><br>如果想及时了解Spark、Hadoop或者Hbase相关的文章，欢迎关注微信公共帐号：<strong>iteblog_hadoop</strong></p>
+<p>我们对上图进行以下说明：</p>
+<ul>
+<li><code>systemMemory = Runtime.getRuntime.maxMemory</code>，其实就是通过参数 <code>spark.executor.memory</code> 或 <code>--executor-memory</code> 配置的。</li>
+<li>reservedMemory 在 Spark 2.2.1 中是写死的，其值等于 300MB，这个值是不能修改的（如果在测试环境下，我们可以通过 <code>spark.testing.reservedMemory</code> 参数进行修改）；</li>
+<li><code>usableMemory = systemMemory - reservedMemory</code>，这个就是 Spark 可用内存；</li>
+</ul>
+<h2 id="堆外内存-Off-heap-Memory"><a href="#堆外内存-Off-heap-Memory" class="headerlink" title="堆外内存(Off-heap Memory)"></a>堆外内存(Off-heap Memory)</h2><p>Spark 1.6 开始引入了Off-heap memory(详见<a target="_blank" rel="noopener" href="https://www.iteblog.com/redirect.php?url=aHR0cHM6Ly9pc3N1ZXMuYXBhY2hlLm9yZy9qaXJhL2Jyb3dzZS9TUEFSSy0xMTM4OQ==&article=true">SPARK-11389</a>)。这种模式不在 JVM 内申请内存，而是调用 Java 的 unsafe 相关 API 进行诸如 C 语言里面的 malloc() 直接向操作系统申请内存，由于这种方式不进过 JVM 内存管理，所以可以避免频繁的 GC，这种内存申请的缺点是必须自己编写内存申请和释放的逻辑。</p>
+<p>默认情况下，堆外内存是关闭的，我们可以通过 <code>spark.memory.offHeap.enabled</code> 参数启用，并且通过 <code>spark.memory.offHeap.size</code> 设置堆外内存大小，单位为字节。如果堆外内存被启用，那么 Executor 内将同时存在堆内和堆外内存，两者的使用互补影响，这个时候 Executor 中的 Execution 内存是堆内的 Execution 内存和堆外的 Execution 内存之和，同理，Storage 内存也一样。相比堆内内存，堆外内存只区分 Execution 内存和 Storage 内存，其内存分布如下图所示：</p>
+<p><a target="_blank" rel="noopener" href="https://s.iteblog.com/pic/spark/Spark_off_heap_memory_iteblog.png"><img src="https://s.iteblog.com/pic/spark/Spark_off_heap_memory_iteblog.png" alt="Spark 内存管理"></a><br>如果想及时了解Spark、Hadoop或者Hbase相关的文章，欢迎关注微信公共帐号：<strong>iteblog_hadoop</strong></p>
+<p>上图中的 <em>maxOffHeapMemory</em> 等于 <em>spark.memory.offHeap.size</em> 参数配置的。</p>
+<h2 id="Execution-内存和-Storage-内存动态调整"><a href="#Execution-内存和-Storage-内存动态调整" class="headerlink" title="Execution 内存和 Storage 内存动态调整"></a>Execution 内存和 Storage 内存动态调整</h2><p>细心的同学肯定看到上面两张图中的 Execution 内存和 Storage 内存之间存在一条虚线，这是为什么呢？</p>
+<p>用过 Spark 的同学应该知道，在 Spark 1.5 之前，Execution 内存和 Storage 内存分配是静态的，换句话说就是如果 Execution 内存不足，即使 Storage 内存有很大空闲程序也是无法利用到的；反之亦然。这就导致我们很难进行内存的调优工作，我们必须非常清楚地了解 Execution 和 Storage 两块区域的内存分布。而目前 Execution 内存和 Storage 内存可以互相共享的。也就是说，如果 Execution 内存不足，而 Storage 内存有空闲，那么 Execution 可以从 Storage 中申请空间；反之亦然。所以上图中的虚线代表 Execution 内存和 Storage 内存是可以随着运作动态调整的，这样可以有效地利用内存资源。Execution 内存和 Storage 内存之间的动态调整可以概括如下：</p>
+<p><a target="_blank" rel="noopener" href="https://s.iteblog.com/pic/spark/spark_memory-management_iteblog.png"><img src="https://s.iteblog.com/pic/spark/spark_memory-management_iteblog.png" alt="Spark 内存管理"></a><br>如果想及时了解Spark、Hadoop或者Hbase相关的文章，欢迎关注微信公共帐号：<strong>iteblog_hadoop</strong></p>
+<p>具体的实现逻辑如下：</p>
+<ul>
+<li>程序提交的时候我们都会设定基本的 Execution 内存和 Storage 内存区域（通过 <code>spark.memory.storageFraction</code> 参数设置）；</li>
+<li>在程序运行时，如果双方的空间都不足时，则存储到硬盘；将内存中的块存储到磁盘的策略是按照 LRU 规则进行的。若己方空间不足而对方空余时，可借用对方的空间;（存储空间不足是指不足以放下一个完整的 Block）</li>
+<li>Execution 内存的空间被对方占用后，可让对方将占用的部分转存到硬盘，然后”归还”借用的空间</li>
+<li>Storage 内存的空间被对方占用后，目前的实现是无法让对方”归还”，因为需要考虑 Shuffle 过程中的很多因素，实现起来较为复杂；而且 Shuffle 过程产生的文件在后面一定会被使用到，而 Cache 在内存的数据不一定在后面使用。</li>
+</ul>
+<p>注意，上面说的借用对方的内存需要借用方和被借用方的内存类型都一样，都是堆内内存或者都是堆外内存，不存在堆内内存不够去借用堆外内存的空间。</p>
+<h2 id="Task-之间内存分布"><a href="#Task-之间内存分布" class="headerlink" title="Task 之间内存分布"></a>Task 之间内存分布</h2><p>为了更好地使用使用内存，Executor 内运行的 Task 之间共享着 Execution 内存。具体的，Spark 内部维护了一个 HashMap 用于记录每个 Task 占用的内存。当 Task 需要在 Execution 内存区域申请 numBytes 内存，其先判断 HashMap 里面是否维护着这个 Task 的内存使用情况，如果没有，则将这个 Task 内存使用置为0，并且以 TaskId 为 key，内存使用为 value 加入到 HashMap 里面。之后为这个 Task 申请 numBytes 内存，如果 Execution 内存区域正好有大于 numBytes 的空闲内存，则在 HashMap 里面将当前 Task 使用的内存加上 numBytes，然后返回；如果当前 Execution 内存区域无法申请到每个 Task 最小可申请的内存，则当前 Task 被阻塞，直到有其他任务释放了足够的执行内存，该任务才可以被唤醒。每个 Task 可以使用 Execution 内存大小范围为 1&#x2F;2N ~ 1&#x2F;N，其中 N 为当前 Executor 内正在运行的 Task 个数。一个 Task 能够运行必须申请到最小内存为 (1&#x2F;2N * Execution 内存)；当 N &#x3D; 1 的时候，Task 可以使用全部的 Execution 内存。</p>
+<p>比如如果 Execution 内存大小为 10GB，当前 Executor 内正在运行的 Task 个数为5，则该 Task 可以申请的内存范围为 10 &#x2F; (2 * 5) ~ 10 &#x2F; 5，也就是 1GB ~ 2GB的范围。</p>
+<h2 id="一个示例"><a href="#一个示例" class="headerlink" title="一个示例"></a>一个示例</h2><p>为了更好的理解上面堆内内存和堆外内存的使用情况，这里给出一个简单的例子。</p>
+<h3 id="只用了堆内内存"><a href="#只用了堆内内存" class="headerlink" title="只用了堆内内存"></a>只用了堆内内存</h3><p>现在我们提交的 Spark 作业关于内存的配置如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`--executor-memory 18g`</span><br></pre></td></tr></table></figure>
+
+<p>由于没有设置 <code>spark.memory.fraction</code> 和 <code>spark.memory.storageFraction</code> 参数，我们可以看到 Spark UI 关于 Storage Memory 的显示如下：</p>
+<p><a target="_blank" rel="noopener" href="https://s.iteblog.com/pic/spark/spark_memory_usage2.png"><img src="https://s.iteblog.com/pic/spark/spark_memory_usage2.png" alt="Spark 内存管理"></a><br>如果想及时了解Spark、Hadoop或者Hbase相关的文章，欢迎关注微信公共帐号：<strong>iteblog_hadoop</strong></p>
+<p>上图很清楚地看到 Storage Memory 的可用内存是 10.1GB，这个数是咋来的呢？根据前面的规则，我们可以得出以下的计算：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`systemMemory = spark.executor.memory``reservedMemory = 300MB``usableMemory = systemMemory - reservedMemory``StorageMemory= usableMemory * spark.memory.fraction * spark.memory.storageFraction`</span><br></pre></td></tr></table></figure>
+
+<p>如果我们把数据代进去，得出以下的结果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`systemMemory = 18Gb = 19327352832 字节``reservedMemory = 300MB = 300 * 1024 * 1024 = 314572800``usableMemory = systemMemory - reservedMemory = 19327352832 - 314572800 = 19012780032``StorageMemory= usableMemory * spark.memory.fraction * spark.memory.storageFraction``             ``= 19012780032 * 0.6 * 0.5 = 5703834009.6 = 5.312109375GB`</span><br></pre></td></tr></table></figure>
+
+<p>不对啊，和上面的 10.1GB 对不上啊。为什么呢？这是因为 Spark UI 上面显示的 Storage Memory 可用内存其实等于 Execution 内存和 Storage 内存之和，也就是 <em>usableMemory * spark.memory.fraction</em>：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`StorageMemory= usableMemory * spark.memory.fraction``             ``= 19012780032 * 0.6 = 11407668019.2 = 10.62421GB`</span><br></pre></td></tr></table></figure>
+
+<p>还是不对，这是因为我们虽然设置了 <em>–executor-memory 18g</em>，但是 Spark 的 Executor 端通过 <em>Runtime.getRuntime.maxMemory</em> 拿到的内存其实没这么大，只有 17179869184 字节，所以 <em>systemMemory &#x3D; 17179869184</em>，然后计算的数据如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`systemMemory = 17179869184 字节``reservedMemory = 300MB = 300 * 1024 * 1024 = 314572800``usableMemory = systemMemory - reservedMemory = 17179869184 - 314572800 = 16865296384``StorageMemory= usableMemory * spark.memory.fraction``             ``= 16865296384 * 0.6 = 9.42421875 GB`</span><br></pre></td></tr></table></figure>
+
+<p>我们通过将上面的 16865296384 * 0.6 字节除于 1024 * 1024 * 1024 转换成 9.42421875 GB，和 UI 上显示的还是对不上，这是因为 Spark UI 是通过除于 1000 * 1000 * 1000 将字节转换成 GB，如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`systemMemory = 17179869184 字节``reservedMemory = 300MB = 300 * 1024 * 1024 = 314572800``usableMemory = systemMemory - reservedMemory = 17179869184 - 314572800 = 16865296384``StorageMemory= usableMemory * spark.memory.fraction``             ``= 16865296384 * 0.6 字节 =  16865296384 * 0.6 / (1000 * 1000 * 1000) = 10.1GB`</span><br></pre></td></tr></table></figure>
+
+<p>现在终于对上了。</p>
+<p>具体将字节转换成 GB 的计算逻辑如下(core 模块下面的 <em>&#x2F;core&#x2F;src&#x2F;main&#x2F;resources&#x2F;org&#x2F;apache&#x2F;spark&#x2F;ui&#x2F;static&#x2F;utils.js</em>)：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">`function`</span> <span class="string">`formatBytes(bytes, type) &#123;`</span><span class="string">`    `</span><span class="string">`if`</span> <span class="string">`(type !== `</span><span class="string">`&#x27;display&#x27;`</span><span class="string">`) `</span><span class="string">`return`</span> <span class="string">`bytes;`</span><span class="string">`    `</span><span class="string">`if`</span> <span class="string">`(bytes == 0) `</span><span class="string">`return`</span> <span class="string">`&#x27;0.0 B&#x27;`</span><span class="string">`;`</span><span class="string">`    `</span><span class="string">`var`</span> <span class="string">`k = 1000;`</span><span class="string">`    `</span><span class="string">`var`</span> <span class="string">`dm = 1;`</span><span class="string">`    `</span><span class="string">`var`</span> <span class="string">`sizes = [`</span><span class="string">`&#x27;B&#x27;`</span><span class="string">`, `</span><span class="string">`&#x27;KB&#x27;`</span><span class="string">`, `</span><span class="string">`&#x27;MB&#x27;`</span><span class="string">`, `</span><span class="string">`&#x27;GB&#x27;`</span><span class="string">`, `</span><span class="string">`&#x27;TB&#x27;`</span><span class="string">`, `</span><span class="string">`&#x27;PB&#x27;`</span><span class="string">`, `</span><span class="string">`&#x27;EB&#x27;`</span><span class="string">`, `</span><span class="string">`&#x27;ZB&#x27;`</span><span class="string">`, `</span><span class="string">`&#x27;YB&#x27;`</span><span class="string">`];`</span><span class="string">`    `</span><span class="string">`var`</span> <span class="string">`i = Math.floor(Math.log(bytes) / Math.log(k));`</span><span class="string">`    `</span><span class="string">`return`</span> <span class="string">`parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + `</span><span class="string">`&#x27; &#x27;`</span> <span class="string">`+ sizes[i];`</span><span class="string">`&#125;`</span></span><br></pre></td></tr></table></figure>
+
+<p>我们设置了 ，但是 Spark 的 Executor 端通过<em>Runtime.getRuntime.maxMemory</em>拿到的内存其实没这么大，只有 17179869184 字节，这个数据是怎么计算的？<em>Runtime.getRuntime.maxMemory</em>是程序能够使用的最大内存，其值会比实际配置的执行器内存的值小。这是因为内存分配池的堆部分分为 Eden，Survivor 和 Tenured 三部分空间，而这里面一共包含了两个 Survivor 区域，而这两个 Survivor 区域在任何时候我们只能用到其中一个，所以我们可以使用下面的公式进行描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`ExecutorMemory = Eden + 2 * Survivor + Tenured``Runtime.getRuntime.maxMemory =  Eden + Survivor + Tenured`</span><br></pre></td></tr></table></figure>
+
+<p>上面的 17179869184 字节可能因为你的 GC 配置不一样得到的数据不一样，但是上面的计算公式是一样的。</p>
+<h3 id="用了堆内和堆外内存"><a href="#用了堆内和堆外内存" class="headerlink" title="用了堆内和堆外内存"></a>用了堆内和堆外内存</h3><p>现在如果我们启用了堆外内存，情况咋样呢？我们的内存相关配置如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`spark.executor.memory           18g``spark.memory.offHeap.enabled    ``true``spark.memory.offHeap.size       10737418240`</span><br></pre></td></tr></table></figure>
+
+<p>从上面可以看出，堆外内存为 10GB，现在 Spark UI 上面显示的 Storage Memory 可用内存为 20.9GB，如下：</p>
+<p><a target="_blank" rel="noopener" href="https://s.iteblog.com/pic/spark/spark_memory_usage1.png"><img src="https://s.iteblog.com/pic/spark/spark_memory_usage1.png" alt="Spark 内存管理"></a><br>如果想及时了解Spark、Hadoop或者Hbase相关的文章，欢迎关注微信公共帐号：<strong>iteblog_hadoop</strong></p>
+<p>其实 Spark UI 上面显示的 Storage Memory 可用内存等于堆内内存和堆外内存之和，计算公式如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`堆内``systemMemory = 17179869184 字节``reservedMemory = 300MB = 300 * 1024 * 1024 = 314572800``usableMemory = systemMemory - reservedMemory = 17179869184 - 314572800 = 16865296384``totalOnHeapStorageMemory = usableMemory * spark.memory.fraction``                         ``= 16865296384 * 0.6 = 10119177830` `堆外``totalOffHeapStorageMemory = spark.memory.offHeap.size = 10737418240` `StorageMemory = totalOnHeapStorageMemory + totalOffHeapStorageMemory``              ``= (10119177830 + 10737418240) 字节``              ``= (20856596070 / (1000 * 1000 * 1000)) GB``              ``= 20.9 GB`</span><br></pre></td></tr></table></figure>
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

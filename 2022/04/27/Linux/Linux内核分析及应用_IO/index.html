@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第5章 输入输出 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第5章 输入输出">
+<meta property="og:url" content="https://iideas18.github.io/2022/04/27/Linux/Linux内核分析及应用_IO/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-04-27T07:32:04.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.221Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/04/27/Linux/Linux内核分析及应用_IO/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '第5章 输入输出',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">第5章 输入输出</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-04-27T07:32:04.000Z" title="发表于 2022-04-27 15:32:04">2022-04-27</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.221Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Linux/">Linux</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="第5章-输入输出"><a href="#第5章-输入输出" class="headerlink" title="第5章 输入输出"></a>第5章 输入输出</h1><p>从操作系统层面来讲是广义的I&#x2F;O架构，主要围绕read&#x2F;write系统调用，从读写文件到最终转换成block块写入磁盘等设备。</p>
+<p>本章将介绍以下内容：</p>
+<blockquote>
+<ul>
+<li>I&#x2F;O在Linux中的生命周期，以及在如下层中完成的任务：vfs、文件系统、页面缓存、block、scsi层等</li>
+<li>I&#x2F;O相关的调度器，以及不同场景应该选择哪个调度器</li>
+<li>多队列机制</li>
+<li>I&#x2F;O多路复用实现</li>
+<li>一些开源系统和操作系统中与I&#x2F;O相关调用的实现</li>
+</ul>
+</blockquote>
+<h2 id="1-I-O在Linux中的生命周期"><a href="#1-I-O在Linux中的生命周期" class="headerlink" title="1. I&#x2F;O在Linux中的生命周期"></a>1. I&#x2F;O在Linux中的生命周期</h2><p>现在我们已经知道输入输出对计算机的重要性，那么下面就介绍Linux的I&#x2F;O实现，并分析一个I&#x2F;O是如何产生并且是如何完成使命的。</p>
+<h3 id="1-1-vfs层"><a href="#1-1-vfs层" class="headerlink" title="1.1 vfs层"></a>1.1 vfs层</h3><p>要了解I&#x2F;O的产生，最直观的就是read、write等系统调用。在这里，我们需要注意一个比较重要的概念：对于Linux来讲，一切都是文件，所以进行I&#x2F;O读写操作的时候，如读写磁盘或其他设备，都会和vfs层挂钩。</p>
+<p><img src="/image-20220427152410287.png" alt="image-20220427152410287"></p>
+<p>Linux为了屏蔽底层文件系统和驱动程序等细节，对文件的操作首先通过vfs接口层来转发系统调用的open、read、write、close等请求，如图5-2所示。限于篇幅，下面仅围绕read和write请求来分析读I&#x2F;O的来龙去脉。下面是read调用的实现（代码详见：Linux&#x2F;fs&#x2F;red_write.c）：</p>
+<p><img src="/image-20220427152437404.png" alt="image-20220427152437404"></p>
+<p>sys_read执行的时候，首先获取当前文件已经读取的位置，然后调用vfs层的vfs_read，在vfs_read中校验文件是否可读，要访问的buf内存块是否可用，文件读取的位置是否越界，权限检测等。然后__vfs_read调用真正的文件系统层进行read操作：</p>
+<p><img src="/image-20220427152527250.png" alt="image-20220427152527250"></p>
+<p>在新版本的内核中，vfs_read操作的逻辑在new_sync_read中，因为ext4文件系统注册的是read_iter方法，具体过程我们后面分析，在new_sync_read中最终执行了file-＞f_op-＞read_iter，把控制权交给了ext4之类的文件系统。所以可以把vfs理解为是Linux对上层提供的统一文件系统的抽象，底层有不同的实现，比如ext4、proc、sysfs等，这也是Linux一切皆是文件的原因。</p>
+<h3 id="1-2-文件系统层"><a href="#1-2-文件系统层" class="headerlink" title="1.2 文件系统层"></a>1.2 文件系统层</h3><p>通过read在vfs层中的执行，我们发现最终会调用具体文件系统的操作。这里我们以ext4文件系统为例，其文件操作函数在&#x2F;linux-4.5.2&#x2F;fs&#x2F;ext4&#x2F;file.c中注册：</p>
+<p><img src="/image-20220427152601920.png" alt="image-20220427152601920"></p>
+<p>在ext4_iget初始化inode的时候会进行注册：</p>
+<p><img src="/image-20220427152620993.png" alt="image-20220427152620993"></p>
+<p>然后在vfs_open打开文件的时候调用了do_dentry_open：</p>
+<p><img src="/image-20220427152638685.png" alt="image-20220427152638685"></p>
+<p>至此彻底搞清楚了，ext4的read和write文件最终委托给了：</p>
+<p><img src="/image-20220427152655324.png" alt="image-20220427152655324"></p>
+<p>同理，sys_write的系统调用过程为：sys_write-＞vfs_write-＞__vfs_write-＞new_sync_write，并且在new_sync_write函数中的filp-＞f_op-＞write_iter其实就是ext4_file_write_iter。其实现为：</p>
+<p>上述过程看起来很长，其实总结出来就以下几步：</p>
+<ol>
+<li><p>状态、权限校验。</p>
+</li>
+<li><p>把数据写入文件。</p>
+</li>
+<li><p>同步数据到磁盘。</p>
+</li>
+</ol>
+<p>在上述代码中，__generic_file_write_iter可谓承上启下，尤其重要：</p>
+<p><img src="/image-20220427153037223.png" alt="image-20220427153037223"></p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

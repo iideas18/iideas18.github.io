@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CPU affinity | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CPU affinity">
+<meta property="og:url" content="https://iideas18.github.io/2022/03/26/Linux/CPU affinity/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-03-26T14:23:02.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.213Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/03/26/Linux/CPU affinity/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'CPU affinity',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">CPU affinity</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-03-26T14:23:02.000Z" title="发表于 2022-03-26 22:23:02">2022-03-26</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.213Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Linux/">Linux</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <p>首先，我们先来了解下将进程与 CPU 进行绑定的好处。</p>
+<blockquote>
+<p>进程绑定 CPU 的好处：在多核 CPU 结构中，每个核心有各自的L1、L2缓存，而L3缓存是共用的。如果一个进程在核心间来回切换，各个核心的缓存命中率就会受到影响。相反如果进程不管如何调度，都始终可以在一个核心上执行，那么其数据的L1、L2 缓存的命中率可以显著提高。</p>
+</blockquote>
+<p>所以，将进程与 CPU 进行绑定可以提高 CPU 缓存的命中率，从而提高性能。而进程与 CPU 绑定被称为：<code>CPU 亲和性</code>。</p>
+<h2 id="1-设置进程的-CPU-亲和性"><a href="#1-设置进程的-CPU-亲和性" class="headerlink" title="1. 设置进程的 CPU 亲和性"></a>1. 设置进程的 CPU 亲和性</h2><p>前面介绍了进程与 CPU 绑定的好处后，现在来介绍一下在 Linux 系统下怎么将进程与 CPU 进行绑定的（也就是设置进程的 CPU 亲和性）。</p>
+<p>Linux 系统提供了一个名为 <code>sched_setaffinity</code> 的系统调用，此系统调用可以设置进程的 CPU 亲和性。我们来看看 <code>sched_setaffinity</code> 系统调用的原型：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">sched_setaffinity</span><span class="params">(<span class="type">pid_t</span> pid, <span class="type">size_t</span> cpusetsize, <span class="type">const</span> <span class="type">cpu_set_t</span> *mask)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>下面介绍一下 <code>sched_setaffinity</code> 系统调用各个参数的作用：</p>
+<ul>
+<li><code>pid</code>：进程ID，也就是要进行绑定 CPU 的进程ID。</li>
+<li><code>cpusetsize</code>：mask 参数所指向的 CPU 集合的大小。</li>
+<li><code>mask</code>：与进程进行绑定的 CPU 集合（由于一个进程可以绑定到多个 CPU 上运行）。</li>
+</ul>
+<p>参数 <code>mask</code> 的类型为 <code>cpu_set_t</code>，而 <code>cpu_set_t</code> 是一个位图，位图的每个位表示一个 CPU，如下图所示：</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/ciab8jTiab9J5oEMviby6FIfsXqKI3qOrjk0WVSicr7GI4DcQUmic656sKpDiaR8Ey7LbxW5V1x67teR8uCd0WYQvh5g/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
+<p>例如，将 <code>cpu_set_t</code> 的第0位设置为1，表示将进程绑定到 CPU0 上运行，当然我们可以将进程绑定到多个 CPU 上运行。</p>
+<p>我们通过一个例子来介绍怎么通过 <code>sched_setaffinity</code> 系统调用来设置进程的 CPU 亲和性：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> _GNU_SOURCE</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sched.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;errno.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">cpu_set_t</span> cpuset;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">CPU_ZERO</span>(&amp;cpuset);    <span class="comment">// 初始化CPU集合，将 cpuset 置为空</span></span><br><span class="line">    <span class="built_in">CPU_SET</span>(<span class="number">2</span>, &amp;cpuset);  <span class="comment">// 将本进程绑定到 CPU2 上</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置进程的 CPU 亲和性</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">sched_setaffinity</span>(<span class="number">0</span>, <span class="built_in">sizeof</span>(cpuset), &amp;cpuset) == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Set CPU affinity failed, error: %s\n&quot;</span>, <span class="built_in">strerror</span>(errno));</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>; </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-CPU-亲和性实现"><a href="#2-CPU-亲和性实现" class="headerlink" title="2. CPU 亲和性实现"></a>2. CPU 亲和性实现</h2><p>知道怎么设置进程的 CPU 亲和性后，现在我们来分析一下 Linux 内核是怎样实现 CPU 亲和性功能的。</p>
+<blockquote>
+<p>本文使用的 Linux 内核版本为 2.6.23</p>
+</blockquote>
+<p>Linux 内核为每个 CPU 定义了一个类型为 <code>struct rq</code> 的 <code>可运行的进程队列</code>，也就是说，每个 CPU 都拥有一个独立的可运行进程队列。</p>
+<p>一般来说，CPU 只会从属于自己的可运行进程队列中选择一个进程来运行。也就是说，CPU0 只会从属于 CPU0 的可运行队列中选择一个进程来运行，而绝不会从 CPU1 的可运行队列中获取。</p>
+<p>所以，从上面的信息中可以分析出，要将进程绑定到某个 CPU 上运行，只需要将进程放置到其所属的 <code>可运行进程队列</code> 中即可。</p>
+<p>下面我们来分析一下 <code>sched_setaffinity</code> 系统调用的实现，<code>sched_setaffinity</code> 系统调用的调用链如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sys_sched_setaffinity</span>()</span><br><span class="line">└→ <span class="built_in">sched_setaffinity</span>()</span><br><span class="line">   └→ <span class="built_in">set_cpus_allowed</span>()</span><br><span class="line">      └→ <span class="built_in">migrate_task</span>()</span><br></pre></td></tr></table></figure>
+
+<p>从上面的调用链可以看出，<code>sched_setaffinity</code> 系统调用最终会调用 <code>migrate_task</code> 函数来完成进程与 CPU 进行绑定的工作，我们来分析一下 <code>migrate_task</code> 函数的实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">int</span></span></span><br><span class="line"><span class="function"><span class="title">migrate_task</span><span class="params">(<span class="keyword">struct</span> task_struct *p, <span class="type">int</span> dest_cpu, <span class="keyword">struct</span> migration_req *req)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">rq</span> *rq = <span class="built_in">task_rq</span>(p);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 情况1:</span></span><br><span class="line">    <span class="comment">// 如果进程还没有在任何运行队列中</span></span><br><span class="line">    <span class="comment">// 那么只需要将进程的 cpu 字段设置为 dest_cpu 即可</span></span><br><span class="line">    <span class="keyword">if</span> (!p-&gt;se.on_rq &amp;&amp; !<span class="built_in">task_running</span>(rq, p)) &#123;</span><br><span class="line">        <span class="built_in">set_task_cpu</span>(p, dest_cpu);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 情况2:</span></span><br><span class="line">    <span class="comment">// 如果进程已经在某一个 CPU 的可运行队列中</span></span><br><span class="line">    <span class="comment">// 那么需要将进程从之前的 CPU 可运行队列中迁移到新的 CPU 可运行队列中</span></span><br><span class="line">    <span class="comment">// 这个迁移过程由 migration_thread 内核线程完成</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构建进程迁移请求</span></span><br><span class="line">    <span class="built_in">init_completion</span>(&amp;req-&gt;done);</span><br><span class="line">    req-&gt;task = p;</span><br><span class="line">    req-&gt;dest_cpu = dest_cpu;</span><br><span class="line">    <span class="built_in">list_add</span>(&amp;req-&gt;list, &amp;rq-&gt;migration_queue);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们先来介绍一下 <code>migrate_task</code> 函数各个参数的意义：</p>
+<ul>
+<li><code>p</code>：要设置 CPU 亲和性的进程描述符。</li>
+<li><code>dest_cpu</code>：绑定的 CPU 编号。</li>
+<li><code>req</code>：进程迁移请求对象（下面会介绍）。</li>
+</ul>
+<p>所以，<code>migrate_task</code> 函数的作用就是将进程描述符为 <code>p</code> 的进程绑定到编号为 <code>dest_cpu</code> 的目标 CPU 上。</p>
+<p><code>migrate_task</code> 函数主要分两种情况来将进程绑定到某个 CPU 上：</p>
+<ul>
+<li><strong>情况1</strong>：如果进程还没有在任何 CPU 的可运行队列中（不可运行状态），那么只需要将进程描述符的 <code>cpu</code> 字段设置为 <code>dest_cpu</code> 即可。当进程变为可运行时，会根据进程描述符的 <code>cpu</code> 字段来自动放置到对应的 CPU 可运行队列中。</li>
+<li><strong>情况2</strong>：如果进程已经在某个 CPU 的可运行队列中，那么需要将进程从之前的 CPU 可运行队列中迁移到新的 CPU 可运行队列中。迁移过程由 <code>migration_thread</code> 内核线程完成，<code>migrate_task</code> 函数只是构建一个进程迁移请求，并通知 <code>migration_thread</code> 内核线程有新的迁移请求需要处理。</li>
+</ul>
+<p>而进程迁移过程由 <code>__migrate_task</code> 函数完成，我们来看看 <code>__migrate_task</code> 函数的实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">int</span> </span><br><span class="line">__migrate_task(<span class="keyword">struct</span> task_struct *p, <span class="type">int</span> src_cpu, <span class="type">int</span> dest_cpu)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">rq</span> *rq_dest, *rq_src;</span><br><span class="line">    <span class="type">int</span> ret = <span class="number">0</span>, on_rq;</span><br><span class="line">    ...</span><br><span class="line">    rq_src = <span class="built_in">cpu_rq</span>(src_cpu);    <span class="comment">// 进程所在的原可运行队列</span></span><br><span class="line">    rq_dest = <span class="built_in">cpu_rq</span>(dest_cpu);  <span class="comment">// 进程希望放置的目标可运行队列</span></span><br><span class="line">    ...</span><br><span class="line">    on_rq = p-&gt;se.on_rq;  <span class="comment">// 进程是否在可运行队列中（可运行状态）</span></span><br><span class="line">    <span class="keyword">if</span> (on_rq)</span><br><span class="line">        <span class="built_in">deactivate_task</span>(rq_src, p, <span class="number">0</span>);  <span class="comment">// 把进程从原来的可运行队列中删除</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">set_task_cpu</span>(p, dest_cpu);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (on_rq) &#123;</span><br><span class="line">        <span class="built_in">activate_task</span>(rq_dest, p, <span class="number">0</span>);   <span class="comment">// 把进程放置到目标可运行队列中</span></span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>__migrate_task</code> 函数主要完成以下两个工作：</p>
+<ul>
+<li>把进程从原来的可运行队列中删除。</li>
+<li>把进程放置到目标可运行队列中。</li>
+</ul>
+<p>其工作过程如下图所示（将进程从 CPU0 的可运行队列迁移到 CPU3 的可运行队列中）：</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/ciab8jTiab9J5oEMviby6FIfsXqKI3qOrjkc7SAlqWCvWV57ja95IibuxvMjOBjjW6Nwuw2hnZhcK0h0dlOfy6jUng/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
+<p>如上图所示，进程原本在 CPU0 的可运行队列中，但由于重新将进程绑定到 CPU3，所以需要将进程从 CPU0 的可运行队列迁移到 CPU3 的可运行中。</p>
+<p>迁移过程首先将进程从 CPU0 的可运行队列中删除，然后再将进程插入到 CPU3 的可运行队列中。</p>
+<p>当 CPU 要运行进程时，首先从它所属的可运行队列中挑选一个进程，并将此进程调度到 CPU 中运行。</p>
+<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3. 总结"></a>3. 总结</h2><p>从上面的分析可知，其实将进程绑定到某个 CPU 只是将进程放置到 CPU 的可运行队列中。</p>
+<p>由于每个 CPU 都有一个可运行队列，所以就有可能会出现 CPU 间可运行队列负载不均衡问题。如 CPU0 可运行队列中的进程比 CPU1 可运行队列多非常多，从而导致 CPU0 的负载非常高，而 CPU1 负载非常低的情况。</p>
+<p>当出现上述情况时，就需要对 CPU 间的可运行队列进行重平衡操作，有兴趣的可以自行阅读源码或参考相关资料。</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

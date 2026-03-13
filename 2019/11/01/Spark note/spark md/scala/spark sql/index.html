@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spark SQL的selectExpr | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark SQL的selectExpr">
+<meta property="og:url" content="https://iideas18.github.io/2019/11/01/Spark note/spark md/scala/spark sql/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2019-10-31T16:39:50.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.269Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2019/11/01/Spark note/spark md/scala/spark sql/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Spark SQL的selectExpr',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">Spark SQL的selectExpr</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2019-10-31T16:39:50.000Z" title="发表于 2019-11-01 00:39:50">2019-11-01</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.269Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Spark note/">Spark note</a>
+            
+            <a class="post-meta-categories" href="/categories/spark md/">spark md</a>
+            
+            <a class="post-meta-categories" href="/categories/scala/">scala</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.spark.sql.<span class="type">SparkSession</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> spark = <span class="type">SparkSession</span>.builder().appName(<span class="string">&quot;Spark Hive Example&quot;</span>).config(<span class="string">&quot;spark.sql.warehouse.dir&quot;</span>,<span class="string">&quot;/user/hive/warehouse&quot;</span>).enableHiveSupport().getOrCreate()</span><br><span class="line"></span><br><span class="line">spark.sql(<span class="string">&quot;SELECT * FROM refbanking50.recommendation_feature&quot;</span>).show();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h1 id="Spark-SQL的selectExpr"><a href="#Spark-SQL的selectExpr" class="headerlink" title="Spark SQL的selectExpr"></a>Spark SQL的selectExpr</h1><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//两者等价,可看作把sql语句直接拿来使用</span></span><br><span class="line">df1.selectExpr(<span class="string">&quot;*&quot;</span>,<span class="string">&quot;(DEST_COUNTRY_NAME = ORIGIN_COUNTRY_NAME) as withincountry&quot;</span>).show(<span class="number">5</span>)</span><br><span class="line">spark.sql(<span class="string">&quot;select * ,</span></span><br><span class="line"><span class="string">(DEST_COUNTRY_NAME = ORIGIN_COUNTRY_NAME) as withincountry from dfTable limit 5&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h1 id="Spark-ML函数VectorAssembler"><a href="#Spark-ML函数VectorAssembler" class="headerlink" title="Spark ML函数VectorAssembler"></a>Spark ML函数VectorAssembler</h1><p>版权声明：本文为博主原创文章，遵循<a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-sa/4.0/"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。本文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/lichao_ustc/article/details/52688127">https://blog.csdn.net/lichao_ustc/article/details/52688127</a></p>
+<p>从源数据中提取特征指标数据，这是一个比较典型且通用的步骤，因为我们的原始数据集里，经常会包含一些非指标数据，如 ID，Description 等。为方便后续模型进行特征输入，需要部分列的数据转换为特征向量，并统一命名，VectorAssembler类完成这一任务。VectorAssembler是一个transformer，将多列数据转化为单列的向量列。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.spark.ml.feature.<span class="type">VectorAssembler</span></span><br><span class="line"><span class="keyword">import</span> org.apache.spark.ml.linalg.<span class="type">Vectors</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> dataset = spark.createDataFrame(</span><br><span class="line">  <span class="type">Seq</span>((<span class="number">0</span>, <span class="number">18</span>, <span class="number">1.0</span>, <span class="type">Vectors</span>.dense(<span class="number">0.0</span>, <span class="number">10.0</span>, <span class="number">0.5</span>), <span class="number">1.0</span>))</span><br><span class="line">).toDF(<span class="string">&quot;id&quot;</span>, <span class="string">&quot;hour&quot;</span>, <span class="string">&quot;mobile&quot;</span>, <span class="string">&quot;userFeatures&quot;</span>, <span class="string">&quot;clicked&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> assembler = <span class="keyword">new</span> <span class="type">VectorAssembler</span>()</span><br><span class="line">  .setInputCols(<span class="type">Array</span>(<span class="string">&quot;hour&quot;</span>, <span class="string">&quot;mobile&quot;</span>, <span class="string">&quot;userFeatures&quot;</span>))</span><br><span class="line">  .setOutputCol(<span class="string">&quot;features&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> output = assembler.transform(dataset)</span><br><span class="line">println(output.select(<span class="string">&quot;features&quot;</span>, <span class="string">&quot;clicked&quot;</span>).first())</span><br></pre></td></tr></table></figure>
+
+<p>转化前的数据：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">id | hour | mobile | userFeatures     | clicked</span><br><span class="line">----|------|--------|------------------|---------</span><br><span class="line"> <span class="number">0</span>  | <span class="number">18</span>   | <span class="number">1.0</span>    | [<span class="number">0.0</span>, <span class="number">10.0</span>, <span class="number">0.5</span>] | <span class="number">1.0</span></span><br></pre></td></tr></table></figure>
+
+<p>转化后的数据：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">id | hour | mobile | userFeatures     | clicked | features</span><br><span class="line">----|------|--------|------------------|---------|-----------------------------</span><br><span class="line"> <span class="number">0</span>  | <span class="number">18</span>   | <span class="number">1.0</span>    | [<span class="number">0.0</span>, <span class="number">10.0</span>, <span class="number">0.5</span>] | <span class="number">1.0</span>     | [<span class="number">18.0</span>, <span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">10.0</span>, <span class="number">0.5</span>]</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h1 id="Spark-ML机器学习：绝对值最大标准化-MaxAbsScaler"><a href="#Spark-ML机器学习：绝对值最大标准化-MaxAbsScaler" class="headerlink" title="Spark ML机器学习：绝对值最大标准化-MaxAbsScaler"></a>Spark ML机器学习：绝对值最大标准化-MaxAbsScaler</h1><p>版权声明：本文为博主原创文章，遵循<a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-sa/4.0/"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。本文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/linweidong/article/details/87278960">https://blog.csdn.net/linweidong/article/details/87278960</a></p>
+<p>​	数据归一化，以房价预测为案例，房价(y)通常与离市中心距离(x1)、面积(x2)、楼层(x3)有关，设y&#x3D;ax1+bx2+cx3，那么abc就是我们需要重点解决的参数。但是有个问题，面积一般数值是比较大的，100平甚至更多，而距离一般都是几公里而已，b参数只要一点变化都能对房价产生巨大影响，而a的变化对房价的影响相对就小很多了。显然这会影响最终的准确性，毕竟距离可是个非常大的影响因素啊。 所以, 需要使用特征的归一化, 取值跨度大的特征数据, 我们浓缩一下, 跨度小的括展一下, 使得他们的<strong>跨度尽量统一</strong>。<br><strong>归一化就是将所有特征值都等比地缩小到0-1或者-1到1之间的区间内。其目的是为了使特征都在相同的规模中。</strong></p>
+<p><code>MaxAbsScaler</code>转换由向量列组成的数据集,将每个特征调整到<code>[-1,1]</code>的范围,它通过每个特征内的最大绝对值来划分。 它不会移动和聚集数据,因此不会破坏任何的稀疏性。</p>
+<p><code>MaxAbsScaler</code>计算数据集上的统计数据,生成<code>MaxAbsScalerModel</code>,然后使用生成的模型分别的转换特征到范围<code>[-1,1]</code>。下面是程序调用的例子。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// $example on$</span></span><br><span class="line"><span class="keyword">import</span> org.apache.spark.<span class="type">SparkConf</span></span><br><span class="line"><span class="keyword">import</span> org.apache.spark.ml.feature.<span class="type">MaxAbsScaler</span></span><br><span class="line"><span class="keyword">import</span> org.apache.spark.ml.linalg.<span class="type">Vectors</span></span><br><span class="line"><span class="comment">// $example off$</span></span><br><span class="line"><span class="keyword">import</span> org.apache.spark.sql.<span class="type">SparkSession</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">所有值都扫描一遍，计算出最大最小值，比如1000的话那么absMax=1000。最后返回MaxAbsScalerModel</span></span><br><span class="line"><span class="comment">第一列1.0、2.0、4.0中最小为1.0，最大为4.0，2.0为0.5，第二列0.1、1.0、10.0依次类推</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">MaxAbsScalerExample</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">val</span> sparkConf = <span class="keyword">new</span> <span class="type">SparkConf</span>();</span><br><span class="line">    sparkConf.setMaster(<span class="string">&quot;local[*]&quot;</span>).setAppName(<span class="keyword">this</span>.getClass.getSimpleName)</span><br><span class="line">    <span class="keyword">val</span> spark = <span class="type">SparkSession</span></span><br><span class="line">      .builder</span><br><span class="line">      .config(sparkConf)</span><br><span class="line">      .appName(<span class="string">&quot;MaxAbsScalerExample&quot;</span>)</span><br><span class="line">      .getOrCreate()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// $example on$</span></span><br><span class="line">    <span class="keyword">val</span> dataFrame = spark.createDataFrame(<span class="type">Seq</span>(</span><br><span class="line">      (<span class="number">0</span>, <span class="type">Vectors</span>.dense(<span class="number">1.0</span>, <span class="number">0.1</span>, <span class="number">-8.0</span>)),</span><br><span class="line">      (<span class="number">1</span>, <span class="type">Vectors</span>.dense(<span class="number">2.0</span>, <span class="number">1.0</span>, <span class="number">-4.0</span>)),</span><br><span class="line">      (<span class="number">2</span>, <span class="type">Vectors</span>.dense(<span class="number">4.0</span>, <span class="number">10.0</span>, <span class="number">8.0</span>))</span><br><span class="line">    )).toDF(<span class="string">&quot;id&quot;</span>, <span class="string">&quot;features&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> scaler = <span class="keyword">new</span> <span class="type">MaxAbsScaler</span>()</span><br><span class="line">      .setInputCol(<span class="string">&quot;features&quot;</span>)</span><br><span class="line">      .setOutputCol(<span class="string">&quot;scaledFeatures&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Compute summary statistics and generate MaxAbsScalerModel</span></span><br><span class="line">    <span class="keyword">val</span> scalerModel = scaler.fit(dataFrame)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// rescale each feature to range [-1, 1]</span></span><br><span class="line">    <span class="keyword">val</span> scaledData = scalerModel.transform(dataFrame)</span><br><span class="line">    scaledData.select(<span class="string">&quot;features&quot;</span>, <span class="string">&quot;scaledFeatures&quot;</span>).show()</span><br><span class="line">    <span class="comment">// $example off$</span></span><br><span class="line"></span><br><span class="line">    spark.stop()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+————–+—————-+</span><br><span class="line">| features| scaledFeatures|</span><br><span class="line">+————–+—————-+</span><br><span class="line">|[1.0,0.1,-8.0]|[0.25,0.01,-1.0]|</span><br><span class="line">|[2.0,1.0,-4.0]| [0.5,0.1,-0.5]|</span><br><span class="line">|[4.0,10.0,8.0]| [1.0,1.0,1.0]|</span><br><span class="line">+————–+—————-+</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

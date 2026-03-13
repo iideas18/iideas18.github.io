@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cgroup原理与实现 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cgroup原理与实现">
+<meta property="og:url" content="https://iideas18.github.io/2022/03/26/Linux/Cgroup原理与实现/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-03-26T07:09:28.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.216Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/03/26/Linux/Cgroup原理与实现/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Cgroup原理与实现',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">Cgroup原理与实现</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-03-26T07:09:28.000Z" title="发表于 2022-03-26 15:09:28">2022-03-26</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.216Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Linux/">Linux</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <p><code>CGroup</code> 全称 <code>Control Group</code> 中文意思为 <code>控制组</code>，用于控制（限制）进程对系统各种资源的使用，比如 <code>CPU</code>、<code>内存</code>、<code>网络</code> 和 <code>磁盘I/O</code> 等资源的限制，著名的容器引擎 <code>Docker</code> 就是使用 <code>CGroup</code> 来对容器进行资源限制。</p>
+<h3 id="CGroup-使用"><a href="#CGroup-使用" class="headerlink" title="CGroup 使用"></a>CGroup 使用</h3><p>本文主要以 <code>内存子系统（memory subsystem）</code> 作为例子来阐述 <code>CGroup</code> 的原理，所以这里先介绍怎么通过 <code>内存子系统</code> 来限制进程对内存的使用。</p>
+<blockquote>
+<p><code>子系统</code> 是 <code>CGroup</code> 用于控制某种资源（如内存或者CPU等）使用的逻辑或者算法</p>
+</blockquote>
+<p><code>CGroup</code> 使用了 <code>虚拟文件系统</code> 来进行管理限制的资源信息和被限制的进程列表等，例如要创建一个限制内存使用的 <code>CGroup</code> 可以使用下面命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mount -t cgroup -o memory memory /sys/fs/cgroup/memory</span><br></pre></td></tr></table></figure>
+
+<p>上面的命令用于创建内存子系统的根 <code>CGroup</code>，如果系统已经存在可以跳过。然后我们使用下面命令在这个目录下面创建一个新的目录 <code>test</code>，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir /sys/fs/cgroup/memory/test</span><br></pre></td></tr></table></figure>
+
+<p>这样就在内存子系统的根 <code>CGroup</code> 下创建了一个子 <code>CGroup</code>，我们可以通过 <code>ls</code> 目录来查看这个目录下有哪些文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ ls -l /sys/fs/cgroup/memory/test</span><br><span class="line">cgroup.clone_childrenmemory.kmem.max_usage_in_bytesmemory.limit_in_bytesmemory.numa_statmemory.use_hierarchy</span><br><span class="line">cgroup.event_controlmemory.kmem.slabinfomemory.max_usage_in_bytesmemory.oom_controlnotify_on_release</span><br><span class="line">cgroup.procsmemory.kmem.tcp.failcntmemory.memsw.failcntmemory.pressure_leveltasks</span><br><span class="line">memory.failcntmemory.kmem.tcp.limit_in_bytesmemory.memsw.limit_in_bytesmemory.soft_limit_in_bytes</span><br><span class="line">memory.force_emptymemory.kmem.tcp.max_usage_in_bytesmemory.memsw.max_usage_in_bytesmemory.stat</span><br><span class="line">memory.kmem.failcntmemory.kmem.tcp.usage_in_bytesmemory.memsw.usage_in_bytesmemory.swappiness</span><br><span class="line">memory.kmem.limit_in_bytesmemory.kmem.usage_in_bytesmemory.move_charge_at_immigratememory.usage_in_bytes</span><br></pre></td></tr></table></figure>
+
+<p>可以看到在目录下有很多文件，每个文件都是 <code>CGroup</code> 用于控制进程组的资源使用。我们可以向 <code>memory.limit_in_bytes</code> 文件写入限制进程（进程组）使用的内存大小，单位为字节(bytes)。例如可以使用以下命令写入限制使用的内存大小为 <code>1MB</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ echo 1048576 &gt; /sys/fs/cgroup/memory/test/memory.limit_in_bytes</span><br></pre></td></tr></table></figure>
+
+<p>然后我们可以通过以下命令把要限制的进程加入到 <code>CGroup</code> 中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ echo task_pid &gt; /sys/fs/cgroup/memory/test/tasks</span><br></pre></td></tr></table></figure>
+
+<p>上面的 <code>task_pid</code> 为进程的 <code>PID</code>，把进程PID添加到 <code>tasks</code> 文件后，进程对内存的使用就受到此 <code>CGroup</code> 的限制。</p>
+<h3 id="CGroup-基本概念"><a href="#CGroup-基本概念" class="headerlink" title="CGroup 基本概念"></a>CGroup 基本概念</h3><p>在介绍 <code>CGroup</code> 原理前，先介绍一下 <code>CGroup</code> 几个相关的概念，因为要理解 <code>CGroup</code> 就必须要理解他们：</p>
+<ul>
+<li><code>任务（task）</code>。任务指的是系统的一个进程，如上面介绍的 <code>tasks</code> 文件中的进程；</li>
+<li><code>控制组（control group）</code>。控制组就是受相同资源限制的一组进程。<code>CGroup</code> 中的资源控制都是以控制组为单位实现。一个进程可以加入到某个控制组，也从一个进程组迁移到另一个控制组。一个进程组的进程可以使用 <code>CGroup</code> 以控制组为单位分配的资源，同时受到 <code>CGroup</code> 以控制组为单位设定的限制；</li>
+<li><code>层级（hierarchy）</code>。由于控制组是以目录形式存在的，所以控制组可以组织成层级的形式，即一棵控制组组成的树。控制组树上的子节点控制组是父节点控制组的孩子，继承父控制组的特定的属性；</li>
+<li><code>子系统（subsystem）</code>。一个子系统就是一个资源控制器，比如 <code>CPU子系统</code> 就是控制 CPU 时间分配的一个控制器。子系统必须附加（attach）到一个层级上才能起作用，一个子系统附加到某个层级以后，这个层级上的所有控制组都受到这个子系统的控制。</li>
+</ul>
+<p>他们之间的关系如下图：</p>
+<p><img src="/640-1648278265986.jpg" alt="Image"></p>
+<p>我们可以把 <code>层级</code> 中的一个目录当成是一个 <code>CGroup</code>，那么目录里面的文件就是这个 <code>CGroup</code> 用于控制进程组使用各种资源的信息（比如 <code>tasks</code> 文件用于保存这个 <code>CGroup</code> 控制的进程组所有的进程PID，而 <code>memory.limit_in_bytes</code> 文件用于描述这个 <code>CGroup</code> 能够使用的内存字节数）。</p>
+<p>而附加在 <code>层级</code> 上的 <code>子系统</code> 表示这个 <code>层级</code> 中的 <code>CGroup</code> 可以控制哪些资源，每当向 <code>层级</code> 附加 <code>子系统</code> 时，<code>层级</code> 中的所有 <code>CGroup</code> 都会产生很多与 <code>子系统</code> 资源控制相关的文件。</p>
+<h3 id="CGroup-操作规则"><a href="#CGroup-操作规则" class="headerlink" title="CGroup 操作规则"></a>CGroup 操作规则</h3><p>使用 <code>CGroup</code> 时，必须按照 <code>CGroup</code> 一些操作规则来进行操作，否则会出错。下面介绍一下关于 <code>CGroup</code> 的一些操作规则：</p>
+<ol>
+<li>一个 <code>层级</code> 可以附加多个 <code>子系统</code>，如下图：</li>
+</ol>
+<p><img src="/640-1648278278150.jpg" alt="Image"></p>
+<ol>
+<li>一个已经被挂载的 <code>子系统</code> 只能被再次挂载在一个空的 <code>层级</code> 上，不能挂载到已经挂载了其他 <code>子系统</code> 的 <code>层级</code>，如下图：</li>
+</ol>
+<p><img src="/640-1648278258818.jpg" alt="Image"></p>
+<ol>
+<li>每个 <code>任务</code> 只能在同一个 <code>层级</code> 的唯一一个 <code>CGroup</code> 里，并且可以在多个不同层级的 <code>CGroup</code> 中，如下图：</li>
+</ol>
+<p><img src="/640-1648278270015.jpg" alt="Image"></p>
+<ol>
+<li>子进程在被 <code>fork</code> 出时自动继承父进程所在 <code>CGroup</code>，但是 <code>fork</code> 之后就可以按需调整到其他 <code>CGroup</code>，如下图：</li>
+</ol>
+<p><img src="/640-1648278265233.jpg" alt="Image"></p>
+<p>关于 <code>CGroup</code> 的介绍和使用就到这里，接下来我们来分析一下内核是怎么实现 <code>CGroup</code> 的。前面我们介绍了 <code>CGroup</code> 的使用与基本概念，接下来将通过分析源码（本文使用的 Linux2.6.25 版本）来介绍 <code>CGroup</code> 的实现原理。在分析源码前，我们先介绍几个重要的数据结构，因为 <code>CGroup</code> 就是通过这几个数据结构来控制进程组对各种资源的使用。</p>
+<h2 id="cgroup-结构体"><a href="#cgroup-结构体" class="headerlink" title="cgroup 结构体"></a><code>cgroup</code> 结构体</h2><p>前面介绍过，<code>cgroup</code> 是用来控制进程组对各种资源的使用，而在内核中，<code>cgroup</code> 是通过 <code>cgroup</code> 结构体来描述的，我们来看看其定义：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">struct cgroup &#123;</span><br><span class="line">    unsigned long flags;        /* &quot;unsigned long&quot; so bitops work */</span><br><span class="line">    atomic_t count;</span><br><span class="line">    struct list_head sibling;   /* my parent&#x27;s children */</span><br><span class="line">    struct list_head children;  /* my children */</span><br><span class="line">    struct cgroup *parent;      /* my parent */</span><br><span class="line">    struct dentry *dentry;      /* cgroup fs entry */</span><br><span class="line">    struct cgroup_subsys_state *subsys[CGROUP_SUBSYS_COUNT];</span><br><span class="line">    struct cgroupfs_root *root;</span><br><span class="line">    struct cgroup *top_cgroup;</span><br><span class="line">    struct list_head css_sets;</span><br><span class="line">    struct list_head release_list;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>下面我们来介绍一下 <code>cgroup</code> 结构体各个字段的用途：</p>
+<ol>
+<li><code>flags</code>: 用于标识当前 <code>cgroup</code> 的状态。</li>
+<li><code>count</code>: 引用计数器，表示有多少个进程在使用这个 <code>cgroup</code>。</li>
+<li><code>sibling、children、parent</code>: 由于 <code>cgroup</code> 是通过 <code>层级</code> 来进行管理的，这三个字段就把同一个 <code>层级</code> 的所有 <code>cgroup</code> 连接成一棵树。<code>parent</code> 指向当前 <code>cgroup</code> 的父节点，<code>sibling</code> 连接着所有兄弟节点，而 <code>children</code> 连接着当前 <code>cgroup</code> 的所有子节点。</li>
+<li><code>dentry</code>: 由于 <code>cgroup</code> 是通过 <code>虚拟文件系统</code> 来进行管理的，在介绍 <code>cgroup</code> 使用时说过，可以把 <code>cgroup</code> 当成是 <code>层级</code> 中的一个目录，所以 <code>dentry</code> 字段就是用来描述这个目录的。</li>
+<li><code>subsys</code>: 前面说过，<code>子系统</code> 能够附加到 <code>层级</code>，而附加到 <code>层级</code> 的 <code>子系统</code> 都有其限制进程组使用资源的算法和统计数据。所以 <code>subsys</code> 字段就是提供给各个 <code>子系统</code> 存放其限制进程组使用资源的统计数据。我们可以看到 <code>subsys</code> 字段是一个数组，而数组中的每一个元素都代表了一个 <code>子系统</code> 相关的统计数据。从实现来看，<code>cgroup</code> 只是把多个进程组织成控制进程组，而真正限制资源使用的是各个 <code>子系统</code>。</li>
+<li><code>root</code>: 用于保存 <code>层级</code> 的一些数据，比如：<code>层级</code> 的根节点，附加到 <code>层级</code> 的 <code>子系统</code> 列表（因为一个 <code>层级</code> 可以附加多个 <code>子系统</code>），还有这个 <code>层级</code> 有多少个 <code>cgroup</code> 节点等。</li>
+<li><code>top_cgroup</code>: <code>层级</code> 的根节点（根cgroup）。</li>
+</ol>
+<p>我们通过下面图片来描述 <code>层级</code> 中各个 <code>cgroup</code> 组成的树状关系：</p>
+<p><img src="/image-20220326142821827.png" alt="image-20220326142821827"></p>
+<h2 id="cgroup-subsys-state-结构体"><a href="#cgroup-subsys-state-结构体" class="headerlink" title="cgroup_subsys_state 结构体"></a><code>cgroup_subsys_state</code> 结构体</h2><p>每个 <code>子系统</code> 都有属于自己的资源控制统计信息结构，而且每个 <code>cgroup</code> 都绑定一个这样的结构，这种资源控制统计信息结构就是通过 <code>cgroup_subsys_state</code> 结构体实现的，其定义如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct cgroup_subsys_state &#123;</span><br><span class="line">    struct cgroup *cgroup;</span><br><span class="line">    atomic_t refcnt;</span><br><span class="line">    unsigned long flags;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>下面介绍一下 <code>cgroup_subsys_state</code> 结构各个字段的作用：</p>
+<ol>
+<li><code>cgroup</code>: 指向了这个资源控制统计信息所属的 <code>cgroup</code>。</li>
+<li><code>refcnt</code>: 引用计数器。</li>
+<li><code>flags</code>: 标志位，如果这个资源控制统计信息所属的 <code>cgroup</code> 是 <code>层级</code> 的根节点，那么就会将这个标志位设置为 <code>CSS_ROOT</code> 表示属于根节点。</li>
+</ol>
+<p>从 <code>cgroup_subsys_state</code> 结构的定义看不到各个 <code>子系统</code> 相关的资源控制统计信息，这是因为 <code>cgroup_subsys_state</code> 结构并不是真实的资源控制统计信息结构，比如 <code>内存子系统</code> 真正的资源控制统计信息结构是 <code>mem_cgroup</code>，那么怎样通过这个 <code>cgroup_subsys_state</code> 结构去找到对应的 <code>mem_cgroup</code> 结构呢？我们来看看 <code>mem_cgroup</code> 结构的定义：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct mem_cgroup &#123;</span><br><span class="line">    struct cgroup_subsys_state css; // 注意这里</span><br><span class="line">    struct res_counter res;</span><br><span class="line">    struct mem_cgroup_lru_info info;</span><br><span class="line">    int prev_priority;</span><br><span class="line">    struct mem_cgroup_stat stat;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>从 <code>mem_cgroup</code> 结构的定义可以发现，<code>mem_cgroup</code> 结构的第一个字段就是一个 <code>cgroup_subsys_state</code> 结构。下面的图片展示了他们之间的关系：</p>
+<p><img src="/640-1648275969919.jpg" alt="Image">cgroup-state-memory</p>
+<p>从上图可以看出，<code>mem_cgroup</code> 结构包含了 <code>cgroup_subsys_state</code> 结构，<code>内存子系统</code> 对外暴露出 <code>mem_cgroup</code> 结构的 <code>cgroup_subsys_state</code> 部分（即返回 <code>cgroup_subsys_state</code> 结构的指针），而其余部分由 <code>内存子系统</code> 自己维护和使用。</p>
+<p>由于 <code>cgroup_subsys_state</code> 部分在 <code>mem_cgroup</code> 结构的首部，所以要将 <code>cgroup_subsys_state</code> 结构转换成 <code>mem_cgroup</code> 结构，只需要通过指针类型转换即可。</p>
+<p><code>cgroup</code> 结构与 <code>cgroup_subsys_state</code> 结构之间的关系如下图：</p>
+<p><img src="/640-1648275970247.jpg" alt="Image">cgroup-subsys-state</p>
+<h2 id="css-set-结构体"><a href="#css-set-结构体" class="headerlink" title="css_set 结构体"></a><code>css_set</code> 结构体</h2><p>由于一个进程可以同时添加到不同的 <code>cgroup</code> 中（前提是这些 <code>cgroup</code> 属于不同的 <code>层级</code>）进行资源控制，而这些 <code>cgroup</code> 附加了不同的资源控制 <code>子系统</code>。所以需要使用一个结构把这些 <code>子系统</code> 的资源控制统计信息收集起来，方便进程通过 <code>子系统ID</code> 快速查找到对应的 <code>子系统</code> 资源控制统计信息，而 <code>css_set</code> 结构体就是用来做这件事情。<code>css_set</code> 结构体定义如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct css_set &#123;</span><br><span class="line">    struct kref ref;</span><br><span class="line">    struct list_head list;</span><br><span class="line">    struct list_head tasks;</span><br><span class="line">    struct list_head cg_links;</span><br><span class="line">    struct cgroup_subsys_state *subsys[CGROUP_SUBSYS_COUNT];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>下面介绍一下 <code>css_set</code> 结构体各个字段的作用：</p>
+<ol>
+<li><code>ref</code>: 引用计数器，用于计算有多少个进程在使用此 <code>css_set</code>。</li>
+<li><code>list</code>: 用于连接所有 <code>css_set</code>。</li>
+<li><code>tasks</code>: 由于可能存在多个进程同时受到相同的 <code>cgroup</code> 控制，所以用此字段把所有使用此 <code>css_set</code> 的进程连接起来。</li>
+<li><code>subsys</code>: 用于收集各种 <code>子系统</code> 的统计信息结构。</li>
+</ol>
+<p>进程描述符 <code>task_struct</code> 有两个字段与此相关，如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">struct task_struct &#123;</span><br><span class="line">    ...</span><br><span class="line">    struct css_set *cgroups;</span><br><span class="line">    struct list_head cg_list;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出，<code>task_struct</code> 结构的 <code>cgroups</code> 字段就是指向 <code>css_set</code> 结构的指针，而 <code>cg_list</code> 字段用于连接所有使用此 <code>css_set</code> 结构的进程列表。</p>
+<p><code>task_struct</code> 结构与 <code>css_set</code> 结构的关系如下图：</p>
+<p><img src="/640-1648275970249.jpg" alt="Image"></p>
+<p>cgroup-task-cssset</p>
+<h2 id="cgroup-subsys-结构"><a href="#cgroup-subsys-结构" class="headerlink" title="cgroup_subsys 结构"></a><code>cgroup_subsys</code> 结构</h2><p><code>CGroup</code> 通过 <code>cgroup_subsys</code> 结构操作各个 <code>子系统</code>，每个 <code>子系统</code> 都要实现一个这样的结构，其定义如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">struct cgroup_subsys &#123;</span><br><span class="line">    struct cgroup_subsys_state *(*create)(struct cgroup_subsys *ss,</span><br><span class="line">                          struct cgroup *cgrp);</span><br><span class="line">    void (*pre_destroy)(struct cgroup_subsys *ss, struct cgroup *cgrp);</span><br><span class="line">    void (*destroy)(struct cgroup_subsys *ss, struct cgroup *cgrp);</span><br><span class="line">    int (*can_attach)(struct cgroup_subsys *ss,</span><br><span class="line">              struct cgroup *cgrp, struct task_struct *tsk);</span><br><span class="line">    void (*attach)(struct cgroup_subsys *ss, struct cgroup *cgrp,</span><br><span class="line">            struct cgroup *old_cgrp, struct task_struct *tsk);</span><br><span class="line">    void (*fork)(struct cgroup_subsys *ss, struct task_struct *task);</span><br><span class="line">    void (*exit)(struct cgroup_subsys *ss, struct task_struct *task);</span><br><span class="line">    int (*populate)(struct cgroup_subsys *ss,</span><br><span class="line">            struct cgroup *cgrp);</span><br><span class="line">    void (*post_clone)(struct cgroup_subsys *ss, struct cgroup *cgrp);</span><br><span class="line">    void (*bind)(struct cgroup_subsys *ss, struct cgroup *root);</span><br><span class="line"></span><br><span class="line">    int subsys_id;</span><br><span class="line">    int active;</span><br><span class="line">    int disabled;</span><br><span class="line">    int early_init;</span><br><span class="line">    const char *name;</span><br><span class="line">    struct cgroupfs_root *root;</span><br><span class="line">    struct list_head sibling;</span><br><span class="line">    void *private;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><code>cgroup_subsys</code> 结构包含了很多函数指针，通过这些函数指针，<code>CGroup</code> 可以对 <code>子系统</code> 进行一些操作。比如向 <code>CGroup</code> 的 <code>tasks</code> 文件添加要控制的进程PID时，就会调用 <code>cgroup_subsys</code> 结构的 <code>attach()</code> 函数。当在 <code>层级</code> 中创建新目录时，就会调用 <code>create()</code> 函数创建一个 <code>子系统</code> 的资源控制统计信息对象 <code>cgroup_subsys_state</code>，并且调用 <code>populate()</code> 函数创建 <code>子系统</code> 相关的资源控制信息文件。</p>
+<p>除了函数指针外，<code>cgroup_subsys</code> 结构还包含了很多字段，下面说明一下各个字段的作用：</p>
+<ol>
+<li><code>subsys_id</code>: 表示了子系统的ID。</li>
+<li><code>active</code>: 表示子系统是否被激活。</li>
+<li><code>disabled</code>: 子系统是否被禁止。</li>
+<li><code>name</code>: 子系统名称。</li>
+<li><code>root</code>: 被附加到的层级挂载点。</li>
+<li><code>sibling</code>: 用于连接被附加到同一个层级的所有子系统。</li>
+<li><code>private</code>: 私有数据。</li>
+</ol>
+<p><code>内存子系统</code> 定义了一个名为 <code>mem_cgroup_subsys</code> 的 <code>cgroup_subsys</code> 结构，如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">struct cgroup_subsys mem_cgroup_subsys = &#123;</span><br><span class="line">    .name = &quot;memory&quot;,</span><br><span class="line">    .subsys_id = mem_cgroup_subsys_id,</span><br><span class="line">    .create = mem_cgroup_create,</span><br><span class="line">    .pre_destroy = mem_cgroup_pre_destroy,</span><br><span class="line">    .destroy = mem_cgroup_destroy,</span><br><span class="line">    .populate = mem_cgroup_populate,</span><br><span class="line">    .attach = mem_cgroup_move_task,</span><br><span class="line">    .early_init = 0,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>另外 Linux 内核还定义了一个 <code>cgroup_subsys</code> 结构的数组 <code>subsys</code>，用于保存所有 <code>子系统</code> 的 <code>cgroup_subsys</code> 结构，如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">static struct cgroup_subsys *subsys[] = &#123;</span><br><span class="line">    cpuset_subsys,</span><br><span class="line">    debug_subsys,</span><br><span class="line">    ns_subsys,</span><br><span class="line">    cpu_cgroup_subsys,</span><br><span class="line">    cpuacct_subsys,</span><br><span class="line">    mem_cgroup_subsys</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="CGroup-的挂载"><a href="#CGroup-的挂载" class="headerlink" title="CGroup 的挂载"></a><code>CGroup</code> 的挂载</h2><p>前面介绍了 <code>CGroup</code> 相关的几个结构体，接下来我们分析一下 <code>CGroup</code> 的实现。</p>
+<p>要使用 <code>CGroup</code> 功能首先必须先进行挂载操作，比如使用下面命令挂载一个 <code>CGroup</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mount -t cgroup -o memory memory /sys/fs/cgroup/memory</span><br></pre></td></tr></table></figure>
+
+<p>在上面的命令中，<code>-t</code> 参数指定了要挂载的文件系统类型为 <code>cgroup</code>，而 <code>-o</code> 参数表示要附加到此 <code>层级</code> 的子系统，上面表示附加了 <code>内存子系统</code>，当然可以附加多个 <code>子系统</code>。而紧随 <code>-o</code> 参数后的 <code>memory</code> 指定了此 <code>CGroup</code> 的名字，最后一个参数表示要挂载的目录路径。</p>
+<p>挂载过程最终会调用内核函数 <code>cgroup_get_sb()</code> 完成，由于 <code>cgroup_get_sb()</code> 函数比较长，所以我们只分析重要部分：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">static int cgroup_get_sb(struct file_system_type *fs_type,</span><br><span class="line">     int flags, const char *unused_dev_name,</span><br><span class="line">     void *data, struct vfsmount *mnt)</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">    struct cgroupfs_root *root;</span><br><span class="line">    ...</span><br><span class="line">    root = kzalloc(sizeof(*root), GFP_KERNEL);</span><br><span class="line">    ...</span><br><span class="line">    ret = rebind_subsystems(root, root-&gt;subsys_bits);</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    struct cgroup *cgrp = &amp;root-&gt;top_cgroup;</span><br><span class="line"></span><br><span class="line">    cgroup_populate_dir(cgrp);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>cgroup_get_sb()</code> 函数会调用 <code>kzalloc()</code> 函数创建一个 <code>cgroupfs_root</code> 结构。<code>cgroupfs_root</code> 结构主要用于描述这个挂载点的信息，其定义如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">struct cgroupfs_root &#123;</span><br><span class="line">    struct super_block *sb;</span><br><span class="line">    unsigned long subsys_bits;</span><br><span class="line">    unsigned long actual_subsys_bits;</span><br><span class="line">    struct list_head subsys_list;</span><br><span class="line">    struct cgroup top_cgroup;</span><br><span class="line">    int number_of_cgroups;</span><br><span class="line">    struct list_head root_list;</span><br><span class="line">    unsigned long flags;</span><br><span class="line">    char release_agent_path[PATH_MAX];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>下面介绍一下 <code>cgroupfs_root</code> 结构的各个字段含义：</p>
+<ol>
+<li><code>sb</code>: 挂载的文件系统超级块。</li>
+<li><code>subsys_bits/actual_subsys_bits</code>: 附加到此层级的子系统标志。</li>
+<li><code>subsys_list</code>: 附加到此层级的子系统(cgroup_subsys)列表。</li>
+<li><code>top_cgroup</code>: 此层级的根cgroup。</li>
+<li><code>number_of_cgroups</code>: 层级中有多少个cgroup。</li>
+<li><code>root_list</code>: 连接系统中所有的cgroupfs_root。</li>
+<li><code>flags</code>: 标志位。</li>
+</ol>
+<p>其中最重要的是 <code>subsys_list</code> 和 <code>top_cgroup</code> 字段，<code>subsys_list</code> 表示了附加到此 <code>层级</code> 的所有 <code>子系统</code>，而 <code>top_cgroup</code> 表示此 <code>层级</code> 的根 <code>cgroup</code>。</p>
+<p>接着调用 <code>rebind_subsystems()</code> 函数把挂载时指定要附加的 <code>子系统</code> 添加到 <code>cgroupfs_root</code> 结构的 <code>subsys_list</code> 链表中，并且为根 <code>cgroup</code> 的 <code>subsys</code> 字段设置各个 <code>子系统</code> 的资源控制统计信息对象，最后调用 <code>cgroup_populate_dir()</code> 函数向挂载目录创建 <code>cgroup</code> 的管理文件（如 <code>tasks</code> 文件）和各个 <code>子系统</code> 的管理文件（如 <code>memory.limit_in_bytes</code> 文件）。</p>
+<h2 id="向-CGroup-添加要进行资源控制的进程"><a href="#向-CGroup-添加要进行资源控制的进程" class="headerlink" title="向 CGroup 添加要进行资源控制的进程"></a>向 <code>CGroup</code> 添加要进行资源控制的进程</h2><p>通过向 <code>CGroup</code> 的 <code>tasks</code> 文件写入要进行资源控制的进程PID，即可以对进程进行资源控制。例如下面命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ echo 123012 &gt; /sys/fs/cgroup/memory/test/tasks</span><br></pre></td></tr></table></figure>
+
+<p>向 <code>tasks</code> 文件写入进程PID是通过 <code>attach_task_by_pid()</code> 函数实现的，代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">static int attach_task_by_pid(struct cgroup *cgrp, char *pidbuf)</span><br><span class="line">&#123;</span><br><span class="line">    pid_t pid;</span><br><span class="line">    struct task_struct *tsk;</span><br><span class="line">    int ret;</span><br><span class="line"></span><br><span class="line">    if (sscanf(pidbuf, &quot;%d&quot;, &amp;pid) != 1) // 读取进程pid</span><br><span class="line">        return -EIO;</span><br><span class="line"></span><br><span class="line">    if (pid) &#123; // 如果有指定进程pid</span><br><span class="line">        ...</span><br><span class="line">        tsk = find_task_by_vpid(pid); // 通过pid查找对应进程的进程描述符</span><br><span class="line">        if (!tsk || tsk-&gt;flags &amp; PF_EXITING) &#123;</span><br><span class="line">            rcu_read_unlock();</span><br><span class="line">            return -ESRCH;</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        tsk = current; // 如果没有指定进程pid, 就使用当前进程</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ret = cgroup_attach_task(cgrp, tsk); // 调用 cgroup_attach_task() 把进程添加到cgroup中</span><br><span class="line">    ...</span><br><span class="line">    return ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>attach_task_by_pid()</code> 函数首先会判断是否指定了进程pid，如果指定了就通过进程pid查找到进程描述符，如果没指定就使用当前进程，然后通过调用 <code>cgroup_attach_task()</code> 函数把进程添加到 <code>cgroup</code> 中。</p>
+<p>我们接着看看 <code>cgroup_attach_task()</code> 函数的实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">int cgroup_attach_task(struct cgroup *cgrp, struct task_struct *tsk)</span><br><span class="line">&#123;</span><br><span class="line">    int retval = 0;</span><br><span class="line">    struct cgroup_subsys *ss;</span><br><span class="line">    struct cgroup *oldcgrp;</span><br><span class="line">    struct css_set *cg = tsk-&gt;cgroups;</span><br><span class="line">    struct css_set *newcg;</span><br><span class="line">    struct cgroupfs_root *root = cgrp-&gt;root;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">    newcg = find_css_set(cg, cgrp); // 根据新的cgroup查找css_set对象</span><br><span class="line">    ...</span><br><span class="line">    rcu_assign_pointer(tsk-&gt;cgroups, newcg); // 把进程的cgroups字段设置为新的css_set对象</span><br><span class="line">    ...</span><br><span class="line">    // 把进程添加到css_set对象的tasks列表中</span><br><span class="line">    write_lock(&amp;css_set_lock);</span><br><span class="line">    if (!list_empty(&amp;tsk-&gt;cg_list)) &#123;</span><br><span class="line">        list_del(&amp;tsk-&gt;cg_list);</span><br><span class="line">        list_add(&amp;tsk-&gt;cg_list, &amp;newcg-&gt;tasks);</span><br><span class="line">    &#125;</span><br><span class="line">    write_unlock(&amp;css_set_lock);</span><br><span class="line"></span><br><span class="line">    // 调用各个子系统的attach函数</span><br><span class="line">    for_each_subsys(root, ss) &#123;</span><br><span class="line">        if (ss-&gt;attach)</span><br><span class="line">            ss-&gt;attach(ss, cgrp, oldcgrp, tsk);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>cgroup_attach_task()</code> 函数首先会调用 <code>find_css_set()</code> 函数查找或者创建一个 <code>css_set</code> 对象。前面说过 <code>css_set</code> 对象用于收集不同 <code>cgroup</code> 上附加的 <code>子系统</code> 资源统计信息对象。</p>
+<p>因为一个进程能够被加入到不同的 <code>cgroup</code> 进行资源控制，所以 <code>find_css_set()</code> 函数就是收集进程所在的所有 <code>cgroup</code> 上附加的 <code>子系统</code> 资源统计信息对象，并返回一个 <code>css_set</code> 对象。接着把进程描述符的 <code>cgroups</code> 字段设置为这个 <code>css_set</code> 对象，并且把进程添加到这个 <code>css_set</code> 对象的 <code>tasks</code> 链表中。</p>
+<p>最后，<code>cgroup_attach_task()</code> 函数会调用附加在 <code>层级</code> 上的所有 <code>子系统</code> 的 <code>attach()</code> 函数对新增进程进行一些其他的操作（这些操作由各自 <code>子系统</code> 去实现）。</p>
+<h2 id="限制-CGroup-的资源使用"><a href="#限制-CGroup-的资源使用" class="headerlink" title="限制 CGroup 的资源使用"></a>限制 <code>CGroup</code> 的资源使用</h2><p>本文主要是使用 <code>内存子系统</code> 作为例子，所以这里分析内存限制的原理。</p>
+<p>可以向 <code>cgroup</code> 的 <code>memory.limit_in_bytes</code> 文件写入要限制使用的内存大小（单位为字节），如下面命令限制了这个 <code>cgroup</code> 只能使用 1MB 的内存：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ echo 1048576 &gt; /sys/fs/cgroup/memory/test/memory.limit_in_bytes</span><br></pre></td></tr></table></figure>
+
+<p>向 <code>memory.limit_in_bytes</code> 写入数据主要通过 <code>mem_cgroup_write()</code> 函数实现的，其实现如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">static ssize_t mem_cgroup_write(struct cgroup *cont, struct cftype *cft,</span><br><span class="line">                struct file *file, const char __user *userbuf,</span><br><span class="line">                size_t nbytes, loff_t *ppos)</span><br><span class="line">&#123;</span><br><span class="line">    return res_counter_write(&amp;mem_cgroup_from_cont(cont)-&gt;res,</span><br><span class="line">                cft-&gt;private, userbuf, nbytes, ppos,</span><br><span class="line">                mem_cgroup_write_strategy);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其主要工作就是把 <code>内存子系统</code> 的资源控制对象 <code>mem_cgroup</code> 的 <code>res.limit</code> 字段设置为指定的数值。</p>
+<h2 id="限制进程使用资源"><a href="#限制进程使用资源" class="headerlink" title="限制进程使用资源"></a>限制进程使用资源</h2><p>当设置好 <code>cgroup</code> 的资源使用限制信息，并且把进程添加到这个 <code>cgroup</code> 的 <code>tasks</code> 列表后，进程的资源使用就会受到这个 <code>cgroup</code> 的限制。这里使用 <code>内存子系统</code> 作为例子，来分析一下内核是怎么通过 <code>cgroup</code> 来限制进程对资源的使用的。</p>
+<p>当进程要使用内存时，会调用 <code>do_anonymous_page()</code> 来申请一些内存页，而 <code>do_anonymous_page()</code> 函数会调用 <code>mem_cgroup_charge()</code> 函数来检测进程是否超过了 <code>cgroup</code> 设置的资源限制。而 <code>mem_cgroup_charge()</code> 最终会调用 <code>mem_cgroup_charge_common()</code> 函数进行检测，<code>mem_cgroup_charge_common()</code> 函数实现如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">static int mem_cgroup_charge_common(struct page *page, struct mm_struct *mm,</span><br><span class="line">                gfp_t gfp_mask, enum charge_type ctype)</span><br><span class="line">&#123;</span><br><span class="line">    struct mem_cgroup *mem;</span><br><span class="line">    ...</span><br><span class="line">    mem = rcu_dereference(mm-&gt;mem_cgroup); // 获取进程对应的内存限制对象</span><br><span class="line">    ...</span><br><span class="line">    while (res_counter_charge(&amp;mem-&gt;res, PAGE_SIZE)) &#123; // 判断进程使用内存是否超出限制</span><br><span class="line">        if (!(gfp_mask &amp; __GFP_WAIT))</span><br><span class="line">            goto out;</span><br><span class="line"></span><br><span class="line">        if (try_to_free_mem_cgroup_pages(mem, gfp_mask)) // 如果超出限制, 就释放一些不用的内存</span><br><span class="line">            continue;</span><br><span class="line"></span><br><span class="line">        if (res_counter_check_under_limit(&amp;mem-&gt;res))</span><br><span class="line">            continue;</span><br><span class="line"></span><br><span class="line">        if (!nr_retries--) &#123;</span><br><span class="line">            mem_cgroup_out_of_memory(mem, gfp_mask); // 如果尝试过5次后还是超出限制, 那么发出oom信号</span><br><span class="line">            goto out;</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>mem_cgroup_charge_common()</code> 函数会对进程内存使用情况进行检测，如果进程已经超过了 <code>cgroup</code> 设置的限制，那么就会尝试进行释放一些不用的内存，如果还是超过限制，那么就会发出 <code>OOM (out of memory)</code> 的信号。</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

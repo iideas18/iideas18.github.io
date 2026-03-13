@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spark 内存管理的前世今生（下） | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark 内存管理的前世今生（下）">
+<meta property="og:url" content="https://iideas18.github.io/2020/06/04/Spark note/spark md/Spark 内存管理的前世今生（下）/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2020-06-04T07:35:26.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.256Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2020/06/04/Spark note/spark md/Spark 内存管理的前世今生（下）/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Spark 内存管理的前世今生（下）',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">Spark 内存管理的前世今生（下）</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2020-06-04T07:35:26.000Z" title="发表于 2020-06-04 15:35:26">2020-06-04</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.256Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Spark note/">Spark note</a>
+            
+            <a class="post-meta-categories" href="/categories/spark md/">spark md</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="Spark-内存管理的前世今生（下）"><a href="#Spark-内存管理的前世今生（下）" class="headerlink" title="Spark 内存管理的前世今生（下）"></a>Spark 内存管理的前世今生（下）</h1><blockquote>
+<p>欢迎关注我的微信公众号：FunnyBigData</p>
+</blockquote>
+<p>在《Spark 内存管理的前世今生（上）》中，我们介绍了 UnifiedMemoryManager 是如何管理内存的。然而，UnifiedMemoryManager 是 MemoryManager 而不是 MemoryAllocator 或 MemoryConsumer，不进行实质上的内存分配和使用，只是负责可以分配多少 storage 或 execution 内存给谁，记录各种元数据信息。</p>
+<p>这篇文章会关注 storage 的堆内堆外内存到底是在什么样的情况下，以什么样的形式分配以及是怎么使用的。</p>
+<p>缓存 RDD 是 storage 内存最核心的用途，那我们就来看看缓存 RDD 的 partition 是怎样分配、使用 storage 内存的。</p>
+<p>可以以非序列化或序列化的形式缓存 RDD，两种情况有所不同，我们先来看看非序列化形式的。</p>
+<h2 id="1-缓存非序列化-RDD（只支持-ON-HEAP）"><a href="#1-缓存非序列化-RDD（只支持-ON-HEAP）" class="headerlink" title="1: 缓存非序列化 RDD（只支持 ON_HEAP）"></a>1: 缓存非序列化 RDD（只支持 ON_HEAP）</h2><p>缓存非序列化 RDD 通过调用</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MemoryStore<span class="selector-id">#putIteratorAsValues</span><span class="selector-attr">[T]</span>(blockId: BlockId,</span><br><span class="line">    values: Iterator[T],</span><br><span class="line">    classTag: ClassTag[T]): Either[PartiallyUnrolledIterator[T], Long]</span><br></pre></td></tr></table></figure>
+
+<p>来缓存一个个 partition 。该函数缓存一个 partition（一个 partition 对应一个 block） 数据至 storage 内存。其中：</p>
+<ul>
+<li>blockId：缓存到内存后的 block 的 blockId</li>
+<li>values：对象类型的迭代器，对应一个 partition 的数据</li>
+</ul>
+<p>整个流程还可以细化为以下两个子流程：</p>
+<ol>
+<li>unroll block：展开迭代器</li>
+<li>store unrolled to storage memory：将展开后的数据存入 storage 内存</li>
+</ol>
+<h3 id="1-1-unroll-block"><a href="#1-1-unroll-block" class="headerlink" title="1-1: unroll block"></a>1-1: unroll block</h3><p>一图胜千言，我们先来看看 unroll 的流程</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/204749-e68065100e830d05.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1200/format/webp" alt="img"></p>
+<p>我们先对上图中的流程做进一步的说明，然后再简洁的描述下整个过程以加深印象</p>
+<h4 id="1-1-1-为什么申请初始-unroll-内存不成功还继续往下走？"><a href="#1-1-1-为什么申请初始-unroll-内存不成功还继续往下走？" class="headerlink" title="1-1-1: 为什么申请初始 unroll 内存不成功还继续往下走？"></a>1-1-1: 为什么申请初始 unroll 内存不成功还继续往下走？</h4><p>初始的用于 unroll 的内存大小由 <code>spark.storage.unrollMemoryThreshold</code> 控制，默认为 1M。继续往下走主要由两个原因：</p>
+<ul>
+<li>由于初始 unroll 大小是可以设置的，如果不小心设置了过大，比如 1G，这时申请这么大的 storage 内存很可能失败，但 block 的真正大小可能远远小于该值；即使该值设置的比较合理，block 也很可能比初始 unroll 大小要小</li>
+<li>对于 <code>MemoryStore#putIteratorAsValues</code>，即使 block 大小比初始 unroll 大小要大，甚至最终都没能完整的把 values unroll 也是有用的，这个将在后文展开，这里先请关注返回值 <code>new PartiallyUnrolledIterator(...)</code></li>
+</ul>
+<h4 id="1-1-2-关于-vector-SizeTrackingVector"><a href="#1-1-2-关于-vector-SizeTrackingVector" class="headerlink" title="1-1-2: 关于 vector: SizeTrackingVector"></a>1-1-2: 关于 vector: SizeTrackingVector</h4><p>如流程图中所示，在 partition 对应的 iterator 不断被展开的过程中，每展开获取一个记录，就加到 vector 中，该 vector 为 SizeTrackingVector 类型，是一个只能追加的 buffer（内部通过数组实现），并持续记录自身的估算大小。从这里也可以看出，unroll 过程使用的内存都是 ON_HEAP 的。</p>
+<p>整个展开过程，说白了就是尽量把更多的 records 塞到这个 vector 中。因为所有展开的 records 都存入了 vector 中，所以从图中可以看出，每当在计算 vector 的估算 size 后，就会与累计已申请的 unroll 内存大小进行比较，如果 vector 的估算 size 更大，说明申请的 unroll 内存不够，就会触发申请更多的 unroll 内存（具体是申请 vector 估算大小的 1.5 倍减去已申请的 unroll 总内存），这：</p>
+<ul>
+<li>一是为了接下去的展开操作申请 unroll 内存</li>
+<li>二也是为了尽量保障向 MemoryManager 申请的 unroll 内存能稍大于真实消耗的 unroll 内存，以避免 OOM（若向 MemoryManager 申请的 unroll 内存小于真实使用的，那么就会导致 MemoryManager 认为有比真实情况下更多的空闲内存，如果使用了这部分不存在的空闲内存就会 OOM）</li>
+</ul>
+<p>如图所示，要符合一定的条件才 check unroll memory 是否够用，也就是 vector 计算其估算大小并判断是否大于已申请的 unroll memory size。这里是<strong>每展开 16 条记录进行一次检查</strong>，设置这样的间隔是因为每次估算都需要耗费数毫秒。</p>
+<h4 id="1-1-3-继续还是停止-unroll-？"><a href="#1-1-3-继续还是停止-unroll-？" class="headerlink" title="1-1-3: 继续还是停止 unroll ？"></a>1-1-3: 继续还是停止 unroll ？</h4><p>每展开一条记录后，都会判断是否还需要、还能够继续展开，当 values 还有未展开的 record 且还有 unroll 内存来展开时就会继续展开，将 record 追加到 vector 中。</p>
+<p>需要注意的是，只有当 keepUnrolling 为 true 时（不管 values.hasNext 是否为 true）才会进入 <code>store unrolled to storage memory</code> 流程。这样的逻辑其实有些问题，我们先来看看其实现代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (values.hasNext &amp;&amp; keepUnrolling) &#123;</span><br><span class="line">  vector += values.<span class="built_in">next</span>()</span><br><span class="line">  <span class="keyword">if</span> (elementsUnrolled % <span class="number">16</span> == <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="comment">// currentSize 为 vector 的估算大小</span></span><br><span class="line">    val currentSize = vector.<span class="built_in">estimateSize</span>()</span><br><span class="line">    <span class="keyword">if</span> (currentSize &gt;= memoryThreshold) &#123;</span><br><span class="line">      <span class="comment">// 申请 size 为 amountToRequest 的估算大小，memoryGrowthFactor 为 1.5</span></span><br><span class="line">      val amountToRequest = (currentSize * memoryGrowthFactor - memoryThreshold).toLong</span><br><span class="line">      keepUnrolling = <span class="built_in">reserveUnrollMemoryForThisTask</span>(blockId, amountToRequest, MemoryMode.ON_HEAP)</span><br><span class="line">      &#125;</span><br><span class="line">      memoryThreshold += amountToRequest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  elementsUnrolled += <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (keepUnrolling) &#123;</span><br><span class="line">  <span class="comment">// store unrolled to storage memory</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时，假设 keepUnrolling 为 true， <code>values.hasNext</code> 为 true，也就是还有一些记录没有展开（在假设剩余未展开的 records 总大小为 1M），进入循环后，展开一条记录追加到 vector 中后，恰好 <code>elementsUnrolled % 16 == 0</code> 且 <code>currentSize &gt;= memoryThreshold</code>。根据 <code>val amountToRequest = (currentSize * memoryGrowthFactor - memoryThreshold).toLong</code> 计算出要为了展开剩余 records 本次要申请的 unroll 内存大小为 amountToRequest，大小为 5M，这时候实际上最大能申请的 unroll 内存大小为 3M，那么申请就失败了，keepUnrolling 为 false，此时进入下一次循环判断就失败了，整个展开过程也就失败了，但事实上剩余能申请的 unroll 内存大小是足以满足剩余的 records 的。</p>
+<p>一个简单的治标不治本的改进方案是将 memoryGrowthFactor 的值设置的更小（当前为 1.5），该值越小发生上述情况的概率越小，并且，这里的申请内存其实只是做一些数值上的状态更新，并不会发生耗资源或耗时的操作，所以多申请几次并不会带来什么性能下降。</p>
+<p>回到当前的实现中来，当循环结束，若 keepUnrolling 为 true ，values 一定被全部展开；若 keepUnrolling 为 false（存在展开最后一条 record 后 check 出 vector 估算 size 大于已申请 unroll 总内存并申请失败的情况），则无论 values 有没有被全部展开，都说明能申请到的总 unroll 内存是不足以展开整个 values 的，这就意味着缓存该 partition 至内存失败。</p>
+<p>需要注意的是，缓存到内存失败并不代表整个缓存动作是失败的，根据 StorageLevel 还可能会缓存到磁盘。</p>
+<hr>
+<h3 id="1-2-store-unrolled-to-storage-memory"><a href="#1-2-store-unrolled-to-storage-memory" class="headerlink" title="1-2: store unrolled to storage memory"></a>1-2: store unrolled to storage memory</h3><p><img src="https://upload-images.jianshu.io/upload_images/204749-aab49ef818fca7ba.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1200/format/webp" alt="img"></p>
+<h4 id="1-2-1-真正的-block-即-DeserializedMemoryEntry"><a href="#1-2-1-真正的-block-即-DeserializedMemoryEntry" class="headerlink" title="1-2-1: 真正的 block 即 DeserializedMemoryEntry"></a>1-2-1: 真正的 block 即 DeserializedMemoryEntry</h4><p>这一流程说白了就是将 unroll 的总内存占用转化为 storage 的内存占用，事实上真正保存 records 的 vector 中的数组也被移到了 entry 中（引用传递）。entry 是这样被构造的：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> case <span class="keyword">class</span> <span class="title class_">DeserializedMemoryEntry</span>[<span class="title">T</span>](</span><br><span class="line">    value: Array[T],</span><br><span class="line">    size: <span class="built_in">Long</span>,</span><br><span class="line">    classTag: ClassTag[T]) extends MemoryEntry[T] &#123;</span><br><span class="line">  <span class="keyword">val</span> memoryMode: MemoryMode = MemoryMode.ON_HEAP</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> arrayValues = vector.toArray</span><br><span class="line">vector = <span class="literal">null</span></span><br><span class="line"><span class="keyword">val</span> entry = new DeserializedMemoryEntry[T](arrayValues, SizeEstimator.estimate(arrayValues), classTag)</span><br></pre></td></tr></table></figure>
+
+<p>entry 的成员 value 为 vector 中保存 records 的数组，entry 的 size 成员为该数组的估算大小。DeserializedMemoryEntry 继承于 MemoryEntry，MemoryEntry 的另一个子类是 SerializedMemoryEntry，对应的是一个序列化的 block。在 MemoryStore 中，以 <code>entries: LinkedHashMap[BlockId, MemoryEntry[_]]</code> 的形式维护 blockId 及序列化或非序列化的 block 的映射。</p>
+<p>从这里，你也可以看出，当前缓存非序列化的 RDD 只能使用 ON_HEAP 内存。</p>
+<h4 id="1-2-2-unroll-内存的多退少补"><a href="#1-2-2-unroll-内存的多退少补" class="headerlink" title="1-2-2: unroll 内存的多退少补"></a>1-2-2: unroll 内存的多退少补</h4><p>这之后，再次使用 array[record] 的估算大小与 unroll 总内存进行比较：</p>
+<ul>
+<li>若前者较大，则计算要再申请多少 unroll 内存（两者之差）并申请之，申请的结果为 acquireExtra</li>
+<li>若后者较大，则说明申请了在 unroll 过程中申请了过多的内存，则释放多出来的部分（两者之差）。会出现多出来的情况有两点原因：<ul>
+<li>这次 array[record] 的估算结果更为准确</li>
+<li>在 unroll 过程中由于每次申请的内存是 <code>val amountToRequest = (currentSize * memoryGrowthFactor - memoryThreshold).toLong</code>，这样的算法是容易导致申请多余实际需要的</li>
+</ul>
+</li>
+</ul>
+<h4 id="1-2-3-transform-unroll-to-storage"><a href="#1-2-3-transform-unroll-to-storage" class="headerlink" title="1-2-3: transform unroll to storage"></a>1-2-3: transform unroll to storage</h4><p>将 unroll 内存占用转为 storage 内存占用实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">def <span class="title function_">transferUnrollToStorage</span><span class="params">(amount: Long)</span>: Unit = &#123;</span><br><span class="line">  <span class="comment">// Synchronize so that transfer is atomic</span></span><br><span class="line">  memoryManager.<span class="keyword">synchronized</span> &#123;</span><br><span class="line">    releaseUnrollMemoryForThisTask(MemoryMode.ON_HEAP, amount)</span><br><span class="line">    <span class="type">val</span> <span class="variable">success</span> <span class="operator">=</span> memoryManager.acquireStorageMemory(blockId, amount, MemoryMode.ON_HEAP)</span><br><span class="line">    <span class="keyword">assert</span>(success, <span class="string">&quot;transferring unroll memory to storage memory failed&quot;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，这是一个 memoryManager 级别的同步操作，不用担心刚被 release 的 unroll 内存在占用等量的 storage 内存之前会在其他地方被占用。</p>
+<p>在 <code>UnifiedMemoryManager</code> 的内存划分中，unroll 内存其实就是 storage 内存，所以上面代码所做的事看起来没什么意义，先让 storage used memory 减去某个值，再加上该值，结果是没变。那为什么还要这么做呢？我想是为了 MemoryStore 和 MemoryManager 的解耦，对于 MemoryStore 来说其并不知道在 MemoryManager 中 unroll 内存就是 storage 内存，如果之后 MemoryManager 不是这样实现了，对 MemoryStore 也不会有影响。</p>
+<h4 id="1-2-4-enoughStorageMemory-及结果"><a href="#1-2-4-enoughStorageMemory-及结果" class="headerlink" title="1-2-4: enoughStorageMemory 及结果"></a>1-2-4: enoughStorageMemory 及结果</h4><p>在这一流程的最后，会根据 enoughStorageMemory 为 true 后 false，返回不同的结果。只有当以上流程中，partition 被完全展开并成功存放到 storage 内存中 enoughStorageMemory 才为 true；即使partition 全部展开，并生成了 entry，如果最终能申请的最多的 storage 内存还是小于 array[record] 的估算 size，整个 cache block to memory 的操作也是失败的，此时的 enoughStorageMemory 为 false。</p>
+<p>如果最终结果是成功的，返回值为 array[record] 的估算 size。如果是失败的，包括 unroll 失败，将返回 PartiallyUnrolledIterator 对象实例：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">PartiallyUnrolledIterator</span>[<span class="title">T</span>](</span><br><span class="line">    memoryStore: MemoryStore,</span><br><span class="line">    memoryMode: MemoryMode,</span><br><span class="line">    unrollMemory: <span class="built_in">Long</span>,</span><br><span class="line">    <span class="keyword">private</span>[<span class="keyword">this</span>] <span class="keyword">var</span> unrolled: Iterator[T],</span><br><span class="line">    rest: Iterator[T])</span><br><span class="line">extends Iterator[T]</span><br></pre></td></tr></table></figure>
+
+<p>该实例(也是个迭代器)由部分已经展开的迭代器（unrolled）以及剩余未展开的迭代器（rest）组合而成，调用者可根据 StorageLevel 是否还包含 Disk 级别来决定是 close 还是使用该返回值将 block 持久化到磁盘（可以避免部分的 unroll 操作）。</p>
+<h2 id="2-缓存序列化-RDD（支持-ON-HEAP-和-OFF-HEAP）"><a href="#2-缓存序列化-RDD（支持-ON-HEAP-和-OFF-HEAP）" class="headerlink" title="2: 缓存序列化 RDD（支持 ON_HEAP 和 OFF_HEAP）"></a>2: 缓存序列化 RDD（支持 ON_HEAP 和 OFF_HEAP）</h2><p>有了上面分析缓存非序列化 RDD 至内存的经验，再来看下面的缓存序列化 RDD 至内存的图会发现有一些相似，也有一些不同。在下面的流程图中，包含了 unroll 过程和 store block to storage memory 过程。为了方便分析，我将整个流程分为三大块：</p>
+<ul>
+<li>红框部分：初始化 allocator、bbos、serializationStream</li>
+<li>灰框部分：展开 values 并 append 到 serializationStream 中</li>
+<li>篮框部分：store block to storage memory</li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/204749-83153121577110a3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1103/format/webp" alt="img"></p>
+<h3 id="2-1-初始化-allocator、bbos、serializationStream"><a href="#2-1-初始化-allocator、bbos、serializationStream" class="headerlink" title="2-1: 初始化 allocator、bbos、serializationStream"></a>2-1: 初始化 allocator、bbos、serializationStream</h3><p><code>allocator: Int =&gt; ByteBuffer</code> 是一个函数变量，用来分配内存，它是这样被构造的：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">val allocator = memoryMode match &#123;</span><br><span class="line">  <span class="keyword">case</span> MemoryMode.ON_HEAP =&gt; ByteBuffer.allocate _</span><br><span class="line">  <span class="keyword">case</span> MemoryMode.OFF_HEAP =&gt; Platform.allocateDirectBuffer _</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>当 MemoryMode 为 ON_HAP 时，allocator 分配的是 HeapByteBuffer 形式的堆上内存</li>
+<li>当 MemoryMode 为 OFF_HEAP 时，allocator 分配的是 DirectByteBuffer 形式的堆外内存。需要特别注意的是，DirectByteBuffer 本身是堆内的对象，这里的堆外是指其指向的内存是堆外的</li>
+</ul>
+<p>HeapByteBuffer 通过调用 new 分配内存，而 DirectByteBuffer 最终调用 C++ 的 malloc 方法分配，在分配和销毁上 HeapByteBuffer 要比 DirectByteBuffer 稍快。但在网络读写和文件读写方面，DirectByteBuffer 比 HeapByteBuffer 更快（具体原因请自行调研，不是本文重点），这对经常会被网络读写的 block 来说很有意义。</p>
+<p>另外，HeapByteBuffer 指向的内存受 GC 管理；而 DirectByteBuffer 指向的内存不受 GC 管理，可减小 GC 压力。DirectByteBuffer 指向的内存会在两种情况下会释放：</p>
+<ul>
+<li>remove 某个 block 时，会通过 DirectByteBuffer 的 cleaner 来释放其指向的内存</li>
+<li>当 BlockManager stop 时，会 clear 整个 MemoryStore 中的所有 blocks，这时会释放所有的 DirectByteBuffers 及其指向的内存</li>
+</ul>
+<p>接下来是：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val bbos = <span class="keyword">new</span> <span class="built_in">ChunkedByteBufferOutputStream</span>(initialMemoryThreshold.toInt, allocator)</span><br></pre></td></tr></table></figure>
+
+<p>ChunkedByteBufferOutputStream 包含一个 <code>chunks: ArrayBuffer[ByteBuffer]</code>，该数组中的 ByteBuffer 通过 allocator 创建，用于真正存储 unrolled 数据。再次说明，如果是 ON_HEAP，这里的 ByteBuffer 是 HeapByteBuffer；而如果是 OFF_HEAP，这里的 ByteBuffer 则是 DirectByteBuffer。</p>
+<p>bbos 之后将用于建构构造 <code>serializeStream: SerializationStream</code>，records 将一条条写入 serializeStream，serializeStream 最终会将 records 写入 bbos 的 <code>chunks: ArrayBuffer[ByteBuffer]</code> 中，一条 record 对应 ByteBuffer 元素。</p>
+<h3 id="2-2-展开-values-并-append-到-serializationStream-中"><a href="#2-2-展开-values-并-append-到-serializationStream-中" class="headerlink" title="2-2: 展开 values 并 append 到 serializationStream 中"></a>2-2: 展开 values 并 append 到 serializationStream 中</h3><p>具体展开的流程与 “缓存非序列化 RDD” 类似（<code>serializationStream.writeObject(values.next())(classTag)</code> 也在上一小节进行了说明），最大的区别是在没展开一条 record 都会调用 <code>reserveAdditionalMemoryIfNecessary()</code>，实现如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">reserveAdditionalMemoryIfNecessary</span>(): Unit = &#123;</span><br><span class="line">  <span class="keyword">if</span> (bbos.size &gt; unrollMemoryUsedByThisBlock) &#123;</span><br><span class="line">    val amountToRequest = bbos.size - unrollMemoryUsedByThisBlock</span><br><span class="line">    keepUnrolling = reserveUnrollMemoryForThisTask(blockId, amountToRequest, memoryMode)</span><br><span class="line">    <span class="keyword">if</span> (keepUnrolling) &#123;</span><br><span class="line">      unrollMemoryUsedByThisBlock += amountToRequest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于是序列化的数据，这里的 bbos.size 是准确值而不是估算值。reserveAdditionalMemoryIfNecessary 说白了就是计算真实已经占用的 unroll 内存（bbos.size）比已经申请的 unrolll 总内存 size 大多少，并申请相应 MemoryMode 的 unroll 内存来使得申请的 unroll 总大小和实际使用的保持一致。如果申请失败，则 keepUnrolling 为 false，那么缓存该非序列化 block 至内存就失败了，将返回 PartiallySerializedBlock 类型对象。</p>
+<p>在完整展开后，会再调用一次 reserveAdditionalMemoryIfNecessary，以最终确保实际申请的 unroll 内存和实际占用的大小相同。</p>
+<h3 id="2-3-store-block-to-storage-memory"><a href="#2-3-store-block-to-storage-memory" class="headerlink" title="2-3: store block to storage memory"></a>2-3: store block to storage memory</h3><p>这里将 bbos 中的 <code>ArrayBuffer[ByteBuffer]</code> 转化为 ChunkedByteBuffer 对象，ChunkedByteBuffer 是只读的物理上是以多块内存组成（即 Array[ByteBuffer]）。</p>
+<p>再以该 ChunkedByteBuffer 对象构造真正的序列化的 block，即 <code>entry: SerializedMemoryEntry</code>，构造时同样会传入 MemoryMode。</p>
+<p>最后将 entry 加到 <code>entries: LinkedHashMap[BlockId, MemoryEntry[_]]</code> 中。</p>
+<p>与 “缓存非序列化 RDD” 相同，如果缓存序列化 block 至内存失败了，根据 StorageLevel 还有机会缓存到磁盘上。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>上篇文章主要讲解 MemoryManager 是怎样管理内存的，即如何划分内存区域、分配踢除策略、借用策略等，并不涉及真正的内存分配，只做数值上的管理，是处于中心的storage 内存调度 “调度”。而本文则分析了在最重要的缓存非序列化&#x2F;序列化 RDD 至内存的场景下，storage 内存真正是如何分配使用的，即以什么样的 MemoryMode、什么样的分配逻辑及方式，还介绍了 block 在 memory 中的表现形式等。</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

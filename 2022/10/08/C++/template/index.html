@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>template | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="template">
+<meta property="og:url" content="https://iideas18.github.io/2022/10/08/C++/template/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-10-08T12:21:38.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.166Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/10/08/C++/template/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'template',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">template</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-10-08T12:21:38.000Z" title="发表于 2022-10-08 20:21:38">2022-10-08</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.166Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/C++/">C++</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="template"><a href="#template" class="headerlink" title="template"></a>template</h1><h2 id="1-Define"><a href="#1-Define" class="headerlink" title="1. Define"></a>1. Define</h2><h3 id="1-1-函数模板"><a href="#1-1-函数模板" class="headerlink" title="1.1 函数模板"></a>1.1 函数模板</h3><h4 id="1-1-1-定义"><a href="#1-1-1-定义" class="headerlink" title="1.1.1 定义"></a>1.1.1 定义</h4><p>以关键字template开始，后跟一个模板参数列表(不能为空)（template parameter list），这是一个逗号分隔的一个或多个模板参数（template parameter）的列表，用小于号（&lt;）和大于号（&gt;）包围起来。</p>
+<p><img src="/image-20221007013055866.png" alt="image-20221007013055866"></p>
+<blockquote>
+<p>模板参数列表的作用很像函数参数列表: 函数参数列表定义了若干特定类型的局部变量，但并未指出如何初始化它们。在运行时，调用者提供实参来初始化形参。</p>
+<p>类似的，模板参数表示在类或函数定义中用到的类型或值。当使用模板时，我们（隐式地或显式地）指定模板实参（template argument），将其绑定到模板参数上。</p>
+<p>我们的compare函数声明了一个名为T的类型参数。在compare中，我们用名字T表示一个类型。而T表示的实际类型则在编译时根据compare的使用情况来确定。</p>
+</blockquote>
+<h4 id="1-1-2-实例化"><a href="#1-1-2-实例化" class="headerlink" title="1.1.2 实例化"></a>1.1.2 实例化</h4><p>编译器用推断出的模板参数来为我们实例化（instantiate）一个特定版本的函数。当编译器实例化一个模板时，它使用实际的模板实参代替对应的模板参数来创建出模板的一个新“实例”.</p>
+<p><img src="/image-20221007013558175.png" alt="image-20221007013558175"></p>
+<p>这些编译器生成的版本通常被称为模板的实例（instantiation）</p>
+<h4 id="1-1-3-模板类型参数-———-T"><a href="#1-1-3-模板类型参数-———-T" class="headerlink" title="1.1.3 模板类型参数 ———- T"></a>1.1.3 模板类型参数 ———- T</h4><p>compare函数有一个模板类型参数（type parameter）。一般来说，我们可以将类型参数看作类型说明符，就像内置类型或类类型说明符一样使用。特别是，类型参数可以用来指定返回类型或函数的参数类型，以及在函数体内用于变量声明或类型转换：</p>
+<p><img src="/image-20221007013836821.png" alt="image-20221007013836821"></p>
+<p>类型参数前必须使用关键字class或typename, 在模板参数列表中，这两个关键字的含义相同，可以互换使用。一个模板参数列表中可以同时使用这两个关键字：</p>
+<p><img src="/image-20221007013927676.png" alt="image-20221007013927676"></p>
+<p>看起来用关键字typename来指定模板类型参数比用class更为直观。毕竟，我们可以用内置（非类）类型作为模板类型实参。而且，typename更清楚地指出随后的名字是一个类型名。但是，typename是在模板已经广泛使用之后才引入C++语言的，某些程序员仍然只用class。</p>
+<h4 id="1-1-3-非类型参数（nontype-parameter）"><a href="#1-1-3-非类型参数（nontype-parameter）" class="headerlink" title="1.1.3 非类型参数（nontype parameter）"></a>1.1.3 非类型参数（nontype parameter）</h4><p>除了定义类型参数，还可以在模板中定义非类型参数（nontype parameter）。一个非类型参数表示一个值而非一个类型。我们通过一个特定的类型名而非关键字class或typename来指定非类型参数。</p>
+<p><img src="/image-20221007014048859.png" alt="image-20221007014048859"></p>
+<p>当一个模板被实例化时，非类型参数被一个用户提供的或编译器推断出的值所代替。这些值必须是常量表达式（参见2.4.4节，第58页），从而允许编译器在编译时实例化模板。</p>
+<h2 id="1-2-类模板"><a href="#1-2-类模板" class="headerlink" title="1.2 类模板"></a>1.2 类模板</h2><h4 id="1-2-1定义"><a href="#1-2-1定义" class="headerlink" title="1.2.1定义"></a>1.2.1定义</h4><p>类似函数模板，类模板以关键字template开始，后跟模板参数列表。在类模板（及其成员）的定义中，我们将模板参数当作替身，代替使用模板时用户需要提供的类型或值：</p>
+<p><img src="/image-20221008144636879.png" alt="image-20221008144636879"></p>
+<p>我们的Blob模板有一个名为T的模板类型参数，用来表示Blob保存的元素的类型。例如，我们将元素访问操作的返回类型定义为T&amp;。当用户实例化Blob时，T就会被替换为特定的模板实参类型。</p>
+<h4 id="1-2-2-实例化类模板"><a href="#1-2-2-实例化类模板" class="headerlink" title="1.2.2 实例化类模板"></a>1.2.2 实例化类模板</h4><p>显式模板实参（explicit template argument）列表，它们被绑定到模板参数。编译器使用这些模板实参来实例化出特定的类。</p>
+<p><img src="/image-20221008144747104.png" alt="image-20221008144747104"></p>
+<p>ia和ia2使用相同的特定类型版本的Blob（即Blob<int>）。从这两个定义，编译器会实例化出一个与下面定义等价的类：</p>
+<p><img src="/image-20221008144842835.png" alt="image-20221008144842835"></p>
+<p>当编译器从我们的Blob模板实例化出一个类时，它会重写Blob模板，将模板参数T的每个实例替换为给定的模板实参，在本例中是int。对我们指定的每一种元素类型，编译器都生成一个不同的类：</p>
+<p><img src="/image-20221008144856031.png" alt="image-20221008144856031"></p>
+<p>这两个定义会实例化出两个不同的类。names的定义创建了一个Blob类，每个T都被替换为string。prices的定义生成了另一个Blob类，T被替换为double。</p>
+<p>在编写代码的时候，发现一个现象：</p>
+<ol>
+<li>模板类从一个父模板类继承后，不能访问其内部的protected成员变量，提示：not declare；</li>
+<li>普通类从一个父模板类继承后，可以访问其内部的protected成员变量，可正常编译和使用；</li>
+</ol>
+<p>对于第1个现象，如果想正常使用需要加上父模板类的域名; </p>
+<p>下面上代码</p>
+<ol>
+<li>模板类继承模板类</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">namespace</span> test</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Base</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">Show</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;hello world1! Base. a = &quot;</span> &lt;&lt; a &lt;&lt; std::endl;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">  <span class="type">int</span> a = <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Child</span> : <span class="keyword">public</span> Base&lt;T&gt;</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">Show</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;hello world1! Child. a = &quot;</span> &lt;&lt; a &lt;&lt; std::endl;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&#125; <span class="comment">// namespace test</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  test::Child&lt;<span class="type">int</span>&gt; ch;</span><br><span class="line">  ch.<span class="built_in">Show</span>();</span><br><span class="line">  std::cout &lt;&lt; <span class="string">&quot;main.\n&quot;</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="/421798-20200426102829593-307001607.png" alt="img"></p>
+<p>对成员变量a增加基类域名后编译通过：</p>
+<p><img src="/421798-20200426103140333-866845689.png" alt="img"></p>
+<ol>
+<li>普通类继承模板类</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">namespace</span> test</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Base</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">Show</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;hello world1! Base. a = &quot;</span> &lt;&lt; a &lt;&lt; std::endl;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">  <span class="type">int</span> a = <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span> : <span class="keyword">public</span> Base&lt;<span class="type">int</span>&gt;</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">Show</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;hello world1! A. a = &quot;</span> &lt;&lt; a &lt;&lt; std::endl;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&#125; <span class="comment">// namespace test</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  test::A ch;</span><br><span class="line">  ch.<span class="built_in">Show</span>();</span><br><span class="line">  std::cout &lt;&lt; <span class="string">&quot;main.\n&quot;</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="/421798-20200426104327193-135020804.png" alt="img"></p>
+<p>什么模板类不能够声明和定义分离?</p>
+<p>模板类是编译器生成具体的类的依据，只有模板被使用时才会编译。首先一般编译器都是以一个.cpp文件为一个编译单元，如果模板类的声明和实现是分离的，那么对模板类的定义文件编译，生成.o文件，此时只有模板，没有模板的实例类。c++编译器的工作流程分为预处理、编译、汇编、链接，而模板实例化发生在编译期间，当编译器没有找到模板类的一个特例时，它会认为该特例在另外的文件中（.o或.so），而将问题交给链接器去处理，但是模板的实现文件中没有该实例，无法找到符号，所以一般这种问题的抱错都是”ld error“。</p>
+<p>那么为什么模板不被使用就无法编译呢。我们知道，c语言对内存的管理是底层的面向系统的，如果类型参数化的模板类而言，无法得知模板的类型，就无法得知模板类的占用内存。编译器无法为一个不知道大小的类分配内存。所谓模板类，不是一个类，而是一个生成类的模板。</p>
+<p><img src="/v2-eff9c2fa2869f38e48afb7e0ffd3fc59_1440w.webp" alt="img"></p>
+<p>模板实例化是指从一个函数模板或类模板中创建一个具体的函数或一个具体的类。模板的实例化可以是隐式的（编译器生成的）或显式的（用户提供的）。</p>
+<h2 id="隐式实例化"><a href="#隐式实例化" class="headerlink" title="隐式实例化"></a><strong>隐式实例化</strong></h2><p>隐式实例化应该是你的默认选择。隐式实例化意味着编译器会自动使用提供的模板实参生成具体的函数或类。一般来说，编译器也会从函数的实参中推导出模板实参。在 C++17 中，编译器也可以推导出类模板的模板实参。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// implicitTemplateInstantiation.cpp</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyClass</span>&#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">MyClass</span>(T t) &#123; &#125;</span><br><span class="line">    <span class="function">std::string <span class="title">getType</span><span class="params">()</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">typeid</span>(T).<span class="built_in">name</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">isSmaller</span><span class="params">(T fir, T sec)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> fir &lt; sec;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    std::cout &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    std::cout &lt;&lt; std::boolalpha;</span><br><span class="line">  </span><br><span class="line">    std::vector vec&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;;          <span class="comment">// (1)</span></span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;vec.size(): &quot;</span> &lt;&lt; vec.<span class="built_in">size</span>() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="function">MyClass <span class="title">myClass</span><span class="params">(<span class="number">5</span>)</span></span>;                      <span class="comment">// (2)</span></span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;myClass.getType(): &quot;</span> &lt;&lt; myClass.<span class="built_in">getType</span>() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">  </span><br><span class="line">    std::cout &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">  </span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;isSmaller(5, 10): &quot;</span> </span><br><span class="line">              &lt;&lt; <span class="built_in">isSmaller</span>(<span class="number">5</span>, <span class="number">10</span>) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;   <span class="comment">// (3)</span></span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;isSmaller&lt;double&gt;(5.5f, 6.5): &quot;</span> </span><br><span class="line">              &lt;&lt; <span class="built_in">isSmaller</span>&lt;<span class="type">double</span>&gt;(<span class="number">5.5f</span>, <span class="number">6.5</span>) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;    <span class="comment">// (4)</span></span><br><span class="line">  </span><br><span class="line">    std::cout &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第 (1) 行和第 (2) 行使用了类模板参数推导。第 (3) 行也推导出了它的模板参数。而在第 (4) 行，模板参数double被明确指定：<code>isSmaller(5.5f, 6.5)</code>。</p>
+<p>编译器为每个隐式模板实例化创建一个具体的函数或类。<a href="https://link.zhihu.com/?target=https://cppinsights.io/s/e8145723">C++ Insights</a></p>
+<p>这个自动过程非常舒适，但也有一些缺点。</p>
+<ul>
+<li>当你隐式实例化一个模板时，模板的定义通常在头文件中可见。也许，你不想公开这个定义。</li>
+<li>当你需要一个特定的模板实参时，如果它在具体的翻译单元中不可用，编译器就会实例化。一个翻译单元是C预处理器处理后的源文件。通常情况下，链接器会删除所有多余的模板实例并保留一个。这是对时间和空间的浪费。</li>
+</ul>
+<p>这两个问题都可以通过显式模板实例化来解决。</p>
+<h2 id="显式实例化"><a href="#显式实例化" class="headerlink" title="显式实例化"></a><strong>显式实例化</strong></h2><p>显式实例化有两种风格：显式实例化定义和显式实例化声明。</p>
+<p>显式实例化定义的语法：<code>template  显式实例化声明的语法：</code>extern template </p>
+<p>差别在于关键字 <code>extern</code>。</p>
+<p>显式实例化声明在本文后面会提到，先来讲显式实例化定义。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// explicitTemplateInstantiation.cpp</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyClass</span>&#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">MyClass</span>(T t) &#123; &#125;</span><br><span class="line">    <span class="function">std::string <span class="title">getType</span><span class="params">()</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">typeid</span>(T).<span class="built_in">name</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">isSmaller</span><span class="params">(T fir, T sec)</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> fir &lt; sec;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">template</span> <span class="keyword">class</span> <span class="title class_">std</span>::vector&lt;<span class="type">int</span>&gt;;                       <span class="comment">// (1)</span></span><br><span class="line"><span class="keyword">template</span> <span class="type">bool</span> std::vector&lt;<span class="type">double</span>&gt;::<span class="built_in">empty</span>() <span class="type">const</span>;      <span class="comment">// (2)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> <span class="keyword">class</span> <span class="title class_">MyClass</span>&lt;<span class="type">int</span>&gt;;                           <span class="comment">// (3)</span></span><br><span class="line"><span class="keyword">template</span> std::string MyClass&lt;<span class="type">double</span>&gt;::<span class="built_in">getType</span>() <span class="type">const</span>; <span class="comment">// (4)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">template</span> <span class="type">bool</span> <span class="title">isSmaller</span><span class="params">(<span class="type">int</span>, <span class="type">int</span>)</span></span>;                     <span class="comment">// (5)</span></span><br><span class="line"><span class="keyword">template</span> <span class="type">bool</span> <span class="built_in">isSmaller</span>&lt;<span class="type">double</span>&gt;(<span class="type">double</span>, <span class="type">double</span>);       <span class="comment">// (6)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">  std::cout &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">  </span><br><span class="line">  std::cout &lt;&lt; std::boolalpha;</span><br><span class="line">  </span><br><span class="line">  std::vector vec&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;;</span><br><span class="line">  std::cout &lt;&lt; <span class="string">&quot;vec.size(): &quot;</span> &lt;&lt; vec.<span class="built_in">size</span>() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="function">MyClass <span class="title">myClass</span><span class="params">(<span class="number">5</span>)</span></span>;</span><br><span class="line">  std::cout &lt;&lt; <span class="string">&quot;myClass.getType(): &quot;</span> &lt;&lt; myClass.<span class="built_in">getType</span>() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">  </span><br><span class="line">  std::cout &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">  </span><br><span class="line">  std::cout &lt;&lt; <span class="string">&quot;isSmaller(5, 10): &quot;</span> </span><br><span class="line">            &lt;&lt; <span class="built_in">isSmaller</span>(<span class="number">5</span>,<span class="number">10</span>) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">  std::cout &lt;&lt; <span class="string">&quot;isSmaller&lt;double&gt;(5.5f, 6.5): &quot;</span> </span><br><span class="line">            &lt;&lt; <span class="built_in">isSmaller</span>&lt;<span class="type">double</span>&gt;(<span class="number">5.5f</span>, <span class="number">6.5</span>) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">  </span><br><span class="line">  std::cout &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>请关注注释标出的 (1)-(6) 行，这几行代码进行了模板的显式实例化。</p>
+<p>第 (1) 行显式实例化了接收 <code>int</code> 类型的 <code>std::vector</code>；第 (2) 行显式实例化了<code>std::vector</code> 的成员 <code>empty</code>。</p>
+<p>第 (3) 行显式实例化了接收 <code>int</code> 类型的 <code>MyClass</code>；第 (4) 行显式实例化了<code>MyClass</code> 的成员 <code>getType</code>。</p>
+<p>第 (5) 行实例化了接收 <code>(int, int)</code> 类型的 <code>Smaller</code>；第 (6) 行显示提供了模板实参 <code>double</code> 完成了同样的事情。</p>
+<h3 id="隐藏模板的实现"><a href="#隐藏模板的实现" class="headerlink" title="隐藏模板的实现"></a><strong>隐藏模板的实现</strong></h3><p>显式模板实例化可以帮助我们隐藏模板的定义。</p>
+<p>1、把模板声明放在头文件。<br>2、把模板定义放在源文件。在源文件的末尾进行显式模板实例化。<br>3、包含头文件来使用模板。</p>
+<p>这里有三个文件示范了这个过程：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// MyClass.h</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;typeinfo&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyClass</span>&#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">MyClass</span>(T t) &#123; &#125;</span><br><span class="line">    <span class="function">std::string <span class="title">getType</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// MyClass.cpp</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;MyClass.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">std::string MyClass&lt;T&gt;::<span class="built_in">getType</span>() <span class="type">const</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">typeid</span>(T).<span class="built_in">name</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> <span class="keyword">class</span> <span class="title class_">MyClass</span>&lt;<span class="type">int</span>&gt;; </span><br><span class="line"><span class="comment">// mainMyClass.cpp</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;MyClass.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    std::cout &lt;&lt; <span class="string">&#x27;\n&#x27;</span>; </span><br><span class="line"></span><br><span class="line">    <span class="function">MyClass <span class="title">myClass</span><span class="params">(<span class="number">5</span>)</span></span>;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;myClass.getType(): &quot;</span> &lt;&lt; myClass.<span class="built_in">getType</span>() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    MyClass myClass2(5.5);</span></span><br><span class="line"><span class="comment">    std::cout &lt;&lt; &quot;myClass2.getType(): &quot; &lt;&lt; myClass2.getType() &lt;&lt; &#x27;\n&#x27;;</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"></span><br><span class="line">    std::cout &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行该程序可以得到预期的结果。</p>
+<p><img src="https://pic1.zhimg.com/80/v2-46510b93397aa00e2980da0c8890a254_1440w.webp" alt="img"></p>
+<p>但是当我试图对 <code>int</code> 以外的其他类型使用 <code>MyClass</code> 时，链接器会报出错误。如果让上方代码中注释掉的行生效就会得到这样的报错，原因是没有可用于接收 <code>double</code> 类型的模板实例化。</p>
+<h2 id="抑制模板实例化"><a href="#抑制模板实例化" class="headerlink" title="抑制模板实例化"></a><strong>抑制模板实例化</strong></h2><p>假设你在不同的编译单元中使用 <code>MyClass</code>，链接器将其放在一起。本质上，链接器只留了下一个模板实例，其余的都被丢弃了。这是对计算时间的浪费。在C++11中，可以使用了extern关键字，从一个显式模板实例化定义中做出一个显式模板实例化声明。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> <span class="keyword">class</span> <span class="title class_">MyClass</span>&lt;<span class="type">int</span>&gt;;        <span class="comment">// 显式模板实例化定义</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">template</span> <span class="keyword">class</span> <span class="title class_">MyClass</span>&lt;<span class="type">int</span>&gt;; <span class="comment">// 显式模板实例化声明</span></span><br></pre></td></tr></table></figure>
+
+<p>第二行并没有引起模板实例化，因此编译器生成的东西不会被链接器扔掉。你只需要确保链接器可以获得 <code>MyClass</code> 的一个实例化。如果没有，链接器就会报错。</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

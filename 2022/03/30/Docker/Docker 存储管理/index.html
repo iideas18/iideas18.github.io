@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Docker存储管理 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker存储管理">
+<meta property="og:url" content="https://iideas18.github.io/2022/03/30/Docker/Docker 存储管理/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-03-30T06:30:08.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.181Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/03/30/Docker/Docker 存储管理/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Docker存储管理',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">Docker存储管理</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-03-30T06:30:08.000Z" title="发表于 2022-03-30 14:30:08">2022-03-30</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.181Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Docker/">Docker</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="Docker存储管理"><a href="#Docker存储管理" class="headerlink" title="Docker存储管理"></a>Docker存储管理</h1><p>在3.5节中介绍了镜像分层、写时复制机制以及内容寻址存储（content-addressable storage），为了支持这些特性，Docker设计了一套镜像元数据管理机制来管理镜像元数据。另外，为了能够让Docker容器适应不同平台不同应用场景对存储的要求，Docker提供了各种基于不同文件系统实现的存储驱动来管理实际镜像文件。</p>
+<h2 id="1-Docker镜像元数据管理"><a href="#1-Docker镜像元数据管理" class="headerlink" title="1. Docker镜像元数据管理"></a>1. Docker镜像元数据管理</h2><p>Docker镜像在设计上将镜像元数据与镜像文件的存储完全隔离开了。3.5节曾经介绍过与Docker镜像管理相关的概念，包括repository、image、layer。Docker在管理镜像层元数据时，采用的也正是从上至下repository、image、layer三个层次。由于Docker以分层的形式存储镜像，所以repository与image这两类元数据并无物理上的镜像文件与之对应，而layer这种元数据则存在物理上的镜像层文件与之对应。本节将从实现的角度分条介绍Docker如何管理与存储这些概念。</p>
+<h3 id="1-repository元数据"><a href="#1-repository元数据" class="headerlink" title="1. repository元数据"></a>1. repository元数据</h3><p>在3.5节中提到repository即由具有某个功能的Docker镜像的所有迭代版本构成的镜像库。repository在本地的持久化文件存放于&#x2F;var&#x2F;lib&#x2F;docker&#x2F;image&#x2F;some_graph_driver&#x2F;repositories. json中，结构如下所示：</p>
+<p><img src="/image-20220330132847550.png" alt="image-20220330132847550"></p>
+<p>文件中存储了所有repository的名字（如busybox），每个repository下所有版本镜像的名字和tag（如busybox:latest）以及对应的镜像ID。而referenceStore的作用便是解析不同格式的repository名字，并管理repository与镜像ID的映射关系。</p>
+<blockquote>
+<p>当前Docker默认采用SHA256算法根据镜像元数据配置文件计算出镜像ID。</p>
+</blockquote>
+<h3 id="2-image元数据"><a href="#2-image元数据" class="headerlink" title="2. image元数据"></a>2. image元数据</h3><p>image元数据包括了镜像架构（如amd64）、操作系统（如Linux）、镜像默认配置、构建该镜像的容器ID和配置、创建时间、创建该镜像的Docker版本、构建镜像的历史信息以及rootfs组成。其中构建镜像的历史信息和rootfs组成部分除了具有描述镜像的作用外，还将镜像和构成该镜像的镜像层关联了起来。Docker会根据历史信息和rootfs中的diff_ids计算出构成该镜像的镜像层的存储索引chainID，这也是Docker 1.10镜像存储中基于内容寻址的核心技术，详细计算方式将在稍后的章节中叙述。</p>
+<p>imageStore则管理镜像ID与镜像元数据之间的映射关系以及元数据的持久化操作，持久化文件位于&#x2F;var&#x2F;lib&#x2F;docker&#x2F;image&#x2F;[graph_driver]&#x2F;imagedb&#x2F;content&#x2F;sha256&#x2F;[image_id]中。</p>
+<h3 id="3-layer元数据"><a href="#3-layer元数据" class="headerlink" title="3. layer元数据"></a>3. layer元数据</h3><p>layer对应镜像层的概念，在Docker 1.10版本以前，镜像通过一个graph结构管理，每一个镜像层都拥有元数据，记录了该层的构建信息以及父镜像层ID，而最上面的镜像层会多记录一些信息作为整个镜像的元数据。graph则根据镜像ID（即最上层的镜像层ID）和每个镜像层记录的父镜像层ID维护了一个树状的镜像层结构。</p>
+<p>在Docker 1.10版本后，镜像元数据管理巨大改变之一便是简化了镜像层的元数据，镜像层只包含一个具体的镜像层文件包。用户在Docker宿主机上下载了某个镜像层之后，Docker会在宿主机上基于镜像层文件包和image元数据，构建本地的layer元数据，包括diff、parent、size等。而当Docker将在宿主机上产生新的镜像层上传到registry时，与新镜像层相关的宿主机上的元数据也不会与镜像层一块打包上传。</p>
+<p>Docker中定义了Layer和RWLayper两种接口，分别用来定义只读层和可读写层的一些操作，又定义了roLayer和mountedLayer，分别实现了上述两种接口。其中，roLayer用于描述不可改变的镜像层，mountedLayer用于描述可读写的容器层。</p>
+<p>具体来说，roLayer存储的内容主要有索引该镜像层的chainID、该镜像层的校验码diffID、父镜像层parent、graphdriver存储当前镜像层文件的cacheID、该镜像层的大小size等内容。这些元数据的持久化文件位于&#x2F;var&#x2F;lib&#x2F;docker&#x2F;image &#x2F;[graph_driver]&#x2F;layerdb&#x2F;sha256&#x2F;[chainID]&#x2F;文件夹下，其中，diffID和size可以通过一个该镜像层包计算出来；chainID和父镜像层parent需要从所属image元数据中计算得到；而cacheID是在当前Docker宿主机上随机生成的一个uuid，在当前宿主机上与该镜像层一一对应，用于标示并索引graphdriver中的镜像层文件。</p>
+<p>在layer的所有属性中，diffID采用SHA256算法，基于镜像层文件包的内容计算得到。而chainID是基于内容存储的索引，它是根据当前层与所有祖先镜像层diffID计算出来的，具体算法如下。</p>
+<ul>
+<li>如果该镜像层是最底层（没有父镜像层），该层的diffID便是chainID。</li>
+<li>该镜像层的chainID计算公式为chainID(n)&#x3D;SHA256(chain(n-1)diffID(n))，也就是根据父镜像层的chainID加上一个空格和当前层的diffID，再计算SHA256校验码。</li>
+</ul>
+<p>mountedLayer存储的内容主要为索引某个容器的可读写层（也叫容器层）的ID（也对应容器的ID）、容器init层在graphdriver中的ID——initID、读写层在graphdriver中的ID——mountID以及容器层的父层镜像的chainID——parent。持久化文件位于&#x2F;var&#x2F;lib&#x2F;docker&#x2F;image&#x2F;[graph_driver]&#x2F;layerdb&#x2F;mounts&#x2F;[container_id]&#x2F;路径下。</p>
+<h2 id="2-Docker存储驱动"><a href="#2-Docker存储驱动" class="headerlink" title="2. Docker存储驱动"></a>2. Docker存储驱动</h2><p>在3.5节中介绍了镜像分层与写时复制机制，为了支持这些特性，Docker提供了存储驱动的接口。存储驱动根据操作系统底层的支持提供了针对某种文件系统的初始化操作以及对镜像层的增、删、改、查和差异比较等操作。目前存储系统的接口已经有aufs、btrfs、devicemapper、vfs、overlay、zfs这6种具体实现，其中vfs不支持写时复制，是为使用volume（Docker提供的文件管理方式，在3.7节将会具体介绍）提供的存储驱动，仅仅做了简单的文件挂载操作；剩下5种存储驱动支持写时复制，它们的实现有一定的相似之处。本节内容将介绍Docker对所有存储驱动的管理方式，并以aufs、overlay和devicemapper为例介绍存储驱动的具体实现。</p>
+<p>在启动Docker服务时使用docker daemon -s some_driver_name来指定使用的存储驱动，当然指定的驱动必须被底层操作系统支持。</p>
+<h3 id="1-存储驱动的功能与管理"><a href="#1-存储驱动的功能与管理" class="headerlink" title="1. 存储驱动的功能与管理"></a>1. 存储驱动的功能与管理</h3><p>在3.2节的架构中已经提到，Docker中管理文件系统的驱动为graphdriver。其中定义了统一的接口对不同的文件系统进行管理，在Docker daemon启动时就会根据不同的文件系统选择合适的驱动，本节将针对GraphDriver中的功能进行详细的介绍。</p>
+<h4 id="1-存储驱动接口定义"><a href="#1-存储驱动接口定义" class="headerlink" title="1. 存储驱动接口定义"></a>1. 存储驱动接口定义</h4><p>GraphDriver中主要定义了Driver和ProtoDriver两个接口，所有的存储驱动通过实现Driver接口提供相应的功能，而ProtoDriver接口则负责定义其中的基本功能。这些基本功能包括如下8种。</p>
+<ul>
+<li>String()返回一个代表这个驱动的字符串，通常是这个驱动的名字。</li>
+<li>Create()创建一个新的镜像层，需要调用者传进一个唯一的ID和所需的父镜像的ID。</li>
+<li>Remove()尝试根据指定的ID删除一个层。</li>
+<li>Get()返回指定ID的层的挂载点的绝对路径。</li>
+<li>Put()释放一个层使用的资源，比如卸载一个已经挂载的层。</li>
+<li>Exists()查询指定的ID对应的层是否存在。</li>
+<li>Status()返回这个驱动的状态，这个状态用一些键值对表示。</li>
+<li>Cleanup()释放由这个驱动管理的所有资源，比如卸载所有的层。</li>
+</ul>
+<p>而正常的Driver接口实现则通过包含一个ProtoDriver的匿名对象实现上述8个基本功能，除此之外，Driver还定义了其他4个方法，用于对数据层之间的差异（diff）进行管理。</p>
+<ul>
+<li><p>Diff()将指定ID的层相对父镜像层改动的文件打包并返回。</p>
+</li>
+<li><p>Changes()返回指定镜像层与父镜像层之间的差异列表。</p>
+</li>
+<li><p>ApplyDiff()从差异文件包中提取差异列表，并应用到指定ID的层与父镜像层，返回新镜像层的大小。</p>
+</li>
+<li><p>DiffSize()计算指定ID层与其父镜像层的差异，并返回差异相对于基础文件系统的大小。</p>
+<p>GraphDriver还提供了naiveDiffDriver结构，这个结构就包含了一个ProtoDriver对象并实现了Driver接口中与差异有关的方法，可以看作Driver接口的一个实现。</p>
+</li>
+</ul>
+<p>综上所述，Docker中的任何存储驱动都需要实现上述Driver接口。当我们在Docker中添加一个新的存储驱动的时候，可以实现Driver的全部12个方法，或是实现ProtoDriver的8个方法再使用naiveDiffDriver进一步封装。不管那种做法，只要集成了基本存储操作和差异操作的实现，一个存储驱动就算开发完成了。</p>
+<h4 id="2-存储驱动的创建过程"><a href="#2-存储驱动的创建过程" class="headerlink" title="2. 存储驱动的创建过程"></a>2. 存储驱动的创建过程</h4><p>首先，前面提到的各类存储驱动都需要定义一个属于自己的初始化过程，并且在初始化过程中向GraphDriver注册自己。GraphDriver维护了一个drivers列表，提供从驱动名到驱动初始化方法的映射，这用于将来根据驱动名称查找对应驱动的初始化方法。</p>
+<p>而所谓的注册过程，则是存储驱动通过调用GraphDriver提供自己的名字和对应的初始化函数，这样GraphDriver就可以将驱动名和这个初始化方法保存到drivers。</p>
+<p>当需要创建一个存储驱动时（比如aufs的驱动）, GraphDriver会根据名字从drivers中查找到这个驱动对应的初始化方法，然后调用这个初始化函数得到对应的Driver对象。这个创建过程如下所示。</p>
+<p>(1) 依次检查环境变量DOCKER_DRIVER和变量DefaultDriver是否提供了合法的驱动名字（比如aufs），其中DefaultDriver是从Docker daemon启动时的——storage-driver或者-s参数中读出的。获知了驱动名称后，GraphDriver就调用对应的初始化方法，创建一个对应的Driver对象实体。</p>
+<p>(2) 若环境变量和配置默认是空的，则GraphDriver会从驱动的优先级列表中查找一个可用的驱动。“可用”包含两个意思：第一，这个驱动曾经注册过自己；第二，这个驱动对应的文件系统被操作系统支持（这个支持性检查会在该驱动的初始化过程中执行）。在Linux平台下，目前优先级列表依次包含了这些驱动：aufs、btrfs、zfs、devicemapper、overlay和vfs。</p>
+<p>(3) 如果在上述6种驱动中查找不到可用的，则GrapthDriver会查找所用注册过的驱动，找到第一个注册过的、可用的驱动并返回。不过这一设计只是为了将来的可扩展性而存在，用于查找自定义的存储驱动插件，现在有且仅有的上述6种驱动一定会注册自己。</p>
+<h3 id="2．常用存储驱动分析"><a href="#2．常用存储驱动分析" class="headerlink" title="2．常用存储驱动分析"></a>2．常用存储驱动分析</h3><p>了解了存储驱动的基本功能与管理方式以后，本节以aufs、devicemapper以及overlay为例，分析存储驱动的实现方式。</p>
+<h4 id="1-aufs"><a href="#1-aufs" class="headerlink" title="1. aufs"></a>1. aufs</h4><p>首先，让我们来简单认识一下aufs。aufs（advanced multi layered unification filesystem）[插图]是一种支持联合挂载的文件系统，简单来说就是支持将不同目录挂载到同一个目录下，这些挂载操作对用户来说是透明的，用户在操作该目录时并不会觉得与其他目录有什么不同。这些目录的挂载是分层次的，通常来说最上层是可读写层，下层是只读层。所以，aufs的每一层都是一个普通文件系统。</p>
+<p>当需要读取一个文件A时，会从最顶层的读写层开始向下寻找，本层没有，则根据层之间的关系到下一层开始找，直到找到第一个文件A并打开它。</p>
+<p>当需要写入一个文件A时，如果这个文件不存在，则在读写层新建一个；否则像上面的过程一样从顶层开始查找，直到找到最近的文件A, aufs会把这个文件复制到读写层进行修改。</p>
+<p>由此可以看出，在第一次修改某个已有文件时，如果这个文件很大，即使只要修改几个字节，也会产生巨大的磁盘开销。</p>
+<p>当需要删除一个文件时，如果这个文件仅仅存在于读写层中，则可以直接删除这个文件；否则就需要先删除它在读写层中的备份，再在读写层中创建一个whiteout文件来标志这个文件不存在，而不是真正删除底层的文件。</p>
+<p>当新建一个文件时，如果这个文件在读写层存在对应的whiteout文件，则先将whiteout文件删除再新建。否则直接在读写层新建即可。</p>
+<p>那么镜像文件在本地存放在哪里呢？我们知道Docker的工作目录是&#x2F;var&#x2F;lib&#x2F;docker，查看该目录下的内容可以看到如下文件。</p>
+<p><img src="/image-20220330133110724.png" alt="image-20220330133110724"></p>
+<p>如果你正在使用或者曾经使用过aufs作为存储驱动，就会在Docker工作目录和image下发现aufs目录。关于image&#x2F;aufs目录下的内容，本书在前面已经比较详细地介绍过了，是用于存储镜像相关的元数据的，存储逻辑上的镜像和镜像层。</p>
+<p>下面一起探究&#x2F;var&#x2F;lib&#x2F;docker下另一个aufs文件夹。</p>
+<p><img src="/image-20220330133127406.png" alt="image-20220330133127406"></p>
+<p>进入其中可以看到3个目录，其中mnt为aufs的挂载目录，diff为实际的数据来源，包括只读层和可读写层，所有这些层最终一起被挂载在mnt上的目录，layers下为与每层依赖有关的层描述文件。</p>
+<p>最初，mnt和layers都是空目录，文件数据都在diff目录下。一个Docker容器创建与启动的过程中，会在&#x2F;var&#x2F;lib&#x2F;docker&#x2F;aufs下面新建出对应的文件和目录。由于改版后，Docker镜像管理部分与存储驱动在设计上完全分离了，镜像层或者容器层在存储驱动中拥有一个新的标示ID，在镜像层（roLayer）中称为cacheID，容器层（mountedLayer）中为mountID。在Unix环境下，mountID是随机生成的并保存在mountedLayer的元数据mountID中，持久化在image&#x2F;aufs&#x2F;layerdb&#x2F;mounts&#x2F;[container_id]&#x2F;mount-id中。由于讲解的是容器创建过程中新创建的读写层，下面以mountID为例。创建一个新镜像层的步骤如下。</p>
+<p>(1) 分别在mnt和diff目录下创建与该层的mountID同名的子文件夹。</p>
+<p>(2) 在layers目录下创建与该层的mountID同名的文件，用来记录该层所依赖的所有的其他层。</p>
+<p>(3) 如果参数中的parent项不为空（这里由于是创建容器，parent就是镜像的最上层），说明该层依赖于其他的层。GraphDriver就需要将parent的mountID写入到该层在layers下对应mountID的文件里。然后GraphDriver还需要在layers目录下读取与上述parent同mountID的文件，将parent层的所有依赖层也复制到这个新创建层对应的层描述文件中，这样这个文件才记录了该层的所有依赖。创建成功后，这个新创建的层的描述文件如下：</p>
+<p><img src="/image-20220330133154502.png" alt="image-20220330133154502"></p>
+<p>随后GraphDriver会将diff中属于容器镜像的所有层目录以只读方式挂载到mnt下，然后在diff中生成一个以当前容器对应的<mountID>-init命名的文件夹作为最后一层只读层，这个文件夹用于挂载并重新生成如下代码段所列的文件：</p>
+<p><img src="/image-20220330133210935.png" alt="image-20220330133210935"></p>
+<p>可以看到这些文件与这个容器内的环境息息相关，但并不适合被打包作为镜像的文件内容（毕竟文件里的内容是属于这个容器特有的），同时这些内容又不应该直接修改在宿主机文件上，所以Docker容器文件存储中设计了mountID-init这么一层单独处理这些文件。这一层只在容器启动时添加，并会根据系统环境和用户配置自动生成具体的内容（如DNS配置等），只有当这些文件在运行过程中被改动后并且docker commit了才会持久化这些变化，否则保存镜像时不会包含这一层的内容。</p>
+<p>所以严格地说，Docker容器的文件系统有3层：可读写层（将来被commit的内容）、init层和只读层。但是这并不影响我们传统认识上可读写层+只读层组成的容器文件系统：因为init层对于用户来说是完全透明的。</p>
+<p>接下来会在diff中生成一个以容器对应mountID为名的可读写目录，也挂载到mnt目录下。所以，将来用户在容器中新建文件就会出现在mnt下以mountID为名的目录下，而该层对应的实际内容则保存在diff目录下。</p>
+<p>至此我们需要明确，所有文件的实际内容均保存在diff目录下，包括可读写层也会以mountID命名出现在diff目录下，最终会整合到一起联合挂载到mnt目录下以mountID为名的文件夹下。接下来我们统一观察mnt对应的mountID下的变化。首先让我们看看要运行的镜像对应的容器ID，其容器短ID为“7e7d365e363e”。</p>
+<p><img src="/image-20220330133314941.png" alt="image-20220330133314941"></p>
+<p>查看容器层对应mountID为“7e2152451105f352a78421a9f78061bdc8c9895002dcd12f71bf49b 7057f2b45”。</p>
+<p><img src="/image-20220330133325955.png" alt="image-20220330133325955"></p>
+<p>再来看看该容器运行前对应的mnt目录，看到对应mountID文件夹下是空的。</p>
+<p><img src="/image-20220330133355115.png" alt="image-20220330133355115"></p>
+<p>可以看到以mountID命名的文件夹变大了，进入可以看到已经挂载了对应的系统文件。</p>
+<p><img src="/image-20220330133410754.png" alt="image-20220330133410754"></p>
+<p>接下来我们进入容器，查看容器状态，并添加一个1GB左右的文件。</p>
+<p><img src="/image-20220330133422053.png" alt="image-20220330133422053"></p>
+<p>当我们在容器外查看文件变化时可以看到，以mountID命名的文件夹大小出现了变化，如下所示。</p>
+<p><img src="/image-20220330133443138.png" alt="image-20220330133443138"></p>
+<p>我们在容器中生成的文件出现在对应容器对应mountID文件夹中的root文件夹内。而当我们停止容器时，mnt下相应mountID的目录被卸载，而diff下相应文件夹中的文件依然存在。当然，这仅限于当前宿主机，当我们需要迁移容器时，需要把这些内容保存成镜像再操作。</p>
+<p>综上所述，以aufs为例的话，Docker镜像的主要存储目录和作用可以通过图3-13来解释。</p>
+<p><img src="/image-20220330133511158.png" alt="image-20220330133511158"></p>
+<p>最后，当我们用docker commit把容器提交成镜像后，就会在diff目录下生成一个新的cacheID命名的文件夹，存放了最新的差异变化文件，这时一个新的镜像层就诞生了。而原来的以mountID为名的文件夹已然存在，直至对应容器被删除。</p>
+<h3 id="2-Device-Mapper"><a href="#2-Device-Mapper" class="headerlink" title="2. Device Mapper"></a>2. Device Mapper</h3><p>Device Mapper是Linux 2.6内核中提供的一种从逻辑设备到物理设备的映射框架机制，在该机制下，用户可以很方便地根据自己的需要制定实现存储资源的管理策略</p>
+<p>简单来说，Device Mapper包括3个概念：映射设备、映射表和目标设备，如图3-14所示。映射设备是内核向外提供的逻辑设备。一个映射设备通过一个映射表与多个目标设备映射起来，映射表包含了多个多元组，每个多元组记录了这个映射设备的起始地址、范围与一个目标设备的地址偏移量的映射关系。目标设备可以是一个物理设备，也可以是一个映射设备，这个映射设备可以继续向下迭代。一个映射设备最终通过一棵映射树映射到物理设备上。Device Mapper本质功能就是根据映射关系描述IO处理规则，当映射设备接收到IO请求的时候，这个IO请求会根据映射表逐级转发，直到这个请求最终传到最底层的物理设备上。</p>
+<p><img src="/image-20220330133628659.png" alt="image-20220330133628659"></p>
+<p>Docker下面的devicemapper存储驱动是使用Device Mapper的精简配置（thin-provisioning）和快照（snapshotting）功能实现镜像的分层。这个模块使用了两个块设备（一个用于存储数据，另一个用于存储元数据），并将其构建成一个资源池（thin pool）用以创建其他存储镜像的块设备。数据区为生成其他块设备提供资源，元信息存储了虚拟设备和物理设备的映射关系。Copy on Write发生在块存储级别。devicemapper在构建一个资源池后，会先创建一个有文件系统的基础设备，再通过从已有设备创建快照的方式创建新的设备，这些新创建的块设备在写入内容之前并不会分配资源。所有的容器层和镜像层都有自己的块设备，均是通过从其父镜像层创建快照的方式来创建（没有父镜像层的层从基础设备创建快照）。层次结构如图3-15所示。</p>
+<p><img src="/image-20220330133643838.png" alt="image-20220330133643838"></p>
+<p>值得说明的是，devicemapper存储驱动根据使用的两个基础块设备是真正的块设备还是稀疏文件挂载的loop设备分为两种模式，前者称为direct-lvm模式，后者是Docker默认的loop-lvm模式。两种方式对于配置的好的Docker用户来说是完全透明的，驱动层的工作方式也一致，但由于底层存储方式不同导致两者性能差别很大。考虑到loop-lvm不需要额外配置的易用性，Docker将其作为devicemapper的默认模式，但在生产环境中，推荐使用direct-lvm模式。</p>
+<p>在已经创建好两个块设备的基础上，要使用direct-lvm模式的devicemapper存储驱动[插图]，需要在Docker daemon启动的时候除了添加-s&#x3D;devicemapper参数外，还要下列的参数指定存储数据和元数据的块设备。</p>
+<p><img src="/image-20220330134416861.png" alt="image-20220330134416861"></p>
+<p>与aufs一样，如果Docker使用过devicemapper存储驱动，在&#x2F;var&#x2F;lib&#x2F;docker&#x2F;下会创建devicemapper&#x2F;以及image&#x2F;devicemapper目录。同样，image&#x2F;devicemapper也是存储了镜像和逻辑镜像层的元数据信息。</p>
+<p>最终，具体的文件都会存储在&#x2F;var&#x2F;lib&#x2F;docker&#x2F;devicemapper文件夹下，这个文件夹下有3个子文件夹，其中mnt为设备挂载目录，devicemapper下存储了loop-lvm模式下的两个稀疏文件，metadata下存储了每个块设备驱动层的元数据信息。</p>
+<p>以loop-lvm模式为例，在devicemapper实际查看一下，可以看到data是一个100GB的稀疏文件，它包含了所有镜像和容器的实际文件内容，是整个资源池的默认大小。每一个容器默认被限制在10GB大小的卷内，可以通过重新启动daemon，并添加参数——storage-opt dm.basesize&#x3D;[size]调整基础块设备的大小，原有镜像层、容器层以及在原有镜像基础上创建的容器层的大小限制不受影响，只有在更改参数后pull下来的镜像的基础上创建的容器才会生效，并且basesize只能比原来的大，否则daemon会报错。</p>
+<p><img src="/image-20220330134444576.png" alt="image-20220330134444576"></p>
+<p>可以看到，实际占用为519M，当我们再次pull新的镜像或者启动容器在其中增加文件时，基本上只增加了data文件的大小，其他文件并没有变化。</p>
+<h3 id="3-overlay"><a href="#3-overlay" class="headerlink" title="3. overlay"></a>3. overlay</h3><p>OverlayFS是一种新型联合文件系统（union filesystem），它允许用户将一个文件系统与另一个文件系统重叠（overlay），在上层的文件系统中记录更改，而下层的文件系统保持不变。相比于aufs,OverlayFS在设计上更简单，理论上性能更好，最重要的是，它已经进入Linux 3.18版本以后的内核主线，所以在Docker社区中很多人都将OverlayFS视为aufs的接班人。Docker的overlay存储驱动便建立在OverlayFS的基础上。</p>
+<p>OverlayFS主要使用4类目录来完成工作，被联合挂载的两个目录lower和upper，作为统一视图联合挂载点的merged目录，还有作为辅助功能的work目录。作为upper和lower被联合挂载的统一视图，当同一路径的两个文件分别存在两个目录中时，位于上层目录upper中的文件会屏蔽位于下层lower中的文件，如果是同路径的文件夹，那么下层目录中的文件和文件夹会被合并到上层。在对可读写的OverlayFS挂载目录中的文件进行读写删等操作的过程与挂载两层的aufs（下层是只读层，上层是可读写层）是类似的。需要注意的一点是，第一次以write方式打开一个位于下层目录的文件时，OverlayFS会执行一个copy_up将文件从下层复制到上层，与aufs不同的是，这个copy_up的实现不符合POSIX标准[插图]。OverlayFS在使用上非常简单，首先使用命令lsmod | grep overlay确认内核中是否存在overlay模块，如果不存在，需要升级到3.18以上的内核版本，并使用modprobeoverlay加载。然后再创建必要文件夹并执行mount命令即可完成挂载，最后可以通过查看mount命令的输出来确认挂载结果。</p>
+<p><img src="/image-20220330134628491.png" alt="image-20220330134628491"></p>
+<p>在了解了OverlayFS的原理后，下面介绍一下Docker的overlay存储驱动是如何实现的。</p>
+<p>首先请读者直观感受一下overlay的目录结构。overlay存储驱动的工作目录是&#x2F;var&#x2F;lib&#x2F;docker&#x2F;overlay&#x2F;，在本书的实验环境中，该存储驱动下共存储了两个镜像与一个容器。</p>
+<p><img src="/image-20220330134643280.png" alt="image-20220330134643280"></p>
+<p>读者可以清楚地看到overlay目录下面以UUID命名的文件夹下的目录结构分为两种，一种是只有root目录的，另一种则有3个文件夹和一个文件lower-id。根据UUID中是否带-init后缀以及UUID名，很容易能判断出来，前者是镜像层的目录，后者是容器层（包括init层）的目录。读者可能会觉得比较奇怪，为什么镜像层与容器层要采用不同的目录结构。前面介绍OverlayFS原理是将一层目录重叠于另一层目录之上，也就是说OverlayFS文件系统只会涉及两个目录，而Docker镜像却可能有许多层[插图]。为了解决这种不对应的情况，overlay存储驱动在存储镜像层的时候，会把父镜像层的内容“复制”到当前层，然后再写入当前层，为了节省存储空间，在“复制”的过程中，普通文件是采用硬链接的方式链接到父镜像层对应文件，其他类型的文件或文件夹则是按照原来的内容重新创建。所以上层镜像层拥有其依赖镜像层的所有文件，而最上面的镜像层则拥有了整个镜像的文件系统，这也是为什么镜像层对应的目录中只有一个root文件夹。</p>
+<p>至于另一种目录结构，细心的读者可能已经参照上面介绍OverlayFS工作的4种目录找到了对应关系。upper对应上层目录，merged对应挂载点目录，work对应辅助工作（比如copy_up操作需要用到）目录，但lower-id却是一个文件，里面记录了该容器层所属容器的镜像最上面镜像层的cache-id，在本书上面的实验环境中，lower-id内记录的是e43c26d23b&lt;省略部分．..&gt;acca, Docker使用该cache-id找到所依赖镜像层的root目录作为下层目录。</p>
+<p>在准备最上层可读写容器层的时候，会将init层的lower-id与upper目录中的内容全部复制到容器层中。最后为容器准备rootfs时，将对应的4种文件夹联合挂载即可。下面通过在容器里面新建一个文件，然后在存储驱动对应目录中查看，请读者直观感受一下具体的文件存储位置。</p>
+<p><img src="/image-20220330134707033.png" alt="image-20220330134707033"></p>
+<p>最后需要说明一下，虽然overlay存储驱动曾经一度被提议提升为默认驱动[插图]，但其本身仍是一个发展相对初级的存储驱动，用户需要谨慎在生产环境中使用。相对于aufs，除了本节开始提到的优点之外，由于OverlayFS只实现了POSIX标准的子集（例如copy-up等操作不符合POSIX标准），在运行在overlay存储驱动上的容器中直接执行yum命令会出现问题；另外一点就是，在使用overlay存储驱动时会消耗大量的inode，尤其是对于本地镜像和容器比较多的用户，而inode只能在创建文件系统的时候指定。</p>
+<p>本节讨论了Docker对镜像元数据、文件系统的管理方法并介绍了3种典型存储驱动的具体实现。用户在使用Docker的时候，可以根据自己的需求和底层操作系统的支持情况灵活地选择最合适的存储驱动。</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

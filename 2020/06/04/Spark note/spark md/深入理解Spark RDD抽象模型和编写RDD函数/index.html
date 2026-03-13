@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>深入理解Spark RDD抽象模型和编写RDD函数 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解Spark RDD抽象模型和编写RDD函数">
+<meta property="og:url" content="https://iideas18.github.io/2020/06/04/Spark note/spark md/深入理解Spark RDD抽象模型和编写RDD函数/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2020-06-04T06:07:28.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.278Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2020/06/04/Spark note/spark md/深入理解Spark RDD抽象模型和编写RDD函数/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '深入理解Spark RDD抽象模型和编写RDD函数',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">深入理解Spark RDD抽象模型和编写RDD函数</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2020-06-04T06:07:28.000Z" title="发表于 2020-06-04 14:07:28">2020-06-04</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.278Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Spark note/">Spark note</a>
+            
+            <a class="post-meta-categories" href="/categories/spark md/">spark md</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="深入理解Spark-RDD抽象模型和编写RDD函数"><a href="#深入理解Spark-RDD抽象模型和编写RDD函数" class="headerlink" title="深入理解Spark RDD抽象模型和编写RDD函数"></a>深入理解Spark RDD抽象模型和编写RDD函数</h1><ul>
+<li>Table of Contents<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/linbojin/spark-notes/blob/master/rdd-abstraction.md#spark%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86">Spark基础知识</a></li>
+<li>RDD抽象模型<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/linbojin/spark-notes/blob/master/rdd-abstraction.md#%E8%AE%BE%E8%AE%A1%E5%8A%A8%E6%9C%BA">设计动机</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/linbojin/spark-notes/blob/master/rdd-abstraction.md#%E5%AE%9A%E4%B9%89%E5%92%8C%E7%89%B9%E6%80%A7">定义和特性</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/linbojin/spark-notes/blob/master/rdd-abstraction.md#lineage%E5%92%8Cdependencies">Lineage和Dependencies</a></li>
+</ul>
+</li>
+<li>Spark的RDD源码阅读<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/linbojin/spark-notes/blob/master/rdd-abstraction.md#rdd%E7%BC%96%E7%A8%8B%E6%8E%A5%E5%8F%A3">RDD编程接口</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/linbojin/spark-notes/blob/master/rdd-abstraction.md#rdd%E5%87%BD%E6%95%B0">RDD函数</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/linbojin/spark-notes/blob/master/rdd-abstraction.md#rdd%E9%9A%90%E5%BC%8F%E8%BD%AC%E6%8D%A2">RDD隐式转换</a></li>
+</ul>
+</li>
+<li>编写RDD API函数<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/linbojin/spark-notes/blob/master/rdd-abstraction.md#%E9%9A%BE%E7%82%B9%E5%92%8C%E7%AA%81%E7%A0%B4%E5%8F%A3">难点和突破口</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/linbojin/spark-notes/blob/master/rdd-abstraction.md#%E5%BC%80%E5%8F%91%E5%92%8C%E6%B5%8B%E8%AF%95">开发和测试</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/linbojin/spark-notes/blob/master/rdd-abstraction.md#%E4%BD%BF%E7%94%A8rdd%E9%9A%90%E5%BC%8F%E8%BD%AC%E6%8D%A2">使用RDD隐式转换</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>Spark revolves around the concept of a resilient distributed dataset (RDD), which is an <strong>immutable</strong>, <strong>fault-tolerant</strong>, <strong>partitioned</strong> collection of elements that can be operated on in parallel.</p>
+</blockquote>
+<p>第二篇笔记介绍RDD，整个Spark项目的精髓所在，也是理解Spark源码的金钥匙。RDD是一个很棒的分布式计算抽象模型，它提供了通用的数据处理方法和高效的分布式容错机制，Spark是它的一种实现。</p>
+<h2 id="1-Spark基础知识"><a href="#1-Spark基础知识" class="headerlink" title="1. Spark基础知识"></a>1. Spark基础知识</h2><p>开始正题之前，先简单介绍一些Spark的基本概念，以便深入介绍RDD。Spark的api运算函数分为两大类，<strong>Transformation</strong>和<strong>Action</strong>：Transformations是<strong>lazy evaluation</strong>的，调用他们只会被记录而不会被真正执行，只有遇到Actions，之前的Transformations才会被依次执行，这样的<strong>Delay Scheduling</strong>，Spark可以看到完整的计算流程图（以DAG有向无环图的形式表示），从而做更多的优化，Actions会返回结果给Driver或者保存结果到external storages。Spark的基本工作流程是，用户提交程序给cluster，用户的main函数会在<strong>Driver</strong>上面运行，根据用户的程序Spark会产生很多的<strong>Jobs</strong>，原则是遇到一个<strong>Action</strong>就产生一个<strong>Job</strong>，以DAG图的方式记录RDD之间的依赖关系，每一个Job又会根据这些依赖关系被DAGScheduler分成不同的<strong>Stages</strong>，每一个Stage是一个<strong>TaskSet</strong>，以TaskSet为单位，TaskScheduler通过Cluster Manager一批一批地调度到不同node上运行，同一个TaskSet里面的Task都做同样的运算，一个Partition对应一个Task。这个工作流程其实就是Spark的Scheduling Process，附上超经典的示意图，不要纠结这图上的细节，后面会有专门的笔记详细介绍这张<em><strong>藏宝图</strong></em>：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/linbojin/spark-notes/blob/master/media/02-schedulingProcess.jpg"><img src="C:\Users\zhouy1\AppData\Roaming\Typora\typora-user-images\image-20200604135045369.png" alt="image-20200604135045369"></a></p>
+<h2 id="2-RDD抽象模型"><a href="#2-RDD抽象模型" class="headerlink" title="2. RDD抽象模型"></a>2. RDD抽象模型</h2><h3 id="2-1-设计动机"><a href="#2-1-设计动机" class="headerlink" title="2.1 设计动机"></a>2.1 设计动机</h3><p>当初设计RDD主要是为了解决三个问题：</p>
+<ul>
+<li><strong>Fast</strong>: Spark之前的Hadoop用的是MapReduce的编程模型，没有很好的利用分布式内存系统，中间结果都需要保存到external disk，运行效率很低。RDD模型是in-memory computing的，中间结果不需要被物化（materialized），它的<strong>persistence</strong>机制，可以保存中间结果重复使用，对需要迭代运算的机器学习应用和交互式数据挖掘应用，加速显著。Spark快还有一个原因是开头提到过的<strong>Delay Scheduling</strong>机制，它得益于RDD的Dependency设计。</li>
+<li><strong>General: MapReduce</strong>编程模型只能提供有限的运算种类（Map和Reduce），RDD希望支持更广泛更多样的operators（map，flatMap，filter等等），然后用户可以任意地组合他们。</li>
+</ul>
+<blockquote>
+<p>The ability of RDDs to accommodate computing needs that were previously met only by introducing new frameworks is, we believe, the most credible evidence of the power of the RDD abstraction.</p>
+</blockquote>
+<ul>
+<li><strong>Fault tolerance</strong>: 其他的in-memory storage on clusters，基本单元是可变的，用细粒度更新（<strong>fine-grained updates</strong>）方式改变状态，如改变table&#x2F;cell里面的值，这种模型的容错只能通过复制多个数据copy，需要传输大量的数据，容错效率低下。而RDD是<strong>不可变的（immutable）</strong>，通过粗粒度变换（<strong>coarse-grained transformations</strong>），比如map，filter和join，可以把相同的运算同时作用在许多数据单元上，这样的变换只会产生新的RDD而不改变旧的RDD。这种模型可以让Spark用<strong>Lineage</strong>很高效地容错（后面会有介绍）。</li>
+</ul>
+<h3 id="2-2-定义和特性"><a href="#2-2-定义和特性" class="headerlink" title="2.2 定义和特性"></a>2.2 定义和特性</h3><p>在开头的引用中，Spark官网给RDD的定义是：RDD is an <strong>immutable</strong>, <strong>fault-tolerant</strong>, <strong>partitioned</strong> collection of elements that can be operated on <strong>in parallel</strong>。可见RDD有以下几个特点：</p>
+<p><img src="C:\Users\zhouy1\AppData\Roaming\Typora\typora-user-images\image-20200604135259233.png" alt="image-20200604135259233"></p>
+<ul>
+<li><strong>immutable</strong>：任何操作都不会改变RDD本身，只会创造新的RDD</li>
+<li><strong>fault-tolerant</strong>：通过Lineage可以高效容错</li>
+<li><strong>partitioned</strong>：RDD以partition作为最小存储和计算单元，分布在cluster的不同nodes上，一个node可以有多个partitions，一个partition只能在一个node上</li>
+<li><strong>in parallel</strong>：一个Task对应一个partition，Tasks之间相互独立可以并行计算</li>
+</ul>
+<p>另外还有两点</p>
+<ul>
+<li><strong>persistence</strong>：用户可以把会被重复使用的RDDs保存到storage上（内存或者磁盘）</li>
+<li><strong>partitioning</strong>：用户可以选择RDD元素被partitioned的方式来优化计算，比如两个需要被join的数据集可以用相同的方式做hash-partitioned，这样可以减少shuffle提高性能</li>
+</ul>
+<p>RDD可以通过两种方式产生，读取外部数据集（比如HadoopRDD）和通过Transformations从其他RDDs转变而来（比如FilteredRDD）。</p>
+<h3 id="2-3-Lineage和Dependencies"><a href="#2-3-Lineage和Dependencies" class="headerlink" title="2.3 Lineage和Dependencies"></a>2.3 Lineage和Dependencies</h3><p>Spark会记录用于产生某个RDD的所有transformations，称为<strong>Lineage</strong>，更加直白地理解就是一个RDD知道它是如果从它的父辈RDD们转换而来的，下图是一个RDD Lineage Graph，它是一种DAG Graph： </p>
+<p><img src="C:\Users\zhouy1\AppData\Roaming\Typora\typora-user-images\image-20200604135412287.png" alt="image-20200604135412287"></p>
+<blockquote>
+<p>Lineage是Spark高效容错的法宝，因为有了Lineage信息，RDD可以重新单独计算某个丢失的partition，而不用计算整个RDD。</p>
+</blockquote>
+<p>Lineage基于RDD的Dependencies，所以Lineage Graph也可以说成<strong>Dependency Graph</strong>。RDD的Dependencies可以分为两类：窄依赖（<strong>Narrow Dependencies</strong>）和宽依赖（<strong>Wide Dependencies</strong>）。下图就是Dependency Graphs, 每个大方框是一个RDD，蓝色的小矩阵是对应的Partitions：</p>
+<p><img src="C:\Users\zhouy1\AppData\Roaming\Typora\typora-user-images\image-20200604135437696.png" alt="image-20200604135437696"></p>
+<blockquote>
+<p>如果输入RDD的每个Partition只指向（用于计算）输出RDD的一个Partition时，是窄依赖，否则的话就是宽依赖</p>
+</blockquote>
+<p>Spark的DAGScheduler就是基于Dependencies来划分stages的（之后会有笔记介绍），因为窄依赖里面的运算符可以被pipeline在一起（不需要shuffle），用一个Task直接计算。</p>
+<h2 id="3-Spark的RDD源码阅读"><a href="#3-Spark的RDD源码阅读" class="headerlink" title="3. Spark的RDD源码阅读"></a>3. Spark的RDD源码阅读</h2><p>有了前面的理论准备，现在可以开始阅读Spark的RDD模型源码实现了。开始之前，请确保你已经参考我的第一篇笔记<a target="_blank" rel="noopener" href="https://github.com/linbojin/spark-notes/blob/master/ide-setup.md">搭建Spark源码研读和代码调试的开发环境</a>，用Intellij IDEA打开了Spark项目，并且编译通过，然后</p>
+<blockquote>
+<p>command + o, 输入RDD，打开org.apache.spark.rdd.RDD (RDD.scala文件)</p>
+</blockquote>
+<h3 id="3-1-RDD编程接口"><a href="#3-1-RDD编程接口" class="headerlink" title="3.1 RDD编程接口"></a>3.1 RDD编程接口</h3><p>Spark的RDD编程接口是一个抽象类，实例化需要输入SparkContext和RDD的Dependencies，解释两点：</p>
+<ul>
+<li><code>RDD[T: ClassTag]</code>： T代表了RDD每个元素的type，比如RDD[Int]代表每个元素是Int型。</li>
+<li><code>Seq[Dependency[_]]</code>：代表RDD的父辈RDD们的类型是可以任意的，而不是一定要和这个RDD一样，比如<code>RDD[Int]</code>通过<code>map(f: Int =&gt; String)</code>运算可以变成<code>RDD[String]</code>。</li>
+</ul>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">RDD</span>[<span class="type">T</span>: <span class="type">ClassTag</span>](<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="class">    @transient private var _sc: <span class="type">SparkContext</span>,</span></span></span><br><span class="line"><span class="params"><span class="class">    @transient private var deps: <span class="type">Seq</span>[<span class="type">Dependency</span>[_]]</span></span></span><br><span class="line"><span class="params"><span class="class">  </span>) <span class="keyword">extends</span> <span class="title">Serializable</span> <span class="keyword">with</span> <span class="title">Logging</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>为了实现前一节介绍的那些RDD特性，Spark实现的RDD模型包含五个主要的属性：</p>
+<ul>
+<li>A list of <strong>partitions</strong></li>
+<li>A <strong>function</strong> for computing each partition</li>
+<li>A list of <strong>dependencies</strong> on other RDDs</li>
+<li>Optionally, a <strong>Partitioner</strong> for key-value RDDs (e.g. to say that the RDD is hash-partitioned)</li>
+<li>Optionally, a list of <strong>preferred locations</strong> to compute each partition on (e.g. block locations for an HDFS file)</li>
+</ul>
+<p>每一个RDD子类都必须实现这些属性（在源码里面是函数）：</p>
+<p><img src="C:\Users\zhouy1\AppData\Roaming\Typora\typora-user-images\image-20200604135603267.png" alt="image-20200604135603267"></p>
+<p>比如</p>
+<ul>
+<li>HadoopRDD<ul>
+<li>partitions &#x3D; one per HDFS block</li>
+<li>dependencies &#x3D; none</li>
+<li>compute(partition) &#x3D; read corresponding block</li>
+<li>preferredLocations(part) &#x3D; HDFS block location</li>
+<li>partitioner &#x3D; none</li>
+</ul>
+</li>
+<li>FilteredRDD<ul>
+<li>partitions &#x3D; same as parent RDD</li>
+<li>dependencies &#x3D; “one-to-one” on parent</li>
+<li>compute(partition) &#x3D; compute parent and filter it</li>
+<li>preferredLocations(part) &#x3D; none (ask parent)</li>
+<li>partitioner &#x3D; none</li>
+</ul>
+</li>
+<li>JoinedRDD<ul>
+<li>partitions &#x3D; one per reduce task</li>
+<li>dependencies &#x3D; “shuffle” on each parent</li>
+<li>compute(partition) &#x3D; read and join shuffled data</li>
+<li>preferredLocations(part) &#x3D; none</li>
+<li>partitioner &#x3D; HashPartitioner(numTasks)</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-2-RDD函数"><a href="#3-2-RDD函数" class="headerlink" title="3.2 RDD函数"></a>3.2 RDD函数</h3><p>RDD抽象类的源码可以分成几大部分：</p>
+<ul>
+<li><p>必须被子类实现的方法</p>
+</li>
+<li><p>所有RDD都拥有的方法和属性</p>
+</li>
+<li><p>persistence相关的函数</p>
+</li>
+<li><p>用于表示RDD的接口函数<br><img src="C:\Users\zhouy1\AppData\Roaming\Typora\typora-user-images\image-20200604135704501.png" alt="image-20200604135704501"></p>
+</li>
+<li><p>Transformations（返回新的RDD）</p>
+</li>
+<li><p>Actions (启动一个job来计算结果) </p>
+<p><img src="C:\Users\zhouy1\AppData\Roaming\Typora\typora-user-images\image-20200604135740497.png" alt="image-20200604135740497"></p>
+</li>
+<li><p>这里推荐一个非常棒的文档(文件比较大，可能需要pc端打开)，<a target="_blank" rel="noopener" href="https://github.com/linbojin/spark-notes/blob/master/awesome-slides/2015-Visual-Spark-API-Databricks.pdf">Visual Spark Transformations and Actions</a>，用图很形象地介绍RDD APIs.</p>
+</li>
+<li><p>其他内部使用的方法和属性</p>
+</li>
+</ul>
+<p>现在可以先阅读Transformations函数源码，其他的会在后面的笔记里面涉及，因为Actions都会调用<code>sc.runJon()</code>来运行job，深入理解Spark Scheduling之后再阅读会比较容易理解。 这里以<strong>flatMap</strong>为例：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *  Return a new RDD by first applying a function to all elements of this</span></span><br><span class="line"><span class="comment"> *  RDD, and then flattening the results.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">flatMap</span></span>[<span class="type">U</span>: <span class="type">ClassTag</span>](f: <span class="type">T</span> =&gt; <span class="type">TraversableOnce</span>[<span class="type">U</span>]): <span class="type">RDD</span>[<span class="type">U</span>] = withScope &#123;</span><br><span class="line">  <span class="keyword">val</span> cleanF = sc.clean(f)</span><br><span class="line">  <span class="keyword">new</span> <span class="type">MapPartitionsRDD</span>[<span class="type">U</span>, <span class="type">T</span>](<span class="keyword">this</span>, (context, pid, iter) =&gt; iter.flatMap(cleanF))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>flatMap的功能是对RDD[T]类型的RDD上的每一个元素运行函数f，返回类型为RDD[U]的RDD。 </p>
+<p><code>withScope{body}</code>是为了确保运行body代码块产生的所有RDDs都在同一个scope里面。</p>
+<p><code>val cleanF = sc.clean(f)</code>是为了确保这个f函数（专业称为closure）是可以被序列化的，因为它需要被序列化后发送到不同的node上。想要了解他们的实现细节可以用IDE代码跳转功能：</p>
+<blockquote>
+<p>在Intellij里面你可以选择一个函数或者变量，然后Command + b，跳转到它的实现细节，command + [ 可以返回原来的地方</p>
+</blockquote>
+<p>这一行代码是关键所在，实例化了一个MapPartitionsRDD，返回的是RDD[U]类型：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="type">MapPartitionsRDD</span>[<span class="type">U</span>, <span class="type">T</span>](<span class="keyword">this</span>, (context, pid, iter) =&gt; iter.flatMap(cleanF))</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>选择MapPartitionsRDD，command + b, 跳转到它的实现</p>
+</blockquote>
+<p>MapPartitionsRDD[U, T]是RDD[U]的子类，它的源码很好的诠释了如何使用RDD编程接口:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * An RDD that applies the provided function to every partition of the parent RDD.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span>[spark] <span class="class"><span class="keyword">class</span> <span class="title">MapPartitionsRDD</span>[<span class="type">U</span>: <span class="type">ClassTag</span>, <span class="type">T</span>: <span class="type">ClassTag</span>](<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="class">    var prev: <span class="type">RDD</span>[<span class="type">T</span>],</span></span></span><br><span class="line"><span class="params"><span class="class">    f: (<span class="type">TaskContext</span>, <span class="type">Int</span>, <span class="type">Iterator</span>[<span class="type">T</span>]</span>) <span class="title">=&gt;</span> <span class="title">Iterator</span>[<span class="type">U</span>],  <span class="comment">// (TaskContext, partition index, iterator)</span></span></span><br><span class="line">    preservesPartitioning: <span class="type">Boolean</span> = <span class="literal">false</span>)</span><br><span class="line">  <span class="keyword">extends</span> <span class="type">RDD</span>[<span class="type">U</span>](prev) &#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">override</span> <span class="keyword">val</span> partitioner = <span class="keyword">if</span> (preservesPartitioning) firstParent[<span class="type">T</span>].partitioner <span class="keyword">else</span> <span class="type">None</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">getPartitions</span></span>: <span class="type">Array</span>[<span class="type">Partition</span>] = firstParent[<span class="type">T</span>].partitions</span><br><span class="line"></span><br><span class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">compute</span></span>(split: <span class="type">Partition</span>, context: <span class="type">TaskContext</span>): <span class="type">Iterator</span>[<span class="type">U</span>] =</span><br><span class="line">    f(context, split.index, firstParent[<span class="type">T</span>].iterator(split, context))</span><br><span class="line"></span><br><span class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">clearDependencies</span></span>() &#123;</span><br><span class="line">    <span class="keyword">super</span>.clearDependencies()</span><br><span class="line">    prev = <span class="literal">null</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>MapPartitionsRDD[U, T]的partitioner和它的第一个parent RDD的partitioner保持一致（如果需要保留partitioner的话），它的partitions就是它的firstParent的partitions。它的compute函数只是调用了flatMap实例化它时输入的函数。 再次聚焦需要传递的函数的函数类型, 实际传递的函数和调用它的代码：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">f: (<span class="type">TaskContext</span>, <span class="type">Int</span>, <span class="type">Iterator</span>[<span class="type">T</span>]) =&gt; <span class="type">Iterator</span>[<span class="type">U</span>],  <span class="comment">// (TaskContext, partition index, iterator)</span></span><br><span class="line"></span><br><span class="line">(context, pid, iter) =&gt; iter.flatMap(cleanF)</span><br><span class="line"></span><br><span class="line">f(context, split.index, firstParent[<span class="type">T</span>].iterator(split, context))</span><br></pre></td></tr></table></figure>
+
+<p>iter：Iterator[T]是一个Partition上的元素迭代器，用来遍历RDD[T]的第pid个partition上的所有元素。<code>firstParent[T].iterator(split, context)</code>就是返回parentRDD的对应partition的迭代器iter：Iterator[T]： 如果已经保存了就直接读取，否则重新计算（可以跳转看它的实现）。有了这个迭代器iter之后，然后用<code>iter.flatMap(cleanF)</code>来产生新的迭代器，返回类型是Iterator[U]，这个就是最终返回的RDD: RDD[U]的partition的迭代器啦。<code>iter.flatMap(cleanF)</code>只是纯粹的scala flatMap计算，在不同的node上运行。 这部分内容，可能比较绕，只有看着源码不断的跳转，才能比较好的理解。高度总结一下，Transformations函数的实现，就是对RDD上每一个partition的iterator进行相应的操作。</p>
+<h3 id="3-3-RDD隐式转换"><a href="#3-3-RDD隐式转换" class="headerlink" title="3.3 RDD隐式转换"></a>3.3 RDD隐式转换</h3><p>在RDD.scala文件的最后有一个object RDD，这个很有意思，也体现了scala implicit的强大之处: </p>
+<p><img src="C:\Users\zhouy1\AppData\Roaming\Typora\typora-user-images\image-20200604135932903.png" alt="image-20200604135932903"></p>
+<p>它的作用就是在编译代码的时候，scala编译器会自动识别特定类型的RDD，然后调用对应的implicit function来扩展这种特定类型的RDD的api函数，比如scala编译器看到RDD[K, V]，就会调用这个函数</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">implicit</span> <span class="function"><span class="keyword">def</span> <span class="title">rddToPairRDDFunctions</span></span>[<span class="type">K</span>, <span class="type">V</span>](rdd: <span class="type">RDD</span>[(<span class="type">K</span>, <span class="type">V</span>)])</span><br><span class="line">    (<span class="keyword">implicit</span> kt: <span class="type">ClassTag</span>[<span class="type">K</span>], vt: <span class="type">ClassTag</span>[<span class="type">V</span>], ord: <span class="type">Ordering</span>[<span class="type">K</span>] = <span class="literal">null</span>): <span class="type">PairRDDFunctions</span>[<span class="type">K</span>, <span class="type">V</span>] = &#123;</span><br><span class="line">  <span class="keyword">new</span> <span class="type">PairRDDFunctions</span>(rdd)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后这个RDD就拥有PairRDDFunctions类里面的专属函数啦：</p>
+<p><img src="C:\Users\zhouy1\AppData\Roaming\Typora\typora-user-images\image-20200604140006116.png" alt="image-20200604140006116"></p>
+<h2 id="4-编写RDD-API函数"><a href="#4-编写RDD-API函数" class="headerlink" title="4. 编写RDD API函数"></a>4. 编写RDD API函数</h2><p>只说不练假把式，终于到了动手环节了，打起精神啦！任务是编写一个和scala的flatten函数类似的RDD API函数:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="type">Seq</span>(<span class="type">Seq</span>(<span class="number">1</span>,<span class="number">2</span>), <span class="type">Seq</span>(<span class="number">3</span>)).flatten</span><br><span class="line">res0: <span class="type">Seq</span>[<span class="type">Int</span>] = <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<p>虽然它可以用<code>flatMap(x =&gt; x)</code>来代替（这也是为什么spark RDD api函数里面没有它），但是自己动手实现一下这个简单的api函数，可以加深对RDD模型的理解，也能熟悉Spark开发流程，甚至贡献代码给社区。</p>
+<h3 id="4-1-难点和突破口"><a href="#4-1-难点和突破口" class="headerlink" title="4.1 难点和突破口"></a>4.1 难点和突破口</h3><p>看到这个任务最直观的想法，就是修改一下spark的flatMap，比如：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">flatten</span></span>[<span class="type">U</span>: <span class="type">ClassTag</span>](): <span class="type">RDD</span>[<span class="type">U</span>] = withScope &#123;</span><br><span class="line">  <span class="keyword">new</span> <span class="type">MapPartitionsRDD</span>[<span class="type">U</span>, <span class="type">T</span>](<span class="keyword">this</span>, (context, pid, iter) =&gt; iter.flatten)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是问题没有那么简单，在Intellij里面你会看到iter: Iterator[T]没有flatten这个函数，因为可以flatten的数据集的元素必定是可以遍历的类型，比如Seq[Int]，所以Iterator[T]的变量没有flatten，只有类似Iterator[Seq[T]]]的变量才有。 然后第二想法，是用flatMap(x &#x3D;&gt; x):</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">flatten</span></span>[<span class="type">U</span>: <span class="type">ClassTag</span>](): <span class="type">RDD</span>[<span class="type">U</span>] = withScope &#123;</span><br><span class="line">  <span class="keyword">new</span> <span class="type">MapPartitionsRDD</span>[<span class="type">U</span>, <span class="type">T</span>](<span class="keyword">this</span>, (context, pid, iter) =&gt; iter.flatMap((x =&gt; x))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>再一次，失败了，同样因为x是T类型的，编译器认为它是不可遍历的，而flatMap必须接受可遍历类型作为返回。 到这里我们基本认清了问题的难点所在和关键突破口，是不是激起了你的挑战欲望，你可以自己试试。下一节开始讲可行的解决方案。</p>
+<h3 id="4-2-开发和测试"><a href="#4-2-开发和测试" class="headerlink" title="4.2 开发和测试"></a>4.2 开发和测试</h3><p>我们可以参考<a target="_blank" rel="noopener" href="https://github.com/scala/scala/blob/2.11.x/src/library/scala/collection/generic/GenericTraversableTemplate.scala#L169">Scala flatten</a>的实现源码和Spark flatMap的实现源码:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">flatten</span></span>[<span class="type">B</span>](<span class="keyword">implicit</span> asTraversable: <span class="type">A</span> =&gt; <span class="type">GenTraversableOnce</span>[<span class="type">B</span>]): <span class="type">CC</span>[<span class="type">B</span>] = &#123;</span><br><span class="line">  <span class="keyword">val</span> b = genericBuilder[<span class="type">B</span>]</span><br><span class="line">  <span class="keyword">for</span> (xs &lt;- sequential)</span><br><span class="line">    b ++= asTraversable(xs).seq</span><br><span class="line">  b.result()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">flatMap</span></span>[<span class="type">U</span>: <span class="type">ClassTag</span>](f: <span class="type">T</span> =&gt; <span class="type">TraversableOnce</span>[<span class="type">U</span>]): <span class="type">RDD</span>[<span class="type">U</span>] = withScope &#123;</span><br><span class="line">  <span class="keyword">val</span> cleanF = sc.clean(f)</span><br><span class="line">  <span class="keyword">new</span> <span class="type">MapPartitionsRDD</span>[<span class="type">U</span>, <span class="type">T</span>](<span class="keyword">this</span>, (context, pid, iter) =&gt; iter.flatMap(cleanF))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后编写spark flatten api函数如下：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">flatten</span></span>[<span class="type">U</span>: <span class="type">ClassTag</span>](<span class="keyword">implicit</span> asTraversable: <span class="type">T</span> =&gt; <span class="type">TraversableOnce</span>[<span class="type">U</span>]): <span class="type">RDD</span>[<span class="type">U</span>] = withScope &#123;</span><br><span class="line">  <span class="keyword">val</span> f = (x: <span class="type">T</span>) =&gt; asTraversable(x)</span><br><span class="line">  <span class="keyword">val</span> cleanF = sc.clean(f)</span><br><span class="line">  <span class="keyword">new</span> <span class="type">MapPartitionsRDD</span>[<span class="type">U</span>, <span class="type">T</span>](<span class="keyword">this</span>, (context, pid, iter) =&gt; iter.flatMap(cleanF))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中asTraversable是隐式函数，是为了把type T隐式地转换为可以遍历的TraversableOnce[U]类型（是Seq[Int]的父类，深入可以去了解scala的type system）。为什么要这样转换，就如第一节讲的，因为Spark代码里面，RDD[T]的元素（也是<code>iter</code>迭代器的元素）类型是T，编译器并不知道T是否是可遍历类型，也就不能进一步flatten啦。</p>
+<p>开始测试代码了，打开你的Terminal，macOS上我用<a target="_blank" rel="noopener" href="https://www.iterm2.com/">iTerm2</a></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b <span class="type">SN</span>-add-rdd-flatten-tag<span class="number">-210</span></span><br><span class="line">build/sbt clean <span class="keyword">package</span></span><br><span class="line"><span class="comment">// 复制flatten的实现到RDD.scala里面，比如flatMap函数下面</span></span><br><span class="line"><span class="keyword">export</span> <span class="type">SPARK_PREPEND_CLASSES</span>=<span class="literal">true</span></span><br><span class="line">./build/sbt compile</span><br></pre></td></tr></table></figure>
+
+<p><code>SPARK_PREPEND_CLASSES</code>是用于迭代式开发，我们已经用<code>sbt package</code>打包好了所有的依赖，只要让Spark编译你修改的部分，而不用编译全部的依赖，加速开发。参考<a target="_blank" rel="noopener" href="http://spark.apache.org/developer-tools.html">Useful Developer Tools</a></p>
+<p>然后在spark-shell里面就能看到你的flatten函数了，结果如下，如果你也成功了，就给我点star吧，哈哈：</p>
+<p><img src="C:\Users\zhouy1\AppData\Roaming\Typora\typora-user-images\image-20200604140123577.png" alt="image-20200604140123577"></p>
+<p>完整的开发流程，还需要有测试:</p>
+<blockquote>
+<p>command + o， 跳转到RDDSuite.scala</p>
+</blockquote>
+<p>在<code>test(&quot;basic operations&quot;) {} </code>下面添加：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">test(<span class="string">&quot;flatten&quot;</span>) &#123;</span><br><span class="line">  <span class="keyword">val</span> nestedNums = sc.makeRDD(<span class="type">Array</span>(<span class="type">Array</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>), <span class="type">Array</span>(<span class="number">4</span>, <span class="number">5</span>), <span class="type">Array</span>(<span class="number">6</span>)), <span class="number">2</span>)</span><br><span class="line">  assert(nestedNums.flatten.collect().toList === <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后确认测试通过:</p>
+<p><img src="C:\Users\zhouy1\AppData\Roaming\Typora\typora-user-images\image-20200604140151225.png" alt="image-20200604140151225"></p>
+<p>到了这一步，算是大功告成了，你甚至已经可以给spark社区提交pr啦，哈哈。 因为有了test，我们可以随意重构我们的代码，比如不想用flatMap：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">flatten</span></span>[<span class="type">U</span>: <span class="type">ClassTag</span>](<span class="keyword">implicit</span> asTraversable: <span class="type">T</span> =&gt; <span class="type">TraversableOnce</span>[<span class="type">U</span>]): <span class="type">RDD</span>[<span class="type">U</span>] = withScope &#123;</span><br><span class="line">  <span class="keyword">new</span> <span class="type">MapPartitionsRDD</span>[<span class="type">U</span>, <span class="type">T</span>](<span class="keyword">this</span>, (context, pid, iter) =&gt; &#123;</span><br><span class="line">    <span class="keyword">var</span> newIter: <span class="type">Iterator</span>[<span class="type">U</span>] = <span class="type">Iterator</span>.empty</span><br><span class="line">    <span class="keyword">for</span> (x &lt;- iter) newIter ++= asTraversable(x)</span><br><span class="line">    newIter</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>或者用更简洁的foldLeft:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">flatten</span></span>[<span class="type">U</span>: <span class="type">ClassTag</span>](<span class="keyword">implicit</span> asTraversable: <span class="type">T</span> =&gt; <span class="type">TraversableOnce</span>[<span class="type">U</span>]): <span class="type">RDD</span>[<span class="type">U</span>] = withScope &#123;</span><br><span class="line">  <span class="keyword">new</span> <span class="type">MapPartitionsRDD</span>[<span class="type">U</span>, <span class="type">T</span>](<span class="keyword">this</span>, (context, pid, iter) =&gt; &#123;</span><br><span class="line">    <span class="keyword">val</span> emptyIter: <span class="type">Iterator</span>[<span class="type">U</span>] = <span class="type">Iterator</span>.empty</span><br><span class="line">    iter.foldLeft[<span class="type">Iterator</span>[<span class="type">U</span>]](emptyIter)((newIter, x) =&gt; newIter ++ asTraversable(x))</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>完整代码可以参考我创建的<code>SN-add-rdd-flatten-tag-210</code>branch：<a target="_blank" rel="noopener" href="https://github.com/linbojin/spark/commit/5abe3fda10f687f07aafe15bd3f96aab908f2107">https://github.com/linbojin/spark/commit/5abe3fda10f687f07aafe15bd3f96aab908f2107</a></p>
+<h3 id="4-3-使用RDD隐式转换"><a href="#4-3-使用RDD隐式转换" class="headerlink" title="4.3 使用RDD隐式转换"></a>4.3 使用RDD隐式转换</h3><p>上面的实现，个人觉得已经OK，但是有一个不是”问题”的问题，如果你把flatten作用到一个不适用的RDD上面：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="keyword">val</span> rdd = sc.parallelize(<span class="type">Seq</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>))</span><br><span class="line">rdd: org.apache.spark.rdd.<span class="type">RDD</span>[<span class="type">Int</span>] = <span class="type">ParallelCollectionRDD</span>[<span class="number">0</span>] at parallelize at &lt;console&gt;:<span class="number">24</span></span><br><span class="line"></span><br><span class="line">scala&gt; rdd.flatten</span><br><span class="line">&lt;console&gt;:<span class="number">27</span>: error: <span class="type">No</span> <span class="keyword">implicit</span> view available from <span class="type">Int</span> =&gt; scala.collection.<span class="type">TraversableOnce</span>[<span class="type">U</span>].</span><br><span class="line">       rdd.flatten</span><br><span class="line">           ^</span><br></pre></td></tr></table></figure>
+
+<p>我说它不是“问题“，因为scala也是这样的：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="keyword">val</span> l = <span class="type">List</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>)</span><br><span class="line">l: <span class="type">List</span>[<span class="type">Int</span>] = <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">scala&gt; l.flatten</span><br><span class="line">&lt;console&gt;:<span class="number">13</span>: error: <span class="type">No</span> <span class="keyword">implicit</span> view available from <span class="type">Int</span> =&gt; scala.collection.<span class="type">GenTraversableOnce</span>[<span class="type">B</span>].</span><br><span class="line">       l.flatten</span><br><span class="line">         ^</span><br></pre></td></tr></table></figure>
+
+<p>那么真要解决它，也就是在不适用的RDD上面，不要显示这个函数，应该怎么做？用RDD隐式转换！这种方法也有一些limitation，因为RDD是invariant的（一个很复杂的topic，这里不讲了），不能做到像上面的方法那样generic，但是它的思想是很值得学习的，也是很”spark“的解决方案:</p>
+<p>第一步：参考PairRDDFunctions.scala和DoubleRDDFunctions.scala，在和RDD.scala相同的目录下创建TraversableRDDFunctions.scala：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.apache.spark.rdd</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> scala.reflect.<span class="type">ClassTag</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.spark.internal.<span class="type">Logging</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Extra functions available on RDDs of TraversableOnce through an implicit conversion.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TraversableRDDFunctions</span>[<span class="type">U</span>](<span class="params">self: <span class="type">RDD</span>[<span class="type">Seq</span>[<span class="type">U</span>]]</span>)(<span class="params">implicit et: <span class="type">ClassTag</span>[<span class="type">U</span>]</span>) <span class="keyword">extends</span> <span class="title">Logging</span> <span class="keyword">with</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">flattenX</span></span>: <span class="type">RDD</span>[<span class="type">U</span>] = self.withScope &#123;</span><br><span class="line">    self.mapPartitions(iter =&gt; iter.flatten) <span class="comment">// iter.foldLeft(Iterator.empty)((a,b) =&gt; a ++ b.toIterator) )</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第二步，添加隐式转换函数到object RDD里面：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">implicit</span> <span class="function"><span class="keyword">def</span> <span class="title">rddToTraversableRDDFunctions</span></span>[<span class="type">U</span>](rdd: <span class="type">RDD</span>[<span class="type">Seq</span>[<span class="type">U</span>]])</span><br><span class="line">    (<span class="keyword">implicit</span> et: <span class="type">ClassTag</span>[<span class="type">U</span>]): <span class="type">TraversableRDDFunctions</span>[<span class="type">U</span>] = &#123;</span><br><span class="line">  <span class="keyword">new</span> <span class="type">TraversableRDDFunctions</span>(rdd)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第三步，编译：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./build/sbt compile</span><br></pre></td></tr></table></figure>
+
+<p>第四步，运行spark-shell，可以看到flattenX函数只出现在RDD[Seq[Int]]上：</p>
+<p><img src="C:\Users\zhouy1\AppData\Roaming\Typora\typora-user-images\image-20200604140222345.png" alt="image-20200604140222345"></p>
+<p>现在可以简单示意一下，为什么这种方法，有局限性，对RDD[List[Int]]，flatten照常工作，flattenX却不能了，因为RDD is invariant:</p>
+<blockquote>
+<p>List[Int]是Seq[?]的子类，但是RDD[List[Int]]不是RDD[Set[?]]的子类：</p>
+</blockquote>
+<p><img src="C:\Users\zhouy1\AppData\Roaming\Typora\typora-user-images\image-20200604140244593.png" alt="image-20200604140244593"></p>
+<p>这部分完整代码，可以参考我的这个commit: <a target="_blank" rel="noopener" href="https://github.com/linbojin/spark/commit/f9dd9af894fdab98f2512faae091f1be70cab0ac">https://github.com/linbojin/spark/commit/f9dd9af894fdab98f2512faae091f1be70cab0ac</a></p>
+<p>感谢你阅读完我这么长的笔记，也恭喜你现在已经具备开发RDD API函数的能力啦。</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>
