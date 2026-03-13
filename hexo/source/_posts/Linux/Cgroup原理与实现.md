@@ -63,7 +63,7 @@ $ echo task_pid > /sys/fs/cgroup/memory/test/tasks
 
 他们之间的关系如下图：
 
-![Image](Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648278265986.jpg)
+![Image](640-1648278265986.jpg)
 
 我们可以把 `层级` 中的一个目录当成是一个 `CGroup`，那么目录里面的文件就是这个 `CGroup` 用于控制进程组使用各种资源的信息（比如 `tasks` 文件用于保存这个 `CGroup` 控制的进程组所有的进程PID，而 `memory.limit_in_bytes` 文件用于描述这个 `CGroup` 能够使用的内存字节数）。
 
@@ -75,19 +75,19 @@ $ echo task_pid > /sys/fs/cgroup/memory/test/tasks
 
 1. 一个 `层级` 可以附加多个 `子系统`，如下图：
 
-![Image](Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648278278150.jpg)
+![Image](640-1648278278150.jpg)
 
 1. 一个已经被挂载的 `子系统` 只能被再次挂载在一个空的 `层级` 上，不能挂载到已经挂载了其他 `子系统` 的 `层级`，如下图：
 
-![Image](Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648278258818.jpg)
+![Image](640-1648278258818.jpg)
 
 1. 每个 `任务` 只能在同一个 `层级` 的唯一一个 `CGroup` 里，并且可以在多个不同层级的 `CGroup` 中，如下图：
 
-![Image](Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648278270015.jpg)
+![Image](640-1648278270015.jpg)
 
 1. 子进程在被 `fork` 出时自动继承父进程所在 `CGroup`，但是 `fork` 之后就可以按需调整到其他 `CGroup`，如下图：
 
-![Image](Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648278265233.jpg)
+![Image](640-1648278265233.jpg)
 
 关于 `CGroup` 的介绍和使用就到这里，接下来我们来分析一下内核是怎么实现 `CGroup` 的。前面我们介绍了 `CGroup` 的使用与基本概念，接下来将通过分析源码（本文使用的 Linux2.6.25 版本）来介绍 `CGroup` 的实现原理。在分析源码前，我们先介绍几个重要的数据结构，因为 `CGroup` 就是通过这几个数据结构来控制进程组对各种资源的使用。
 
@@ -123,7 +123,7 @@ struct cgroup {
 
 我们通过下面图片来描述 `层级` 中各个 `cgroup` 组成的树状关系：
 
-![image-20220326142821827](Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/image-20220326142821827.png)
+![image-20220326142821827](image-20220326142821827.png)
 
 ## `cgroup_subsys_state` 结构体
 
@@ -157,7 +157,7 @@ struct mem_cgroup {
 
 从 `mem_cgroup` 结构的定义可以发现，`mem_cgroup` 结构的第一个字段就是一个 `cgroup_subsys_state` 结构。下面的图片展示了他们之间的关系：
 
-![Image](Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648275969919.jpg)cgroup-state-memory
+![Image](640-1648275969919.jpg)cgroup-state-memory
 
 从上图可以看出，`mem_cgroup` 结构包含了 `cgroup_subsys_state` 结构，`内存子系统` 对外暴露出 `mem_cgroup` 结构的 `cgroup_subsys_state` 部分（即返回 `cgroup_subsys_state` 结构的指针），而其余部分由 `内存子系统` 自己维护和使用。
 
@@ -165,7 +165,7 @@ struct mem_cgroup {
 
 `cgroup` 结构与 `cgroup_subsys_state` 结构之间的关系如下图：
 
-![Image](Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648275970247.jpg)cgroup-subsys-state
+![Image](640-1648275970247.jpg)cgroup-subsys-state
 
 ## `css_set` 结构体
 
@@ -203,7 +203,7 @@ struct task_struct {
 
 `task_struct` 结构与 `css_set` 结构的关系如下图：
 
-![Image](Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648275970249.jpg)
+![Image](640-1648275970249.jpg)
 
 cgroup-task-cssset
 

@@ -17,7 +17,7 @@ categories:
 
 下图是现在可以看到的常见的存储器层次机构：
 
-[![Memory Hierarchy](Cache%20Memory/2020-01-06_memory-hierarchy.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-06_memory-hierarchy.png)
+[![Memory Hierarchy](2020-01-06_memory-hierarchy.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-06_memory-hierarchy.png)
 
 ### 2. Principle of Locality
 
@@ -38,11 +38,11 @@ categories:
 
 在深入了解 Cache 的技术细节之前，我们可以先看看关于 Cache 在现代计算机系统中的 big picture。如下图所示，ALU 不是直接和主存相连，所有的 load 和 store 通过 Cache 完成，Cache 是 CPU 芯片组成的一部分。
 
-[![Cache System Structure](Cache%20Memory/2020-01-07_cache-system-structure.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-system-structure.png)
+[![Cache System Structure](2020-01-07_cache-system-structure.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-system-structure.png)
 
 随着计算机系统的发展，Cache 不仅仅只有一层，可能被分为多层。于此同时，人们发现，将指令的 Cache 和 数据的 Cache 分开可以获得更大的系统增益。而且，CPU也从单核单处理器逐渐发展到多核多处理器，所以一个现代的计算机系统中，Cache 的组成方式可能如下图所示：
 
-[![Intel Core i7 Cache Hierarchy](Cache%20Memory/2020-01-06_intel-core-i7-cache-hierarchy.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-06_intel-core-i7-cache-hierarchy.png)
+[![Intel Core i7 Cache Hierarchy](2020-01-06_intel-core-i7-cache-hierarchy.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-06_intel-core-i7-cache-hierarchy.png)
 
 在这个图中，只显示了一个处理器(Processor)，处理器中有四个核(Core)，每个 Core 会有自己的L1数据缓存和L1指令缓存，也有自己统一的 L2 缓存。四个核之间会共享 L3 缓存，L3 缓存和主存直接沟通。
 
@@ -56,7 +56,7 @@ Cache 是以 `缓存行(Cache Line)` 为基本组织单位的，下图是一个�
 
 假设内容容量是 M，内存物理地址为 `m` 个bit。CPU 在访问缓存时，物理地址会被解析成如下的格式
 
-[![Cache Line 地址解析](Cache%20Memory/2020-01-07_cache-line-address.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-line-address.png)
+[![Cache Line 地址解析](2020-01-07_cache-line-address.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-line-address.png)
 
 这里，有如下的关系
 
@@ -76,7 +76,7 @@ S=2sB=2bm=t+s+b(1)(2)(3)(1)S=2s(2)B=2b(3)m=t+s+b
 
 下图是一个典型的 Cache Read 的流程
 
-[![Cache Read](Cache%20Memory/2020-01-07_cache-read.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-read.png)
+[![Cache Read](2020-01-07_cache-read.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-read.png)
 
 ## 3. Cache Implement Details
 
@@ -99,7 +99,7 @@ S=2sB=2bm=t+s+b(1)(2)(3)(1)S=2s(2)B=2b(3)m=t+s+b
 
 全相联意味着主存中的数据块可以出现在任意一个缓存行中。这种方式下替换算法(Replacement Policy)有最大的灵活度，也意味着可以有最低的 `Cache Miss Rate`。但是因为没有索引可以使用，检查一个缓存行是否命中需要在整个 Cache 范围内搜索，这带来了查找电路的大量延时。因此只有在缓存极小的情况下才有可能使用这种映射方式。
 
-[![Fully Associative](Cache%20Memory/2020-01-07_cache-fully-associative.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-fully-associative.png)
+[![Fully Associative](2020-01-07_cache-fully-associative.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-fully-associative.png)
 
 ### 2. Direct Mapped Cache
 
@@ -111,7 +111,7 @@ S=2sB=2bm=t+s+b(1)(2)(3)(1)S=2s(2)B=2b(3)m=t+s+b
 
 下图是一个Memory 为 16Kbytes， Cache Line 为 4bytes 的直接映射缓存例子。
 
-[![Direct Mapped](Cache%20Memory/2020-01-07_cache-direct-mapped.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-direct-mapped.png)
+[![Direct Mapped](2020-01-07_cache-direct-mapped.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-direct-mapped.png)
 
 ### 3. Set Associative Cache
 
@@ -120,7 +120,7 @@ S=2sB=2bm=t+s+b(1)(2)(3)(1)S=2s(2)B=2b(3)m=t+s+b
 - 首先通过 set index 来确认数据块应该放在哪一个 set 中
 - 确认到 set 之后，通过 cache 替换策略(Replacement Policy)来确定到底放在组中的那个缓存行
 
-[![Set Associative](Cache%20Memory/2020-01-07_cache-set-associative.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-set-associative.png)
+[![Set Associative](2020-01-07_cache-set-associative.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-set-associative.png)
 
 ## 4. Cache Replacement Policy
 
@@ -180,7 +180,7 @@ $ cat /sys/devices/system/cpu/cpu0/cache/index0/ways_of_associativity
 
 这里是 Intel Core i7 L1数据缓存的实际例子
 
-[![Intel Core i7 L1 Data Cache](Cache%20Memory/2020-01-07_intel-i7-l1-data-cache.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_intel-i7-l1-data-cache.png)
+[![Intel Core i7 L1 Data Cache](2020-01-07_intel-i7-l1-data-cache.png)](https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_intel-i7-l1-data-cache.png)
 
 ## 6. Cache Write
 

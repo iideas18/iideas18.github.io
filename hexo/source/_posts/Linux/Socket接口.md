@@ -10,7 +10,7 @@ categories:
 
 Socket的英文原本意思是 `孔` 或 `插座`。但在计算机科学中通常被称作为 `套接字`，主要用于相同机器的不同进程间或者不同机器间的通信。Socket的使用很多网络编程的书籍都有介绍，所以本文不打算介绍Socket的使用，只讨论Socket的具体实现，所以如果对Socket不太了解的同学可以先查阅Socket相关的资料或者书籍。
 
-在Linux内核中，Socket的实现分为三层，第一层是 `GLIBC接口层`，第二层是 `BSD接口层`，第三层是 `具体的协议层`（如Unix sokcet或者INET socket）。如下图所示： ![Image](Socket%E6%8E%A5%E5%8F%A3/640.png)
+在Linux内核中，Socket的实现分为三层，第一层是 `GLIBC接口层`，第二层是 `BSD接口层`，第三层是 `具体的协议层`（如Unix sokcet或者INET socket）。如下图所示： ![Image](640.png)
 
 GLIBC层在用户态实现，提供一系列的socket族系统调用让用户使用。BSD层在内核态实现，主要是为了让不同的协议能够使用同一套接口来访问而创造的，如上图所示， `Unix socket` 和 `Inet socket` 都可以通过接入 `BSD接口层` 来向用户提供相同的接口。 `具体的协议层` 是为了实现不同的协议或者功能而存在的，如 `Unix socket` 主要是用于进程间通信，`Inet socket` 主要用于网络数据传输等。
 
@@ -218,7 +218,7 @@ asmlinkage long sys_socketcall(int call, unsigned long *args)
 
 所以从中得到，当在用户态调用 `socket()` 函数时实际调用的是 `sys_socket()` 内核函数，其他的 `Socket族系统调用` 道理与 `socket()` 系统调用一致。
 
-通过下面一幅图来展示 `Socket族系统调用` 的原理： ![Image](Socket%E6%8E%A5%E5%8F%A3/640-1648278162793.png)
+通过下面一幅图来展示 `Socket族系统调用` 的原理： ![Image](640-1648278162793.png)
 
 ### sys_socket()函数
 

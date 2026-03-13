@@ -19,7 +19,7 @@ Original songsong001 [Linux内核那些事](javascript:void(0);) *2021-08-10 09:
 
 我们先来看看 `OverlayFS` 基本原理（图片来源于网络）：
 
-![Image](OverlayFS%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640.png)overlayfs-map
+![Image](640.png)overlayfs-map
 
 从上图可知，`OverlayFS` 文件系统主要有三个角色，`lowerdir`、`upperdir` 和 `merged`。`lowerdir` 是只读层，用户不能修改这个层的文件；`upperdir` 是可读写层，用户能够修改这个层的文件；而 `merged` 是合并层，把 `lowerdir` 层和 `upperdir` 层的文件合并展示。
 
@@ -96,7 +96,7 @@ static int ovl_fill_super(struct super_block *sb, void *data, int silent)
 
 最后，其各个数据结构的关系如下图：
 
-![Image](OverlayFS%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648276178342.png)overlayfs-relation
+![Image](640-1648276178342.png)overlayfs-relation
 
 在上面的代码中出现的 `ovl_entry` 结构用于记录 `OverlayFS` 文件系统中某个文件或者目录所在的真实位置，由于 `OverlayFS` 文件系统是一个联合文件系统，并不是真正存在于磁盘的文件系统，所以在 `OverlayFS` 文件系统中的文件都要指向真实文件系统中的位置。
 
@@ -127,7 +127,7 @@ struct ovl_entry {
 
 `__upperdentry` 和 `lowerdentry` 是 `ovl_entry` 结构比较重要的两个字段，一个指向文件所在 `upper` 目录中的dentry对象，另外一个指向文件所在 `lower` 目录中的dentry对象，如下图：
 
-![Image](OverlayFS%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648276172961.png)overlayfs-mount
+![Image](640-1648276172961.png)overlayfs-mount
 
 在 `OverlayFS` 文件系统中，每个文件或目录都由一个 `ovl_entry` 结构管理。如果我们把 `dentry` 结构当成是文件或目录的实体，那么 `__upperdentry` 指向的就是文件或目录所在 `upper` 目录中的实体，而 `lowerdentry` 指向的就是文件或目录所在 `lower` 目录的实体。
 

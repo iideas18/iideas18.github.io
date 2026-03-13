@@ -22,7 +22,7 @@ Docker在1.9版本中引入了一整套的docker network子命令和跨主机网
 
 libnetwork和Docker daemon及各个网络驱动的关系可以通过图进行形象的表示。
 
-![image-20220330143641711](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330143641711.png)
+![image-20220330143641711](image-20220330143641711.png)
 
 如图所示，Docker daemon通过调用libnetwork对外提供的API完成网络的创建和管理等功能。libnetwork中则使用了CNM来完成网络功能的提供。而CNM中主要有沙盒（sandbox）、端点（endpoint）和网络（network）这3种组件。libnetwork中内置的5种驱动则为libnetwork提供了不同类型的网络服务。
 
@@ -48,74 +48,74 @@ libnetwork和Docker daemon及各个网络驱动的关系可以通过图进行形
 
 在初步了解了libnetwork中各个组件和驱动后，为了帮助读者更加深入地理解libnetwork中的CNM模型和熟悉docker network子命令的使用，这里介绍一个libnetwork官方GitHub上示例的搭建过程，并在搭建成功后对其中容器之间的连通性进行验证。
 
-![image-20220330144024141](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144024141.png)
+![image-20220330144024141](image-20220330144024141.png)
 
 在这个例子中，使用Docker默认的bridge驱动进行演示。在此例中，会在Docker上组成一个网络拓扑的应用。
 
 - 它有两个网络，其中backend network为后端网络，frontend network则为前端网络，两个网络互不联通。
 - 其中container1和container3各拥有一个端点，并且分别加入到后端网络和前端网络中。而container2则有两个端点，它们两个分别加入到后端网络和前端网络中。通过以下命令分别创建名为backend和frontend的两个网络。
 
-![image-20220330144040295](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144040295.png)
+![image-20220330144040295](image-20220330144040295.png)
 
 使用docker network ls可以查看这台主机上所有的Docker网络
 
-![image-20220330144055937](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144055937.png)
+![image-20220330144055937](image-20220330144055937.png)
 
 除了刚才创建的backend和frontend之外，还有3个网络。这3个网络是Docker daemon默认创建的，分别使用了3种不同的驱动，而这3种驱动则对应了Docker原来的3种网络模式，这个在后面做详细讲解。需要注意的是，3种内置的默认网络是无法使用docker network rm进行删除的。
 
 在创建了所需要的两个网络之后，接下来创建3个容器，并使用如下命令将名为container1和container2的容器加入到backend网络中，将名为container3的容器加入到frontend网络中。
 
-![image-20220330144114544](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144114544.png)
+![image-20220330144114544](image-20220330144114544.png)
 
 分别在container1和container3中使用ping命令测试其与container2的连通性，因为container1与container2都在backend网络中，所以两者可以连通。但是，因为container3和container2不在一个网络中，所以两个之间并不能连通。可以在container2中使用命令ifconfig来查看此容器中的网卡及其配置情况。可以看到，此容器中只有一块以太网卡，其名称为eth0，并且配置了和网桥backend同在一个IP段的IP地址，这个网卡就是CNM模型中的端点。最后，使用如下命令将container2加入到frontend网络中。
 
-![image-20220330144137491](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144137491.png)
+![image-20220330144137491](image-20220330144137491.png)
 
 再次，在container2中使用命令ifconfig来查看此容器中的网卡及其配置情况。发现多了一块名为eth1的以太网卡，并且其IP和网桥frontend同在一个IP段。测试container2与container3的连通性后，可以发现两者已经连通。可以看出，docker network connect命令会在所连接的容器中创建新的网卡，以完成其与所指定网络的连接。2. bridge驱动实现机制分析前面我们演示了bridge驱动下的CNM使用方式，接下来本节将会分析bridge驱动的实现机制。● docker0网桥当在一台未经特殊网络配置的Ubuntu机器上安装完Docker之后，在宿主机上通过使用ifconfig命令可以看到多了一块名为docker0的网卡，假设IP为172.17.0.1/16。有了这样一块网卡，宿主机也会在内核路由表上添加一条到达相应网络的静态路由，可通过route -n命令查看。
 
-![image-20220330144148743](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144148743.png)
+![image-20220330144148743](image-20220330144148743.png)
 
 此条路由表示所有目的IP地址为172.17.0.0/16的数据包从docker0网卡发出。然后使用docker run命令创建一个执行shell（/bin/bash）的Docker容器，假设容器名称为con1。在con1容器中可以看到它有两块网卡lo和eth0。lo设备不必多说，是容器的回环网卡；eth0即为容器与外界通信的网卡，eth0的IP为172.17.0.2/16，和宿主机上的网桥docker0在同一个网段。查看con1的路由表，可以发现con1的默认网关正是宿主机的docker0网卡，通过测试，con1可以顺利访问外网和宿主机网络，因此表明con1的eth0网卡与宿主机的docker0网卡是相互连通的。这时在其他控制台窗口查看宿主机的网络设备，会发现有一块以“veth”开头的网卡，如vethe043f86，我们可以大胆猜测这块网卡肯定是veth设备了，而veth pair总是成对出现的。在3.1节中介绍过，veth pair通常用来连接两个network namespace，那么另一个应该是Docker容器con1中的eth0了。之前已经判断con1容器的eth0和宿主机的docker0是相连的，那么vethe043f86也应该是与docker0相连的，不难想到，docker0就不只是一个简单的网卡设备了，而是一个网桥。真实情况正是如此，图3-18即为Docker默认网络模式（bridge模式）下的网络环境拓扑图，创建了docker0网桥，并以veth pair连接各容器的网络，容器中的数据通过docker0网桥转发到eth0网卡上。
 
-![image-20220330144232372](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144232372.png)
+![image-20220330144232372](image-20220330144232372.png)
 
 这里网桥的概念等同于交换机，为连在其上的设备转发数据帧。网桥上的veth网卡设备相当于交换机上的端口，可以将多个容器或虚拟机连接在其上，这些端口工作在二层，所以是不需要配置IP信息的。图中docker0网桥就为连在其上的容器转发数据帧，使得同一台宿主机上的Docker容器之间可以相互通信。读者应该注意到docker0既然是二层设备，其上怎么也配置了IP呢？docker0是普通的Linux网桥，它是可以在上面配置IP的，可以认为其内部有一个可以用于配置IP信息的网卡接口（如同每一个Open vSwitch网桥都有一个同名的内部接口一样）。在Docker的桥接网络模式中，docker0的IP地址作为连于之上的容器的默认网关地址存在。在Linux中，可以使用brctl命令查看和管理网桥（需要安装bridge-utils软件包）如查看本机上的Linux网桥以及其上的端口：
 
-![image-20220330144310887](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144310887.png)
+![image-20220330144310887](image-20220330144310887.png)
 
 更多关于brctl命令的功能和使用方法，请读者通过man brctl或brctl ——help查阅，在第4章中，会大量用到此命令。docker0网桥是在Docker daemon启动时自动创建的，其IP默认为172.17.0.1/16，之后创建的Docker容器都会在docker0子网的范围内选取一个未占用的IP使用，并连接到docker0网桥上。Docker提供了如下参数可以帮助用户自定义docker0的设置。❏ ——bip=CIDR：设置docker0的IP地址和子网范围，使用CIDR格式，如192.168.100.1/24。注意这个参数仅仅是配置docker0的，对其他自定义的网桥无效。并且在指定这个参数的时候，宿主机是不存在docker0的或者docker0已存在且docker0的IP和参数指定的IP一致才行。❏ ——fixed-cidr=CIDR：限制Docker容器获取IP的范围。Docker容器默认获取的IP范围为Docker网桥（docker0网桥或者——bridge指定的网桥）的整个子网范围，此参数可将其缩小到某个子网范围内，所以这个参数必须在Docker网桥的子网范围内。如docker0的IP为172.17.0.1/16，可将——fixed-cidr设为172.17.1.1/24，那么Docker容器的IP范围将为172.17.1.1～172.17.1.254。❏ ——mtu=BYTES：指定docker0的最大传输单元（MTU）。除了使用docker0网桥外，还可以使用自己创建的网桥，使用——bridge=BRIDGE参数指定。使用如下命令添加一个名为br0的网桥，并且为其配置IP。
 
-![image-20220330144329390](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144329390.png)
+![image-20220330144329390](image-20220330144329390.png)
 
 然后在启动Docker daemon的时候使用——bridge=br0指定使用br0网桥即可。注意此参数若和——bip参数同时使用会产生冲突。以上参数在Docker daemon启动时指定，如docker daemon ——fixed-cidr=172.17.1.1/24。在Ubuntu中，也可以将这些参数写在DOCKER_OPTS变量中（位于/etc/default/docker文件中），然后重启Docker服务。● iptables规则Docker安装完成后，将默认在宿主机系统上增加一些iptables规则，以用于Docker容器和容器之间以及和外界的通信，可以使用iptables-save命令查看。其中nat表上的POSTROUTING链有这么一条规则：
 
-![image-20220330144352342](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144352342.png)
+![image-20220330144352342](image-20220330144352342.png)
 
 这条规则关系着Docker容器和外界的通信，含义是将源地址为172.17.0.0/16的数据包（即Docker容器发出的数据），当不是从docker0网卡发出时做SNAT（源地址转换，将IP包的源地址替换为相应网卡的地址）。这样一来，从Docker容器访问外网的流量，在外部看来就是从宿主机上发出的，外部感觉不到Docker容器的存在。那么，外界想要访问Docker容器的服务时该怎么办？我们启动一个简单的Web服务容器，观察iptables规则有何变化。首先启动一个Web容器，将其5000端口映射到宿主机的5000端口上。
 
-![image-20220330144401967](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144401967.png)
+![image-20220330144401967](image-20220330144401967.png)
 
 然后查看iptables规则，省略部分无用信息。
 
-![image-20220330144431843](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144431843.png)
+![image-20220330144431843](image-20220330144431843.png)
 
 可以看到，在nat和filter的DOCKER链中分别增加了一条规则，这两条规则将访问宿主机5000端口的流量转发到172.17.0.4的5000端口上（真正提供服务的Docker容器IP端口），所以外界访问Docker容器是通过iptables做DNAT（目的地址转换）实现的。此外，Docker的forward规则默认允许所有的外部IP访问容器，可以通过在filter的DOCKER链上添加规则来对外部的IP访问做出限制，如只允许源IP为8.8.8.8的数据包访问容器，需要添加如下规则：
 
-![image-20220330144504830](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144504830.png)
+![image-20220330144504830](image-20220330144504830.png)
 
 不仅仅是与外界间通信，Docker容器之间互相通信也受到iptables规则限制。通过前面的学习，了解到同一台宿主机上的Docker容器默认都连在docker0网桥上，它们属于一个子网，这是满足相互通信的第一步。同时，Docker daemon会在filter的FORWARD链中增加一条ACCEPT的规则（——icc=true）：
 
-![image-20220330144518279](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144518279.png)
+![image-20220330144518279](image-20220330144518279.png)
 
 这是满足相互通信的第二步。当Docker daemon启动参数——icc（icc参数表示是否允许容器间相互通信）设置为false时，以上规则会被设置为DROP, Docker容器间的相互通信就被禁止，这种情况下，想让两个容器通信就需要在docker run时使用——link选项。在Docker容器和外界通信的过程中，还涉及了数据包在多个网卡间的转发（如从docker0网卡到宿主机eth0的转发），这需要内核将ip-forward功能打开，即将ip_forward系统参数设为1。Dockerdaemon启动的时候默认会将其设为1（——ip-forward=true），也可以通过以下命令手动设置：
 
-![image-20220330144549209](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144549209.png)
+![image-20220330144549209](image-20220330144549209.png)
 
 以上过程中所涉及的Docker daemon启动参数如下。❏ ——iptables：是否允许Docker daemon设置宿主机的iptables规则，默认为true。当设为false时，Docker daemon将不会改变你宿主机上的iptables规则。❏ ——icc：是否允许Docker容器间相互通信，默认为true。true或false改变的是FORWARD链中相应iptables规则的策略（ACCEPT、DROP）。由于操作的是iptables规则，所以需要——iptables=true才能生效。❏ ——ip-forward：是否将ip_forward参数设为1，默认为true，用于打开Linux内核的ip数据包转发功能。这些参数也是在Docker daemon启动时进行设置的，所以可以设置在DOCKER_OPTS变量中。
 
 ● Docker容器的DNS和主机名同一个Docker镜像可以启动很多个Docker容器，通过查看，它们的主机名并不一样，也即是说主机名并非是被写入镜像中的。在3.4节中已经提及，实际上容器中/etc目录下有3个文件是容器启动后被虚拟文件覆盖掉的，分别是/etc/hostname、/etc/hosts、/etc/resolv.conf，通过在容器中运行mount命令可以查看。
 
-![image-20220330144613766](Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144613766.png)
+![image-20220330144613766](image-20220330144613766.png)
 
 这样能解决主机名的问题，同时也能让DNS及时更新（改变resolv.conf）。由于这些文件的维护方法随着Docker版本演进而不断变化，因此尽量不修改这些文件，而是通过Docker提供的参数进行相关设置，参数配置方式如下。❏ -h HOSTNAME或者——hostname=HOSTNAME：设置容器的主机名，此名称会写在/etc/hostname和/etc/hosts文件中，也会在容器的bash提示符中看到。但是在外部，容器的主机名是无法查看的，不会出现在其他容器的hosts文件中，即使使用docker ps命令也查看不到。此参数是docker run命令的参数，而非Docker daemon的启动参数。❏ ——dns=IP_ADDRESS...：为容器配置DNS，写在/etc/resolv.conf中。该参数既可以在Docker daemon启动的时候设置也可以在docker run时设置，默认为8.8.8.8和8.8.4.4。注意对以上3个文件的修改不会被docker commit保存，也就是不会保存在镜像中，重启容器也会导致修改失效。另外，在不稳定的网络环境下使用需要特别注意DNS的设置。至此，Docker基础的网络使用方式已经介绍完了，相信通过本节的介绍，读者对如何选择使用libnetwork的5种驱动已经有了一定的理解。下一节开始，将针对Docker网络配置的原理进行分析。
 

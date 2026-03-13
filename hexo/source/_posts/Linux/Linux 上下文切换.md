@@ -44,7 +44,7 @@ CPU 寄存器里原来用户态的指令位置，需要先保存起来。接着�
 
 如下图所示，保存上下文和恢复上下文的过程并不是“免费”的，需要内核在 CPU 上运行才能完成
 
-![img](Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-a56fb78ff6df50726afc35f7ab346a5b_1440w.jpg)
+![img](v2-a56fb78ff6df50726afc35f7ab346a5b_1440w.jpg)
 
 每次上下文切换都需要几十纳秒到数微秒的 CPU 时间。这个时间还是相当可观的，特别是在进程上下文切换次数较多的情况下，很容易导致 CPU 将大量时间耗费在寄存器、内核栈以及虚拟内存等资源的保存和恢复上，进而大大缩短了真正运行进程的时间。这也正是上一节中我们所讲的，导致平均负载升高的一个重要因素。
 
@@ -100,7 +100,7 @@ Linux 通过 TLB（Translation Lookaside Buffer）来管理虚拟内存到物理
 
 使用 vmstat 这个工具，来查询系统的上下文切换情况 ,主要关注以下几项
 
-![img](Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-7303d3f00da7544219543006fbc1cf14_1440w.jpg)
+![img](v2-7303d3f00da7544219543006fbc1cf14_1440w.jpg)
 
 ```c
 cs（context switch）是每秒上下文切换的次数。
@@ -141,7 +141,7 @@ wa 等待IO CPU时间。
 
 查看每个进程的详细情况
 
-![img](Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-6619141cad1d6deb3f3f0684f9120685_1440w.jpg)
+![img](v2-6619141cad1d6deb3f3f0684f9120685_1440w.jpg)
 
 cswch ，表示每秒自愿上下文切换(voluntary context switches）的次数，nvcswch ，表示每秒非自愿上下文切换（non voluntary context switches）的次数所谓自愿上下文切换，是指进程无法获取所需资源，导致的上下文切换。比如说，I/O、内存等系统资源不足时，就会发生自愿上下文切换。
 
@@ -151,19 +151,19 @@ cswch ，表示每秒自愿上下文切换(voluntary context switches）的次�
 
 1.查看正常情况下的上下文切换情况
 
-![img](Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-f6281a0ea0fe784370ba5b4989caa041_1440w.jpg)
+![img](v2-f6281a0ea0fe784370ba5b4989caa041_1440w.jpg)
 
 2.模拟多线程切换
 
-![img](Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-3081d2facb9e11e9dca6bdba341b1403_1440w.jpg)
+![img](v2-3081d2facb9e11e9dca6bdba341b1403_1440w.jpg)
 
 3.查看此时的上下文切换情况
 
-![img](Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-d258efe8ee660e1c2a4d5a149d541309_1440w.jpg)
+![img](v2-d258efe8ee660e1c2a4d5a149d541309_1440w.jpg)
 
 4.使用pidstat查看上下文切换的情况
 
-![img](Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-e70669ec7e05361161d3191b4bdb3fd2_1440w.jpg)
+![img](v2-e70669ec7e05361161d3191b4bdb3fd2_1440w.jpg)
 
 分析
 
@@ -183,7 +183,7 @@ in 列：中断次数也上升到了 3 万左右，说明中断处理也是个�
 
 虽然 sysbench 进程（也就是主线程）的上下文切换次数看起来并不多，但它的子线程的上下文切换次数却有很多。看来，上下文切换罪魁祸首，还是过多的sysbench 线程
 
-![img](Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-12fed198e168b83c63a52d1c3facfd2d_1440w.jpg)
+![img](v2-12fed198e168b83c63a52d1c3facfd2d_1440w.jpg)
 
 **4.查看/proc/interrupts ，查看中断使用情况**
 

@@ -16,6 +16,7 @@ import re
 import shutil
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import unquote
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 NOTES_DIR = _REPO_ROOT / 'Notes'
@@ -53,7 +54,7 @@ def strip_existing_frontmatter(content: str) -> str:
 
 def rewrite_image_paths(content: str, stem: str) -> str:
     """
-    Replace image references of the form  ![alt](stem/img.ext)
+    Replace image references of the form  ![alt](stem/img.ext)  (plain or URL-encoded stem)
     with                                   ![alt](img.ext)
     Leave all other image references unchanged.
     """
@@ -62,8 +63,10 @@ def rewrite_image_paths(content: str, stem: str) -> str:
     def replacer(m):
         alt  = m.group(1)
         path = m.group(2)
-        if path.startswith(prefix):
-            return f'![{alt}]({path[len(prefix):]})'
+        # Decode URL-encoded paths (e.g. Docker%20%E9%95%... → Docker 镜像管理/...)
+        decoded_path = unquote(path)
+        if decoded_path.startswith(prefix):
+            return f'![{alt}]({decoded_path[len(prefix):] })'
         return m.group(0)
 
     return re.sub(r'!\[([^\]]*)\]\(([^)]+)\)', replacer, content)
@@ -119,7 +122,9 @@ def process_note(md_file: Path) -> Path:
     # --- copy images ---
     img_src = md_file.parent / stem              # e.g. Notes/C++/Const/
     if img_src.is_dir():
-        img_dst = SOURCE_DIR / year / month / day / permalink_slug
+        # Post URL: /:year/:month/:day/<category-subdirs>/:slug/
+        # so images must live under the same path for relative refs to resolve
+        img_dst = SOURCE_DIR.joinpath(year, month, day, *categories, permalink_slug)
         if img_dst.exists():
             shutil.rmtree(img_dst)
         shutil.copytree(img_src, img_dst,

@@ -10,7 +10,7 @@ categories:
 
 Docker使用了传统的client-server架构模式，总架构图如图所示。用户通过Docker client与Docker daemon建立通信，并将请求发送给后者。而Docker的后端是松耦合结构，不同模块各司其职，有机组合，完成用户的请求。
 
-![image-20220328165700005](Docker%E6%9E%B6%E6%9E%84/image-20220328165700005.png)
+![image-20220328165700005](image-20220328165700005.png)
 
 Docker通过driver模块来实现对Docker容器执行环境的创建和管理。
 
@@ -174,7 +174,7 @@ NewDaemon过程会按照Docker的功能点，逐条为daemon对象所需的属�
 
 1. 创建容器配置文件目录。这些配置文件里包含了这个容器的所有元数据。 Docker daemon在创建Docker容器之后，需要将容器内的配置文件放到这个目录下统一管理。目录默认位置为：/var/lib/docker/containers，它下面会为每个具体容器保存如下几个配置文件，其中xxx为容器ID：
 
-![image-20220328210455558](Docker%E6%9E%B6%E6%9E%84/image-20220328210455558.png)
+![image-20220328210455558](image-20220328210455558.png)
 
 2. 配置graphdriver目录。它用于完成Docker容器镜像管理所需的底层存储驱动层。所以，在这一步的配置工作就是加载并配置镜像存储驱动graphdriver，创建存储驱动管理镜像层文件系统所需的目录和环境，初始化镜像层元数据存储。
 
@@ -202,7 +202,7 @@ NewDaemon过程会按照Docker的功能点，逐条为daemon对象所需的属�
 
 综上，这里Docker daemon需要在Docker根目录（/var/lib/docker）下创建并初始化一系列跟容器文件系统密切相关的目录和文件。这些文件和目录的具体作用我们会在讲解镜像和volume的时候做详细解释，这里先给读者进行一个简单的总结。
 
-![image-20220329103906653](Docker%E6%9E%B6%E6%9E%84/image-20220329103906653.png)
+![image-20220329103906653](image-20220329103906653.png)
 
 ### 5. 创建Docker daemon网络创建
 
@@ -269,7 +269,7 @@ Docker daemon进程在经过以上诸多设置以及创建对象之后，最终�
 
 (3) 上述client通过反射机制找到了CmdRun方法。CmdRun在解析过用户提供的容器参数等一系列操作后，最终发出了这样两个请求：
 
-![image-20220329104045987](Docker%E6%9E%B6%E6%9E%84/image-20220329104045987.png)
+![image-20220329104045987](image-20220329104045987.png)
 
 至此，client的主要任务结束。
 
@@ -281,7 +281,7 @@ Docker daemon进程在经过以上诸多设置以及创建对象之后，最终�
 
 估计读者已经猜到，在这一步Docker daemon并不需要真正创建一个Linux容器，它只需要解析用户通过client提交的POST表单，然后使用这些参数在daemon中新建一个container对象出来即可。这个container实体就是container/container_unix.go，其中的CommonContainer字段定义在container/container.go中，为Linux平台和Windows平台上容器共有的属性，本书主要以Linux平台为主，这里将Linux平台上容器最重要的定义片段一并列举如下。容器共有的属性，本书主要以Linux平台为主，这里将Linux平台上容器最重要的定义片段一并列举如下。
 
-![image-20220329104117325](Docker%E6%9E%B6%E6%9E%84/image-20220329104117325.png)
+![image-20220329104117325](image-20220329104117325.png)
 
 这里需要额外注意的是daemon属性，即container是能够知道管理它的daemon进程信息的，很快会看到这个关系的作用。上述过程完成后，container的信息会作为Response返回给client, client会紧接着发送start请求。
 
@@ -293,7 +293,7 @@ Docker daemon进程在经过以上诸多设置以及创建对象之后，最终�
 
 此时，由于container所需的各项参数，比如NetworkSettings、ImageID等，都已经在创建容器过程中赋好了值，Docker daemon会在start.go中直接执行daemon.ContainerStart，就能够在宿主机上创建对应的容器了。等一下，创建容器的过程不是要创建namespace，配置cgroup，挂载rootfs吗？谁负责做这些事情呢？答案当然还是Docker daemon。containerMonitor将daemon设置为自己的supervisor。所以经过一系列调用后，daemon.ContainerStart实际上执行操作的是：
 
-![image-20220329110422733](Docker%E6%9E%B6%E6%9E%84/image-20220329110422733.png)
+![image-20220329110422733](image-20220329110422733.png)
 
 即告诉daemon进程：请使用本container相关信息作参数，执行对应execdriver的Run方法。
 
@@ -336,23 +336,23 @@ Docker daemon进程在经过以上诸多设置以及创建对象之后，最终�
 
 例如，在Docker daemon提交过来的command中，包含namespace、cgroups以及未来容器中将要运行的进程的重要信息。其中Network、Ipc、Pid等字段描述了隔离容器所需的namespace。
 
-![image-20220329135359687](Docker%E6%9E%B6%E6%9E%84/image-20220329135359687.png)
+![image-20220329135359687](image-20220329135359687.png)
 
 CommonCommand字段中包含了Linux平台和Windows平台通用的配置信息。
 
-![image-20220329135413453](Docker%E6%9E%B6%E6%9E%84/image-20220329135413453.png)
+![image-20220329135413453](image-20220329135413453.png)
 
 Resources字段包含了该容器cgroups的配置信息，定义如下：
 
-![image-20220329135430793](Docker%E6%9E%B6%E6%9E%84/image-20220329135430793.png)
+![image-20220329135430793](image-20220329135430793.png)
 
 ProcessConfig字段描述容器中未来要运行的进程信息，定义如下：
 
-![image-20220329135556158](Docker%E6%9E%B6%E6%9E%84/image-20220329135556158.png)
+![image-20220329135556158](image-20220329135556158.png)
 
 这时，execdriver会加载一个预定义的容器配置模板container，然后在模板中添加来自command的相关信息：
 
-![image-20220329135608356](Docker%E6%9E%B6%E6%9E%84/image-20220329135608356.png)
+![image-20220329135608356](image-20220329135608356.png)
 
 等到上述容器配置模板container中的所有项都按照command提供的内容填好之后，一份该容器专属的容器配置container就生成好了。注意，小写的container其实是一个存储配置信息的对象，后面我们很快会提到大写的Container，它才是libcontainer里的容器对象。container可以理解为libcontainer与Docker daemon之间进行信息交换的标准格式。之后，libcontainer就能根据这份配置知道它需要在宿主机上创建MOUNT、UTS、IPC、PID、NET这5个namespace以及相应的cgroups配置，从而创建出Docker容器。在接下来的两节里，我们将从源代码层次分析上述整个过程。
 
@@ -381,7 +381,7 @@ ProcessConfig字段描述容器中未来要运行的进程信息，定义如下�
 
 这一节，我们先把前面Docker daemon借助execdriver创建和启动容器的过程归纳为如下一段伪代码，使读者对这个过程有个初步的认识，也方便读者能在接下来介绍Process、Factory和Container的过程中进行参照和对比。
 
-![image-20220329144114611](Docker%E6%9E%B6%E6%9E%84/image-20220329144114611.png)
+![image-20220329144114611](image-20220329144114611.png)
 
 好了，接下来进入正题，我们先从Factory创建逻辑容器Container开始。
 
@@ -448,7 +448,7 @@ dockerinit进程只有一个功能，那就是执行reexec.init()，该init方�
 
 如果用户执行的是docker run -i -t ubuntu <cmd>呢？那么，所有用户指定的<cmd>都会作为Entrypoint的参数保存在前面说过的Args[0..]里。
 
-![image-20220329144445630](Docker%E6%9E%B6%E6%9E%84/image-20220329144445630.png)
+![image-20220329144445630](image-20220329144445630.png)
 
 我们可以清晰地看到，Docker daemon如何将容器创建所需的配置和用户需要启动的命令交给libcontainer，后者又如何根据这些信息创建逻辑容器和父进程（步骤①），接下来父进程执行Cmd.start，才真正创建（clone）出了容器的namespace环境，并且通过dockerinit以及管道来完成整个容器的初始化过程。在整个过程中，容器进程则经历了3个阶段的变化。
 
@@ -477,11 +477,11 @@ dockerinit进程只有一个功能，那就是执行reexec.init()，该init方�
 
 Docker最终选择的方式就是管道——文件和文件描述符方式。在Linux中，通过pipe(int fd[2])系统调用就可以创建管道，参数是一个包含两个整型的数组。调用完成后，在fd[1]端写入的数据，就可以从fd[0]端读取，如下所示：
 
-![image-20220329144528819](Docker%E6%9E%B6%E6%9E%84/image-20220329144528819.png)
+![image-20220329144528819](image-20220329144528819.png)
 
 调用pipe函数后，创建的子进程会内嵌这个打开的文件描述符，对fd[1]写入数据后可以在fd[0]端读取。通过管道，父子进程之间就可以通信。这个通信完成的标志就在于EOF信号的传递。众所周知，当打开的文件描述符都关闭时，才能读到EOF信号。因此libcontainer中父进程在通过pipe向子进程发送完毕初始化所需信息后，先关闭自己这一端的管道，然后等待子进程关闭另一端的管道文件描述符，传来EOF表示子进程已经完成了这些初始化工作。综上，在libcontainer中，ParentProcess进程与容器进程（cmd，也就是dockerinit进程）的通信方式如图3-10所示。
 
-![image-20220329144552193](Docker%E6%9E%B6%E6%9E%84/image-20220329144552193.png)
+![image-20220329144552193](image-20220329144552193.png)
 
 ### 3.使用runC与libcontainer进行交互
 
@@ -493,11 +493,11 @@ Linux基金会于2015年6月成立OCI（Open Container Initiative）组织，旨
 
 使用runC需要相关容器配置文件以及rootfs，相关配置文件可以使用runc spec命令来进行生成。其中的config.json为容器的基础配置文件，runtime.json为容器的运行时文件。其中rootfs最简单、最常用的是使用Docker busybox，可以使用如下命令生成。
 
-![image-20220329144650676](Docker%E6%9E%B6%E6%9E%84/image-20220329144650676.png)
+![image-20220329144650676](image-20220329144650676.png)
 
 官方的README文档中已经给出具体的构建步骤，此处不再赘述。在准备好相关配置文件以及rootfs之后，只需执行如下命令，即可进行创建并运行一个名为runc-test的容器（需要root权限）。
 
-![image-20220329144707483](Docker%E6%9E%B6%E6%9E%84/image-20220329144707483.png)
+![image-20220329144707483](image-20220329144707483.png)
 
 执行完成后会在/run/runc之下生成一个以容器ID命名的文件夹，该文件夹下会生成一个state.json文件，表示容器的状态，其中的内容与配置参数中的内容类似，展示容器的状态。
 
@@ -522,7 +522,7 @@ runC这个命令行工具是借助开源项目github.com/codegangsta/cli实现�
 - checkpoint：保存容器的检查点快照并结束容器进程，需要填——image-path参数，后面是检查点保存的快照文件路径，完整的命令示例如下。
 - restore：从容器检查点快照恢复容器进程的运行，参数同上。
 
-![image-20220329144747354](Docker%E6%9E%B6%E6%9E%84/image-20220329144747354.png)
+![image-20220329144747354](image-20220329144747354.png)
 
 综上，runC与Docker execdriver进行的工作基本相同，在Docker的源码中并不会涉及runC包的调用，但runC为libcontainer自身的调试和使用带来了极大的便利。
 

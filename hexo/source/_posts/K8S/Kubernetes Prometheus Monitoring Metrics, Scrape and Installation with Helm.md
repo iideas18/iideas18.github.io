@@ -164,7 +164,7 @@ Add the following helm repositories by the commands below.
   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 ```
 
-![Prometheus helm repo](Kubernetes%20Prometheus%20Monitoring%20Metrics,%20Scrape%20and%20Installation%20with%20Helm/Peek-2021-05-31-15-01.gif)
+![Prometheus helm repo](Peek-2021-05-31-15-01.gif)
 
 ```shell
   helm repo add stable https://charts.helm.sh/stable
@@ -205,7 +205,7 @@ Open your favourite browser and open [localhost:3000](https://localhost:3000/). 
 **username**: admin
 **password**: prom-operator
 
-![kubernetes prometheus grafana login](Kubernetes%20Prometheus%20Monitoring%20Metrics,%20Scrape%20and%20Installation%20with%20Helm/ezgif.com-gif-maker-11.gif)
+![kubernetes prometheus grafana login](ezgif.com-gif-maker-11.gif)
 
 Once you are inside the Grafana web UI, there are a lot of things you can do. You can set the duration of scraping metrics. You can also configure your dashboard. Also, you can look into networking. However, there are a lot more things to explore in this. I am adding some of the scouting done by me below.
 
@@ -213,7 +213,7 @@ Once you are inside the Grafana web UI, there are a lot of things you can do. Yo
 
 **![Kubernetes networking grafana prometheus](https://k21academy.com/wp-content/uploads/2021/06/ezgif.com-gif-maker-6.gif)Cluster Status:**
 
-**![cluster monitoring](Kubernetes%20Prometheus%20Monitoring%20Metrics,%20Scrape%20and%20Installation%20with%20Helm/download.png)**
+**![cluster monitoring](download.png)**
 
 ## **Conclusion**
 

@@ -25,7 +25,7 @@ categories:
 
 NUMA中，虽然内存直接attach在CPU上，但是由于内存被平均分配在了各个die上。只有当CPU访问自身直接attach内存对应的物理地址时，才会有较短的响应时间（后称`Local Access`）。而如果需要访问其他CPU attach的内存的数据时，就需要通过inter-connect通道访问，响应时间就相比之前变慢了（后称`Remote Access`）。所以NUMA（Non-Uniform Memory Access）就此得名。
 
-![numa](NUMA%20explain_2/numa.png)
+![numa](numa.png)
 
 #### 我们需要为NUMA做什么
 
@@ -65,7 +65,7 @@ NUMA中，虽然内存直接attach在CPU上，但是由于内存被平均分配�
 - 又因为`Reclaim`默认策略优先淘汰/Swap本Chip上的内存，使得大量有用内存被换出
 - 当被换出页被访问时问题就以数据库响应时间飙高甚至阻塞的形式出现了
 
-![imbalance](NUMA%20explain_2/imbalance.png)
+![imbalance](imbalance.png)
 
 ## 解决方案
 
@@ -90,7 +90,7 @@ Jeremy Cole大神推荐的三个方案如下，如果想详细了解可以阅读
 
 #### NUMA Interleave真的好么？
 
-**为什么`Interleave`的策略就解决了问题？** 借用两张 [Carrefour性能测试](https://www.cs.sfu.ca/~fedorova/papers/asplos284-dashti.pdf) 的结果图，可以看到几乎所有情况下`Interleave`模式下的程序性能都要比默认的亲和模式要高，有时甚至能高达30%。究其根本原因是Linux服务器的大多数workload分布都是随机的：即每个线程在处理各个外部请求对应的逻辑时，所需要访问的内存是在物理上随机分布的。而`Interleave`模式就恰恰是针对这种特性将内存page随机打散到各个CPU Core上，使得每个CPU的负载和`Remote Access`的出现频率都均匀分布。相较NUMA默认的内存分配模式，死板的把内存都优先分配在线程所在Core上的做法，显然普遍适用性要强很多。 ![perf1](NUMA%20explain_2/perf1.png) ![perf2](NUMA%20explain_2/perf2.png)
+**为什么`Interleave`的策略就解决了问题？** 借用两张 [Carrefour性能测试](https://www.cs.sfu.ca/~fedorova/papers/asplos284-dashti.pdf) 的结果图，可以看到几乎所有情况下`Interleave`模式下的程序性能都要比默认的亲和模式要高，有时甚至能高达30%。究其根本原因是Linux服务器的大多数workload分布都是随机的：即每个线程在处理各个外部请求对应的逻辑时，所需要访问的内存是在物理上随机分布的。而`Interleave`模式就恰恰是针对这种特性将内存page随机打散到各个CPU Core上，使得每个CPU的负载和`Remote Access`的出现频率都均匀分布。相较NUMA默认的内存分配模式，死板的把内存都优先分配在线程所在Core上的做法，显然普遍适用性要强很多。 ![perf1](perf1.png) ![perf2](perf2.png)
 
 也就是说，像MySQL这种外部请求随机性强，各个线程访问内存在地址上平均分布的这种应用，`Interleave`的内存分配模式相较默认模式可以带来一定程度的性能提升。 此外 [各种](https://www.cs.sfu.ca/~fedorova/papers/asplos284-dashti.pdf) [论文](http://www.lst.inf.ethz.ch/people/alumni/zmajo/publications/11-systor.pdf) 中也都通过实验证实，真正造成程序在NUMA系统上性能瓶颈的并不是`Remote Acess`带来的响应时间损耗，而是内存的不合理分布导致`Remote Access`将inter-connect这个小水管塞满所造成的结果。而`Interleave`恰好，把这种不合理分布情况下的Remote Access请求平均分布在了各个小水管中。所以这也是`Interleave`效果奇佳的一个原因。
 

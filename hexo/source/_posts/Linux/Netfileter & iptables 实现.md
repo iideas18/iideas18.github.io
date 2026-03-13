@@ -15,7 +15,7 @@ categories:
 
 `Netfilter` 通过向内核协议栈中不同的位置注册 `钩子函数（Hooks）` 来对数据包进行过滤或者修改操作，这些位置称为 `挂载点`，主要有 5 个：`PRE_ROUTING`、`LOCAL_IN`、`FORWARD`、`LOCAL_OUT` 和 `POST_ROUTING`，如下图所示：
 
-![Image](Netfileter%20&%20iptables%20%E5%AE%9E%E7%8E%B0/640-1648355509107.png)
+![Image](640-1648355509107.png)
 
 这 5 个 `挂载点` 的意义如下：
 
@@ -32,7 +32,7 @@ categories:
 
 通过向这些 `挂载点` 注册钩子函数，就能够对处于不同阶段的数据包进行过滤或者修改操作。由于钩子函数能够注册多个，所以内核使用链表来保存这些钩子函数，如下图所示：
 
-![Image](Netfileter%20&%20iptables%20%E5%AE%9E%E7%8E%B0/640-1648355509691.png)
+![Image](640-1648355509691.png)
 
 如上图所示，当数据包进入本地（`LOCAL_IN` 挂载点）时，就会相继调用 `ipt_hook` 和 `fw_confirm` 钩子函数来处理数据包。另外，钩子函数还有优先级，优先级越小越先执行。
 
@@ -89,13 +89,13 @@ categories:
 
 我们通过下图来展示各个表所挂载的链：
 
-![Image](Netfileter%20&%20iptables%20%E5%AE%9E%E7%8E%B0/640-1648355508801.png)
+![Image](640-1648355508801.png)
 
 上图展示了，数据包从网络中进入到内核协议栈的过程中，要执行的 `iptables` 规则，如果在执行某条 `iptables` 规则失败后，会直接把数据包丢弃，不会继续执行下面的规则。
 
 拿其中一个链来看，如下图所示：
 
-![Image](Netfileter%20&%20iptables%20%E5%AE%9E%E7%8E%B0/640-1648355509700.png)
+![Image](640-1648355509700.png)
 
 也就是说，当数据包从网络中进入到内核协议栈后，在路由判定前会分别执行 `Raw表`、`Mangle表` 和 `NAT表` 中的规则。如果在执行规则时，某一条规则拒绝了数据包，那么数据包便会被丢弃，从而不会继续执行下面的规则。
 
@@ -132,7 +132,7 @@ iptables [选项 参数] ...
 
 `iptables` 规则的选项比较多，一般来说，一条 `iptables` 规则主要由四个部分组成，如下图所示：
 
-![Image](Netfileter%20&%20iptables%20%E5%AE%9E%E7%8E%B0/640-1648355509107.png)
+![Image](640-1648355509107.png)
 
 
 
@@ -200,7 +200,7 @@ iptables -L -n -v
 
 我们先来回顾一下 Netfilter 的原理，Netfilter 是通过在网络协议栈的不同阶段注册钩子函数来实现对数据包的处理与过滤，如 图1 所示：
 
-![Image](Netfileter%20&%20iptables%20%E5%AE%9E%E7%8E%B0/640.png)
+![Image](640.png)
 
 在 图1 中，蓝色部分就是 Netfilter 挂载钩子函数的位置，所以 Netfilter 定义了 5 个常量来表示这 5 个位置，如下代码：
 
@@ -220,7 +220,7 @@ iptables -L -n -v
 
 前面说过，Netfilter 是通过在网络协议中的不同位置挂载钩子函数来对数据包进行过滤和处理，而且每个挂载点能够挂载多个钩子函数，所以 Netfilter 使用链表结构来存储这些钩子函数，如 图2 所示：
 
-![Image](Netfileter%20&%20iptables%20%E5%AE%9E%E7%8E%B0/640-1648355375895.png)
+![Image](640-1648355375895.png)
 
 如 图2 所示，Netfilter 的每个挂载点都使用一个链表来存储钩子函数列表。在内核中，定义了一个名为 `nf_hooks` 的数组来存储这些链表，如下代码：
 
@@ -316,7 +316,7 @@ int nf_register_hook(struct nf_hook_ops *reg)
 
 插入过程如 图3 所示：
 
-![Image](Netfileter%20&%20iptables%20%E5%AE%9E%E7%8E%B0/640-1648355375599.png)
+![Image](640-1648355375599.png)
 
 (图3 钩子函数插入过程)
 

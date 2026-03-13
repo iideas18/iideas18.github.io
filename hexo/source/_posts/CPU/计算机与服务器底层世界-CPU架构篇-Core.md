@@ -17,7 +17,7 @@ categories:
 
 话不多说，对于Skylake而言，CPU中的Core的架构图如下所示：
 
-![skylake block diagram.svg](%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BA%95%E5%B1%82%E4%B8%96%E7%95%8C-CPU%E6%9E%B6%E6%9E%84%E7%AF%87-Core/900px-skylake_block_diagram.svg.png)
+![skylake block diagram.svg](900px-skylake_block_diagram.svg.png)
 
 咋一看这个图，感觉超级复杂，各种连线，各种模块。其实对于core而言，主要目的就是执行各种运算，而剩下的就是就是core对执行运算之前的处理。对于上图，我们可以直接把Core划分为三个部分看，一个部分是**前端（Front-end）**也就是图中黄色的部分，另外一个就是**（EU）执行单元**了，也就是图中浅绿色的部分，第三块就是数据缓存，专门给执行单元提供执行指令期间所需要的数据.
 

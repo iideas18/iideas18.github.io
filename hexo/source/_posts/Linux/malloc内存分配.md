@@ -13,7 +13,7 @@ categories:
 
 在前边的文章中已经提及到了，当malloc()分配空间时，并不是要多少就分配多少，而是会额外的加上首部和尾部，其中一些较为简单的部分我会在这里进行解释，而较为重要的部分我会在本文下面的分析中逐步的完善。图片取自侯捷C++内存分配系列教程讲义
 
-![Image](malloc%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/640.png)
+![Image](640.png)
 
 这张图片去除掉了上下两块cookie和下边的填补区pad。
 
@@ -68,7 +68,7 @@ fill上下两块gap预先被填充为了0xfdfdfdfd，用来分隔客户可以使
 - bitvGroupHi和bitvGroupLo共同构成了一个的byteMap共64个byte(分为32组)，将来用于对应每个group中所挂载的64条双向链表，当对应的位置挂载有内存时，会变成1.
 - grpHeadList就是32个group，每个group负责32KB
 
-![Image](malloc%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/640-1648304283875.png)
+![Image](640-1648304283875.png)
 
 ![Image](https://mmbiz.qpic.cn/mmbiz_png/wqfIPAmgib2Wmqo6CbhQQetwicO2XF87XxsSzZw773Tr8Kibh6lTwRmn7vZriaGwPUKStxM34I9thdSD6K7pwZMa9A/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
 
