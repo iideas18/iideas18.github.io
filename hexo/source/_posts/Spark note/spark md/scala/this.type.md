@@ -1,6 +1,6 @@
 ---
 title: "scala this.type"
-date: 2019-11-22 18:06:13
+date: 2019-11-22 18:06:12
 slug: "this.type"
 categories:
   - "Spark note"

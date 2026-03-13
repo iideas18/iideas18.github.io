@@ -1,6 +1,6 @@
 ---
 title: "NUMA架构下的内存分配策略"
-date: 2022-03-14 14:04:41
+date: 2022-03-14 14:04:40
 slug: "NUMA memory alloc"
 categories:
   - "CPU"

@@ -1,6 +1,6 @@
 ---
 title: "[Java Hotspot G1 GC的一些关键技术](https://tech.meituan.com/2016/09/23/g1.html)"
-date: 2019-10-24 04:00:49
+date: 2019-10-24 04:00:48
 slug: "Untitled 2"
 categories:
   - "Spark note"

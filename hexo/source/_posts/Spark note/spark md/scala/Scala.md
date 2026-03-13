@@ -1,6 +1,6 @@
 ---
 title: "scala中的类型擦除的问题"
-date: 2019-10-30 18:18:41
+date: 2019-10-30 18:18:40
 slug: "Scala"
 categories:
   - "Spark note"

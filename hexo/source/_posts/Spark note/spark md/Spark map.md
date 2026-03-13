@@ -1,6 +1,6 @@
 ---
 title: "Map 函数"
-date: 2020-06-04 23:58:25
+date: 2020-06-04 23:58:24
 slug: "Spark map"
 categories:
   - "Spark note"

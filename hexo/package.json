@@ -7,8 +7,9 @@
   },
   "scripts": {
     "clean": "node -e \"const fs=require('fs'); fs.rmSync('public', { recursive: true, force: true }); fs.rmSync('db.json', { force: true });\"",
-    "generate": "node tools/generate.js",
-    "publish-root": "node tools/generate.js --sync-root"
+    "import": "python3 ../scripts/import_notes.py",
+    "generate": "npm run import && node tools/generate.js",
+    "publish-root": "npm run import && node tools/generate.js --sync-root"
   },
   "dependencies": {
     "hexo": "^8.1.1",

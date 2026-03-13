@@ -17,8 +17,9 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
-NOTES_DIR = Path('/mnt/disk3/zy/iideas.github.io/Notes')
-HEXO_DIR  = Path('/mnt/disk3/zy/iideas.github.io/hexo')
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+NOTES_DIR = _REPO_ROOT / 'Notes'
+HEXO_DIR  = _REPO_ROOT / 'hexo'
 POSTS_DIR = HEXO_DIR / 'source' / '_posts'
 SOURCE_DIR = HEXO_DIR / 'source'
 

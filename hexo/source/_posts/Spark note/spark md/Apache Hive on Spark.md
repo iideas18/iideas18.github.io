@@ -1,6 +1,6 @@
 ---
 title: "Tuning Apache Hive on Spark in CDH"
-date: 2019-09-30 17:24:57
+date: 2019-09-30 17:24:56
 slug: "Apache Hive on Spark"
 categories:
   - "Spark note"

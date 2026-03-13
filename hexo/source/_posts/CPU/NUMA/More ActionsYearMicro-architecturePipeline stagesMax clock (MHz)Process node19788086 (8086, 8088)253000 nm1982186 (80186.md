@@ -1,6 +1,6 @@
 ---
 title: "More ActionsYearMicro-architecturePipeline stagesMax clock (MHz)Process node19788086 (8086, 8088)253000 nm1982186 (80186"
-date: 2022-11-06 23:14:37
+date: 2022-11-06 23:14:36
 categories:
   - "CPU"
   - "NUMA"

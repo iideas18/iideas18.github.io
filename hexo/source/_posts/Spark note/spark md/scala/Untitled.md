@@ -1,6 +1,6 @@
 ---
 title: "scala基础之泛型详解"
-date: 2019-10-30 19:20:55
+date: 2019-10-30 19:20:54
 slug: "Untitled"
 categories:
   - "Spark note"

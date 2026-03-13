@@ -1,6 +1,6 @@
 ---
 title: "Golang ServeMux 是如何实现多路处理的"
-date: 2022-04-04 23:25:21
+date: 2022-04-04 23:25:20
 categories:
   - "golang"
 ---

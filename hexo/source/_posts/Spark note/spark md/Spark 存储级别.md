@@ -1,6 +1,6 @@
 ---
 title: "Spark中cache和persist的使用及存储级别"
-date: 2019-10-24 04:10:51
+date: 2019-10-24 04:10:50
 slug: "Spark 存储级别"
 categories:
   - "Spark note"

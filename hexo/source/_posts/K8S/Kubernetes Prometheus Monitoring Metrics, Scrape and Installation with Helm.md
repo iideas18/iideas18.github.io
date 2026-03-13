@@ -1,6 +1,6 @@
 ---
 title: "Kubernetes Prometheus Monitoring: Metrics, Scrape and Installation with Helm"
-date: 2022-04-05 22:31:13
+date: 2022-04-05 22:31:12
 slug: "Kubernetes Prometheus Monitoring Metrics, Scrape and Installation with Helm"
 categories:
   - "K8S"

@@ -1,6 +1,6 @@
 ---
 title: "Zen"
-date: 2022-05-28 21:57:09
+date: 2022-05-28 21:57:08
 categories:
   - "CPU"
 ---

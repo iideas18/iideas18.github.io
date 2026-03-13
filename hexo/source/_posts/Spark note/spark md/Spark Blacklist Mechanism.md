@@ -1,6 +1,6 @@
 ---
 title: "Spark Blacklist Mechanism Introduction"
-date: 2019-09-26 22:30:47
+date: 2019-09-26 22:30:46
 slug: "Spark Blacklist Mechanism"
 categories:
   - "Spark note"

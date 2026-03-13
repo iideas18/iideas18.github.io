@@ -1,6 +1,6 @@
 ---
 title: "Spark SQL的selectExpr"
-date: 2019-11-01 00:39:51
+date: 2019-11-01 00:39:50
 slug: "spark sql"
 categories:
   - "Spark note"

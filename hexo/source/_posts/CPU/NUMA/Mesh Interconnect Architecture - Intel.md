@@ -1,6 +1,6 @@
 ---
 title: "**Mesh Interconnect Architecture - Intel**"
-date: 2022-11-05 10:46:17
+date: 2022-11-05 10:46:16
 slug: "Mesh Interconnect Architecture - Intel"
 categories:
   - "CPU"

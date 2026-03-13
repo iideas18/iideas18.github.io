@@ -1,6 +1,6 @@
 ---
 title: "idea远程调试 spark"
-date: 2019-09-30 17:25:39
+date: 2019-09-30 17:25:38
 slug: "spark remote debug"
 categories:
   - "Spark note"

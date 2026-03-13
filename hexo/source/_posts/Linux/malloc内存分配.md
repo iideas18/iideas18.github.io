@@ -1,6 +1,6 @@
 ---
 title: "malloc内存分配"
-date: 2022-03-26 22:19:57
+date: 2022-03-26 22:19:56
 categories:
   - "Linux"
 ---

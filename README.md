@@ -31,30 +31,56 @@ python3 -m http.server 4000
 
 ## Hexo Authoring Workflow
 
-```bash
-cd hexo
-npm install            # first time only
+### Where are the source files?
 
-# Option A — write a post directly
-# Create hexo/source/_posts/<category>/<title>.md with front matter:
-# ---
-# title: "My Post"
-# date: 2026-03-13 10:00:00
-# categories:
-#   - "MyCategory"
-# ---
+`Notes/` is the **canonical source** of all posts. Do not edit `hexo/source/_posts/` directly — it is overwritten by the import script.
 
-# Option B — import from Notes/
-python3 ../scripts/import_notes.py
-
-# Build
-npm run generate       # rebuilds public/ into hexo/public/
-npm run publish-root   # generate + rsync output to repo root
+```
+Notes/
+  Linux/
+    epoll.md          ← edit here
+  C++/
+    虚函数.md
+  Docker/
+    ...
 ```
 
-## Deployment
+### Adding or editing a post
 
 ```bash
+# 1. Edit (or create) a file in Notes/
+vim Notes/Linux/epoll.md
+
+# 2. Rebuild — import from Notes/ and generate happen automatically
+cd hexo
+npm run generate
+
+# 3. Preview
+cd ..
+python3 -m http.server 4000
+```
+
+### Front matter
+
+If you create a new note, the import script auto-generates front matter from the filename and mtime. You can also add it manually at the top of the file and the script will respect it:
+
+```markdown
+---
+title: "My Post Title"
+date: 2026-03-13 10:00:00
+categories:
+  - "Linux"
+---
+
+Content starts here...
+```
+
+### Full publish
+
+```bash
+cd hexo
+npm run publish-root   # generate + rsync output to repo root
+cd ..
 git add -A && git commit -m "build: site update $(date -u '+%Y-%m-%d')"
 git push origin gh-pages
 ```

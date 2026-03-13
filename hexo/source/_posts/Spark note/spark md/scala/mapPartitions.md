@@ -1,6 +1,6 @@
 ---
 title: "spark算子---mapPartitions"
-date: 2019-11-22 03:01:47
+date: 2019-11-22 03:01:46
 slug: "mapPartitions"
 categories:
   - "Spark note"

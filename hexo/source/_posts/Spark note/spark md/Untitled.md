@@ -1,6 +1,6 @@
 ---
 title: "Spark executor中task的数量与最大并发数"
-date: 2020-03-12 18:17:25
+date: 2020-03-12 18:17:24
 slug: "Untitled"
 categories:
   - "Spark note"

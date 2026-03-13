@@ -1,6 +1,6 @@
 ---
 title: "template"
-date: 2022-10-08 20:21:39
+date: 2022-10-08 20:21:38
 categories:
   - "C++"
 ---

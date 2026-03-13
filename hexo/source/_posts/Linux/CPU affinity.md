@@ -1,6 +1,6 @@
 ---
 title: "CPU affinity"
-date: 2022-03-26 22:23:03
+date: 2022-03-26 22:23:02
 categories:
   - "Linux"
 ---

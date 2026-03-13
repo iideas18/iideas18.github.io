@@ -1,6 +1,6 @@
 ---
 title: "[Apache Spark 统一内存管理模型详解](https://www.iteblog.com/archives/2342.html)"
-date: 2019-10-17 06:14:01
+date: 2019-10-17 06:14:00
 slug: "Apache Spark 统一内存管理模型详解"
 categories:
   - "Spark note"
