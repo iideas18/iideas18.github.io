@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>[scala中“=&gt;”的4种使用场景](https://www.cnblogs.com/wjunge/p/10043079.html) | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[scala中“=>”的4种使用场景](https://www.cnblogs.com/wjunge/p/10043079.html)">
+<meta property="og:url" content="https://iideas18.github.io/2019/11/22/Spark note/spark md/scala/=_/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2019-11-21T19:22:42.000Z">
+<meta property="article:modified_time" content="2026-03-12T15:48:24.792Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2019/11/22/Spark note/spark md/scala/=_/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '[scala中“=>”的4种使用场景](https://www.cnblogs.com/wjunge/p/10043079.html)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-12 23:48:24'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">[scala中“=&gt;”的4种使用场景](https://www.cnblogs.com/wjunge/p/10043079.html)</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2019-11-21T19:22:42.000Z" title="发表于 2019-11-22 03:22:42">2019-11-22</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-12T15:48:24.792Z" title="更新于 2026-03-12 23:48:24">2026-03-12</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Spark note/">Spark note</a>
+            
+            <a class="post-meta-categories" href="/categories/spark md/">spark md</a>
+            
+            <a class="post-meta-categories" href="/categories/scala/">scala</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="scala中“-”的4种使用场景"><a href="#scala中“-”的4种使用场景" class="headerlink" title="scala中“&#x3D;&gt;”的4种使用场景"></a><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wjunge/p/10043079.html">scala中“&#x3D;&gt;”的4种使用场景</a></h1><p>一直以来都对scala中“&#x3D;&gt;”的使用比较迷茫，也不知道他表示什么意思。今天就它的使用场景列举如下，希望可以共同探讨。</p>
+<ol>
+<li><p>表示函数的<strong>返回类型</strong>(Function Type)</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="function"><span class="keyword">def</span> <span class="title">double</span></span>(x: <span class="type">Int</span>): <span class="type">Int</span> = x*<span class="number">2</span></span><br><span class="line">double: (x: <span class="type">Int</span>)<span class="type">Int</span></span><br><span class="line"><span class="comment">//定义一个函数变量: </span></span><br><span class="line">scala&gt; <span class="keyword">var</span> x : (<span class="type">Int</span>) =&gt; <span class="type">Int</span> = double</span><br><span class="line">x: <span class="type">Int</span> =&gt; <span class="type">Int</span> = &lt;function1&gt;</span><br><span class="line"><span class="comment">//调用</span></span><br><span class="line">scala&gt; x(<span class="number">2</span>)</span><br><span class="line">res1: <span class="type">Int</span> = <span class="number">4</span></span><br></pre></td></tr></table></figure>
+
+<p>函数double的类型就是 <strong>(x: Int) &#x3D;&gt; Int</strong> 或者 <strong>Int &#x3D;&gt; Int</strong>。<strong>左边是参数类型，右边是方法返回值类型</strong>。<br><strong>备注：</strong> 当函数只有一个参数的时候，<strong>函数类型里面括起来函数参数的括号是可以省略的</strong>。</p>
+</li>
+<li><p><strong>匿名函数</strong></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//通过匿名函数定义一个函数变量xx</span></span><br><span class="line">scala&gt; <span class="keyword">var</span> xx = (x: <span class="type">Int</span>) =&gt; x + <span class="number">1</span></span><br><span class="line">xx: <span class="type">Int</span> =&gt; <span class="type">Int</span> = &lt;function1&gt;</span><br><span class="line"><span class="comment">//给一个高阶函数，传递一个函数：</span></span><br><span class="line">scala&gt; <span class="keyword">val</span> newList = <span class="type">List</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).map &#123; (x: <span class="type">Int</span>) =&gt; x * <span class="number">2</span> &#125;</span><br><span class="line">newList: <span class="type">List</span>[<span class="type">Int</span>] = <span class="type">List</span>(<span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>)</span><br></pre></td></tr></table></figure>
+
+<p>匿名函数定义， 左边是参数 右边是函数实现体 （x: Int）&#x3D;&gt;{}</p>
+</li>
+<li><p><strong>case语句</strong></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="keyword">val</span> x = <span class="number">10</span>; <span class="keyword">val</span> y = <span class="number">20</span></span><br><span class="line">x: <span class="type">Int</span> = <span class="number">10</span></span><br><span class="line">y: <span class="type">Int</span> = <span class="number">20</span></span><br><span class="line"></span><br><span class="line">scala&gt; <span class="keyword">val</span> max = x &gt; y <span class="keyword">match</span> &#123;</span><br><span class="line">  <span class="keyword">case</span> <span class="literal">true</span> =&gt; x</span><br><span class="line">  <span class="keyword">case</span> <span class="literal">false</span> =&gt; y</span><br><span class="line">&#125;</span><br><span class="line">max: <span class="type">Int</span> = <span class="number">20</span></span><br></pre></td></tr></table></figure>
+
+<p>在模式匹配 match 和 try-catch 都用 “&#x3D;&gt;” 表示输出的结果或返回的值</p>
+</li>
+<li><p><strong>By-Name Parameters(传名参数)</strong>，传名参数在函数调用前表达式不会被求值，而是会被包裹成一个匿名函数作为函数参数传递下去，例如参数类型为无参函数的参数就是传名参数。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="function"><span class="keyword">def</span> <span class="title">doubles</span></span>(x: =&gt; <span class="type">Int</span>) = &#123;</span><br><span class="line">    println(<span class="string">&quot;Now doubling &quot;</span> + x)</span><br><span class="line">    x*<span class="number">2</span>   </span><br><span class="line">&#125;</span><br><span class="line">doubles: (x: =&gt; <span class="type">Int</span>)<span class="type">Int</span></span><br><span class="line"><span class="comment">//调用函数</span></span><br><span class="line">scala&gt; doubles(<span class="number">3</span>)</span><br><span class="line"><span class="type">Now</span> doubling <span class="number">3</span></span><br><span class="line">res2: <span class="type">Int</span> = <span class="number">6</span></span><br><span class="line">   </span><br><span class="line">scala&gt; <span class="function"><span class="keyword">def</span> <span class="title">f</span></span>(x: <span class="type">Int</span>): <span class="type">Int</span> = &#123;</span><br><span class="line">  println(<span class="string">s&quot;Calling f(<span class="subst">$x</span>)&quot;</span>)</span><br><span class="line">  x</span><br><span class="line">&#125;</span><br><span class="line">f: (x: <span class="type">Int</span>)<span class="type">Int</span></span><br><span class="line"><span class="comment">//调用函数</span></span><br><span class="line">scala&gt; doubles(f(<span class="number">3</span>))</span><br><span class="line"><span class="type">Calling</span> f(<span class="number">3</span>)</span><br><span class="line"><span class="type">Now</span> doubling <span class="number">3</span></span><br><span class="line"><span class="type">Calling</span> f(<span class="number">3</span>)</span><br><span class="line">res9: <span class="type">Int</span> = <span class="number">6</span></span><br></pre></td></tr></table></figure>
+
+<p>对于函数doubles而言，它的参数x就是by-name的。如果调用doubles的时候，直接给个普通的值或者非函数变量。那么doubles的执行结果就跟普通的函数没有区别。但是当把一个返回值为Int类型的函数，例如f(2)，传递给doubles的时候。那么f(2)会被先计算出返回值2，返回值2传入doubles参与运算。运算完成以后，f(2)会被doubles在执行以后，再调用一遍。</p>
+</li>
+</ol>
+<p>&lt;-只会出现在for循环里面</p>
+<p>-&gt;只会出现在k-&gt;v里面</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

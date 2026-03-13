@@ -36,3 +36,7 @@ deploy:
   type: git
   repo: https://github.com/iideas18/iideas18.github.io.git
   branch: gh-pages
+
+archive_generator:
+  per_page: 0
+  order_by: -date

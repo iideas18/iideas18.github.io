@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kubernetes Prometheus Monitoring: Metrics, Scrape and Installation with Helm | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes Prometheus Monitoring: Metrics, Scrape and Installation with Helm">
+<meta property="og:url" content="https://iideas18.github.io/2022/04/05/K8S/Kubernetes Prometheus Monitoring Metrics, Scrape and Installation with Helm/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-04-05T14:31:13.000Z">
+<meta property="article:modified_time" content="2026-03-12T15:48:24.731Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/04/05/K8S/Kubernetes Prometheus Monitoring Metrics, Scrape and Installation with Helm/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Kubernetes Prometheus Monitoring: Metrics, Scrape and Installation with Helm',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-12 23:48:24'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">Kubernetes Prometheus Monitoring: Metrics, Scrape and Installation with Helm</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-04-05T14:31:13.000Z" title="发表于 2022-04-05 22:31:13">2022-04-05</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-12T15:48:24.731Z" title="更新于 2026-03-12 23:48:24">2026-03-12</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/K8S/">K8S</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="Kubernetes-Prometheus-Monitoring-Metrics-Scrape-and-Installation-with-Helm"><a href="#Kubernetes-Prometheus-Monitoring-Metrics-Scrape-and-Installation-with-Helm" class="headerlink" title="Kubernetes Prometheus Monitoring: Metrics, Scrape and Installation with Helm"></a>Kubernetes Prometheus Monitoring: Metrics, Scrape and Installation with Helm</h1><p>Kubernetes <strong>monitoring</strong> is a method of examining and reporting the health status of cluster components. So, the process helps track the utilisation of cluster resources, including memory, CPU, and storage. And, talking of open-source tools like Prometheus for Kubernetes monitoring and Grafana for visualising have become the numero uno go-to tools!</p>
+<p>Let’s look at the topics discussed in this post:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/prometheus-grafana-monitoring/#How_does_Prometheus_work">Kubernetes Monitoring</a></li>
+<li><a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/prometheus-grafana-monitoring/#Kubernetes_eases_the_management_of_our_containerised_applications_and_services_It_can_sometimes_be_a_two_edged_sword_as_it_adds_complexity_to_the_system_with_the_influx_of_new_layers_and_abstractions_Hence_it_makes_a_long_list_of_components_to_monitor">Kubernetes Dashboard</a></li>
+<li><a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/prometheus-grafana-monitoring/#prometheus">What is Prometheus?</a></li>
+<li><a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/prometheus-grafana-monitoring/#The_Prometheus_sends_an_HTTP_request_pull_called_Scrape_found_on_the_configuration_in_the_deployment_It_provides_a_query_language_and_a_robust_data_model_that_provides_detailed_and_actionable_metrics">Prometheus Architecture</a></li>
+<li><a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/prometheus-grafana-monitoring/#Prometheus_Architecture">How does Prometheus work?</a></li>
+<li><a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/prometheus-grafana-monitoring/#Most_of_the_monitoring_mechanisms_like_Amazon_Cloud_Watch_pushes_the_data_to_a_centralised_collection_platform_But_this_doesn_t_seem_ideal_for_microservices_because_of_the_traffic_it_might_cause_Hence_the_Prometheus_uses_the_pull_system_from_which_retrieves_data_via_multiple_Prometheus_instances_and_helps_better_detect_a_status_of_a_service_However_Prometheus_offers_the_push_mechanism_for_short_lived_jobs">What is Grafana?</a></li>
+<li><a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/prometheus-grafana-monitoring/#Alerts_The_alerts_can_be_set_up_and_fired_whenever_there_is_an_anticipated_situation">Install Prometheus and Grafana</a></li>
+<li><a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/prometheus-grafana-monitoring/#conclusion">Conclusion</a></li>
+</ul>
+<h2 id="1-Kubernetes-Monitoring"><a href="#1-Kubernetes-Monitoring" class="headerlink" title="1. Kubernetes Monitoring"></a>1. Kubernetes Monitoring</h2><p><img src="https://k21academy.com/wp-content/uploads/2021/06/API_MatricsServer-1-1.png" alt="Kubernetes Monitoring"></p>
+<p>The challenge with Kubernetes comes from the managing of high availability, performance, and deployment of containers. But, what is more, the challenge is also to monitor them. Thankfully, K8s comes up with Metrics. The CAdvisor, installed by default on all cluster nodes, collects containers like CPU, memory, network, and disk usage. These metrics are pushed into the Metric Server of Kubernetes by the kubelet APIs.</p>
+<p>Kubernetes eases the management of our containerised applications and services. It can sometimes be a two-edged sword, as it adds complexity to the system with the influx of new layers and abstractions. Hence, it makes a long list of components to monitor.</p>
+<p>But to our rescue, there are many excelling open-source tools in today’s world to help us get through with the monitoring.</p>
+<h2 id="2-Kubernetes-Dashboard"><a href="#2-Kubernetes-Dashboard" class="headerlink" title="2. Kubernetes Dashboard"></a>2. Kubernetes Dashboard</h2><p>The web-based <a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/kubernetes-dashboard/">Kubernetes console</a>, which is a general-purpose UI made to look after the <em><strong>Cluster</strong></em> in Kubernetes. Surprisingly, even the dashboard is nothing but a <strong>container</strong> that access the cluster information from within the cluster. So, it’s just another resource for Kubernetes to manage.</p>
+<p><img src="https://k21academy.com/wp-content/uploads/2021/02/ui-dashboard.png" alt="Kubernetes Dashboard"></p>
+<p><strong>Also Check:</strong> Our blog post on <a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/kubernetes-deployment/"><strong>Kubernetes Deployment</strong></a>. Click here</p>
+<h2 id="3-What-is-Prometheus"><a href="#3-What-is-Prometheus" class="headerlink" title="3. What is Prometheus?"></a>3. What is Prometheus?</h2><p>An open-source monitoring tool, Prometheus seems to be the <em>King</em> 👑 of all the monitoring tools out there as of today. Prometheus on Kubernetes is used for metrics-based monitoring and alerting. It pulls the real-time metrics, compresses and stores them in a time-series database.</p>
+<p>The Prometheus sends an HTTP request (pull) called <em><strong>Scrape</strong></em>, found on the configuration in the deployment. It provides a query language and a robust data model that provides detailed and actionable metrics.</p>
+<p>Let’s look at how is Prometheus built from the inside.</p>
+<h3 id="1-Prometheus-Architecture"><a href="#1-Prometheus-Architecture" class="headerlink" title="1. Prometheus Architecture"></a>1. Prometheus Architecture</h3><p>At its core, Prometheus has a main component called <strong>Prometheus Server</strong>, responsible for the actual monitoring work. The Prometheus server consists of:</p>
+<ul>
+<li><strong>Time Series Database</strong> that stores all the metric data like current CPU usage, memory usage etc.</li>
+<li><strong>Data Retrieval Worker</strong> is responsible for all the data pulling activities from applications, services, servers etc. and pushing them into the database.</li>
+<li><strong>HTTP Server API</strong> meant to accept queries for the stored data. The Server API is used to display the data in a dashboard or a Web UI.</li>
+</ul>
+<p><img src="https://k21academy.com/wp-content/uploads/2021/06/Prometheus-Server_Chart.png" alt="Prometheus architecture"></p>
+<p>Prometheus Architecture</p>
+<p>These three components together are the ones behind that scene that helps keep our K8s clusters healthy and perform the best.</p>
+<p><strong>Also Check:</strong> Our blog post on <a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/kubernetes-readiness-and-livenessprobe/"><strong>Kubernetes LivenessProbe</strong></a>. Click here</p>
+<h3 id="3-How-does-Prometheus-work-with-Kubernetes"><a href="#3-How-does-Prometheus-work-with-Kubernetes" class="headerlink" title="3. How does Prometheus work with Kubernetes?"></a>3. How does Prometheus work with Kubernetes?</h3><p>Prometheus on Kubernetes monitors a ‘thing’, for instance, Linux&#x2F;Windows server, an application, Apache server, service like a database. These are called the <em><strong>Targets</strong></em>.</p>
+<p><strong><img src="https://k21academy.com/wp-content/uploads/2021/06/Prometheus-Server.png" alt="Prometheus Grafana working"></strong></p>
+<p>Working of Prometheus</p>
+<h4 id="1-Metrics"><a href="#1-Metrics" class="headerlink" title="1.Metrics"></a>1.Metrics</h4><p>The units monitored from these targets can be like the current CPU usage, memory usage, the number of counts of a request or an exception. These units are called <em><strong>Metrics</strong></em>. They are in a human-readable text-based format with <em>TYPE</em> and <em>HELP</em> attributes. The <strong>HELP</strong> attributes description of what the metrics are.</p>
+<p>There are three types of metrics <strong>TYPES</strong> named:</p>
+<ol>
+<li><strong>Counter</strong><em>:</em> Tells us about how many times ‘x’ happened. It can be like the number of times an exception occurred or the number of requests.</li>
+<li><strong>Gauge</strong>: It represents a metric that can go up and down. So, it gives us the value of ‘x’. An ‘x’ can be the current CPU usage, disk usage etc.</li>
+<li><strong>Histogram</strong>: This type tracks the duration or the size of requests or any required metric.</li>
+</ol>
+<p>Prometheus on Kubernetes pulls metrics data from the targets. They pull data from HTTP endpoints like the host address&#x2F;metrics. So, for this to work, the targets should expose their &#x2F;metrics endpoint, and the data at the endpoint must be acceptable by Prometheus. But, not every service exposes their &#x2F;metrics endpoint by default. So, then comes the <strong>Exporter</strong>. It is a script that does help the Prometheus server retrieve the metrics by doing the following work:</p>
+<ol>
+<li>Pulls the metrics from the target.</li>
+<li>Converts it into the Prometheus readable format.</li>
+<li>Exposes the &#x2F;metrics endpoints.</li>
+</ol>
+<p>So, these exporters help you scrape metrics when required and are readily available. There are many official Prometheus exporters for services like MySQL, Linux server, cloud platforms, etc. You can check it out from <em><strong><a target="_blank" rel="noopener" href="https://prometheus.io/docs/instrumenting/exporters/">here</a></strong></em> 👈</p>
+<h4 id="2-Alerts-Manager"><a href="#2-Alerts-Manager" class="headerlink" title="2. Alerts Manager"></a>2. Alerts Manager</h4><p>The Prometheus has another component that alerts in a failure in the cluster, resource limitations etc. The Alert Manager is responsible for firing alerts via a different medium like Slack, email, etc.</p>
+<h4 id="3-Prometheus-Data-Storage"><a href="#3-Prometheus-Data-Storage" class="headerlink" title="3. Prometheus Data Storage"></a>3. Prometheus Data Storage</h4><p>Prometheus on Kubernetes collects and aggregates all the data in a disk. So, it involves local storage but can also connect with remote storage. But we can’t directly store the pulled data on a relational database since it is in a <strong>custom time-series format</strong>.</p>
+<h4 id="4-Prometheus-Querying"><a href="#4-Prometheus-Querying" class="headerlink" title="4. Prometheus Querying"></a>4. Prometheus Querying</h4><p>Once the data gets stored in the database, we can query the data using PromQL. The Prometheus web UI, <em><strong>Grafana</strong></em> are the tools that help us visualise data.</p>
+<p>Most of the monitoring mechanisms like Amazon Cloud Watch pushes the data to a centralised collection platform. But, this doesn’t seem ideal for microservices because of the traffic it might cause. Hence, the Prometheus uses the <strong>pull system</strong> from which retrieves data via multiple Prometheus instances and helps better detect a status of a service. However, Prometheus offers the push mechanism for ‘short-lived jobs’.</p>
+<p><strong>Check Out:</strong> Our blog post on <a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/kubernetes-operator/"><strong>Kubernetes Operator Tutorial</strong></a>. Click here</p>
+<h2 id="3-What-is-Grafana"><a href="#3-What-is-Grafana" class="headerlink" title="3. What is Grafana?"></a>3. What is Grafana?</h2><p>Grafana is an open-source mighty visualisation and analytics software. It helps us visualise massive amounts of data with the help of an excellent customisable dashboard. Therefore it helps us study, monitor, and analyse data over a period of time. It connects with a lot of data source like Prometheus, Graphite, Influx DB, ElasticSearch etc.</p>
+<h3 id="Features-of-Grafana"><a href="#Features-of-Grafana" class="headerlink" title="Features of Grafana"></a>Features of Grafana</h3><ul>
+<li><strong>The Dashboard</strong>: It is quite an excelling feature with well equipped and continually evolving part. The dashboard helps us make sense of complex data.</li>
+<li><strong>Alerts</strong>: The alerts can be set up and fired whenever there is an anticipated situation.</li>
+<li><strong>Native Support</strong>: It has native support of around a dozen databases.</li>
+<li><strong>Built-in Support</strong>: It offers built-in support for Prometheus, Influx DB, CloudWatch, Graphite, ElasticSearch.</li>
+</ul>
+<p><strong>Also Check:</strong> Our blog post on <a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/configmaps-secrets/"><strong>Kubernetes Configmap</strong></a>. Click here</p>
+<h2 id="4-Install-Prometheus-and-Grafana-on-Kubernetes"><a href="#4-Install-Prometheus-and-Grafana-on-Kubernetes" class="headerlink" title="4. Install Prometheus and Grafana on Kubernetes"></a>4. Install Prometheus and Grafana on Kubernetes</h2><p>So, we finally have arrived at the most exciting part of the blog. Yes, we are going to install Prometheus Kubernetes with a Grafana web UI. But, before we get started, let’s look at some of the prerequisites.</p>
+<p>i) You should have a <strong>Kubernetes cluster</strong> up and running. It can be of any number of nodes, *<strong>minikube*</strong> <em><strong>cluster</strong></em> would also do.</p>
+<p>If you don’t have one, check out how to create a <strong>three-node</strong> <a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/how-to-setup-a-three-node-kubernetes-cluster-for-cka-step-by-step/"><strong>Kubernetes cluster</strong></a>. But, don’t forget to get back here 😉</p>
+<p>ii) <a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/helm-and-helm-charts-with-kubernetes/"><strong>Helm</strong></a> package manager should be installed on your machine or the Kubernetes cluster. If not, don’t worry. We got you all covered. You can install from the below commands.</p>
+<p><strong>For Linux:</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -</span><br><span class="line">sudo apt-get install apt-transport-https --yes</span><br><span class="line">echo &quot;deb https://baltocdn.com/helm/stable/debian/ all main&quot; | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install helm</span><br></pre></td></tr></table></figure>
+
+<p><strong>For Windows:</strong></p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">choco install kubernetes-helm</span><br></pre></td></tr></table></figure>
+
+<p><strong>For macOS:</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install helm</span><br></pre></td></tr></table></figure>
+
+<p><strong>From pkg (FreeBSD):</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pkg install helm</span><br></pre></td></tr></table></figure>
+
+<h3 id="Step-1-Add-repositories"><a href="#Step-1-Add-repositories" class="headerlink" title="Step 1: Add repositories"></a><strong>Step 1: Add repositories</strong></h3><p>Add the following helm repositories by the commands below.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm repo add prometheus-community https://prometheus-community.github.io/helm-charts</span><br></pre></td></tr></table></figure>
+
+<p><img src="/Kubernetes%20Prometheus%20Monitoring%20Metrics,%20Scrape%20and%20Installation%20with%20Helm/Peek-2021-05-31-15-01.gif" alt="Prometheus helm repo"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm repo add stable https://charts.helm.sh/stable</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://k21academy.com/wp-content/uploads/2021/06/ezgif.com-gif-maker-1.gif" alt="prometheus stable repo"></p>
+<h3 id="Step-2-Update-Helm-repositories"><a href="#Step-2-Update-Helm-repositories" class="headerlink" title="Step 2: Update Helm repositories"></a><strong>Step 2: Update Helm repositories</strong></h3><p>After we add the helm repositories, we have to update the helm repo by the following command.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm repo update</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://k21academy.com/wp-content/uploads/2021/06/ezgif.com-gif-maker-3.gif" alt="helm repo update"></p>
+<h3 id="Step-3-Install-Prometheus-Kubernetes"><a href="#Step-3-Install-Prometheus-Kubernetes" class="headerlink" title="Step 3: Install Prometheus Kubernetes"></a><strong>Step 3: Install Prometheus Kubernetes</strong></h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm install prometheus prometheus-community/kube-prometheus-stack</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://k21academy.com/wp-content/uploads/2021/06/ezgif.com-gif-maker-9.gif" alt="helm install prometheus"></p>
+<h3 id="Step-4-Kubernetes-Prometheus-Port-Forward"><a href="#Step-4-Kubernetes-Prometheus-Port-Forward" class="headerlink" title="Step 4: Kubernetes Prometheus Port Forward"></a><strong>Step 4: Kubernetes Prometheus Port Forward</strong></h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl port-forward deployment/prometheus-grafana 3000</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://k21academy.com/wp-content/uploads/2021/06/ezgif.com-gif-maker-5.gif" alt="grafana port forward"></p>
+<h3 id="Step-5-Log-in-to-Grafana"><a href="#Step-5-Log-in-to-Grafana" class="headerlink" title="Step 5: Log in to Grafana"></a><strong>Step 5: Log in to Grafana</strong></h3><p>Open your favourite browser and open <a target="_blank" rel="noopener" href="https://localhost:3000/">localhost:3000</a>. Since you are logging in for the first time, you will have to use a default username and password. However, you can create new users and update passwords later. Use the default credentials for now:</p>
+<p><strong>username</strong>: admin<br><strong>password</strong>: prom-operator</p>
+<p><img src="/Kubernetes%20Prometheus%20Monitoring%20Metrics,%20Scrape%20and%20Installation%20with%20Helm/ezgif.com-gif-maker-11.gif" alt="kubernetes prometheus grafana login"></p>
+<p>Once you are inside the Grafana web UI, there are a lot of things you can do. You can set the duration of scraping metrics. You can also configure your dashboard. Also, you can look into networking. However, there are a lot more things to explore in this. I am adding some of the scouting done by me below.</p>
+<p><strong>Networking in a pod:</strong></p>
+<p><strong><img src="https://k21academy.com/wp-content/uploads/2021/06/ezgif.com-gif-maker-6.gif" alt="Kubernetes networking grafana prometheus">Cluster Status:</strong></p>
+<p><strong><img src="/Kubernetes%20Prometheus%20Monitoring%20Metrics,%20Scrape%20and%20Installation%20with%20Helm/download.png" alt="cluster monitoring"></strong></p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a><strong>Conclusion</strong></h2><p>Monitoring is crucial whether you are experimenting or using the production-based cluster. Prometheus Kubernetes monitoring with Grafana is a boon for us indeed. It makes our lives a lot easier with a customisable interface, configurable exporters. Also, it is open-source. However, K8s has its official dashboard, and the Prometheus + Grafana is no match.</p>
+<p>We have used Helm to deploy the Prometheus operator, including all the necessary tools for Prometheus and Grafana to monitor the cluster. So, you would have figured out why Prometheus and Grafana for Kubernetes are a superpower. If no yet, I suggest you install the Prometheus and Grafana on Kubernetes and have a look at the various features it has to offer for us!</p>
+<h2 id="Related-Post"><a href="#Related-Post" class="headerlink" title="Related Post"></a><strong>Related Post</strong></h2><ul>
+<li><a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/docker-and-kubernetes-important-blogs-for-beginners/"><strong>Kubernetes for Beginners</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/kubernetes-operator/"><strong>Kubernetes Operator: An Overview, Stateful Application Exampl</strong></a>e</li>
+<li><a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/three-node-kubernetes-cluster/"><strong>How To Setup A Three Node Kubernetes Cluster For CKA: Step By Step</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://k21academy.com/dockerkubernetes?sub_confirmation=1"><strong>Check out and Subscribe to our YouTube channel on “Docker &amp;</strong> <strong>Kubernetes.”</strong></a></li>
+<li><strong><a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/certified-kubernetes-administrator-cka-certification-exam-everything-you-must-know/">Certified Kubernetes Administrator (CKA) Certification Exam</a></strong></li>
+<li><strong><a target="_blank" rel="noopener" href="https://k21academy.com/docker-kubernetes/certified-kubernetes-administrator-cka-certification-training-step-by-step-activity-guides-hands-on-lab-exercise/">Certified Kubernetes Administrator (CKA) Certification: Step By Step Activity Guides&#x2F;Hands-On Lab Exercise</a></strong></li>
+</ul>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

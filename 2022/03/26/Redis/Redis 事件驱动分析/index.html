@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Redis 事件驱动分析 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 事件驱动分析">
+<meta property="og:url" content="https://iideas18.github.io/2022/03/26/Redis/Redis 事件驱动分析/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-03-26T07:06:57.000Z">
+<meta property="article:modified_time" content="2026-03-12T15:48:24.760Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/03/26/Redis/Redis 事件驱动分析/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Redis 事件驱动分析',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-12 23:48:24'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">Redis 事件驱动分析</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-03-26T07:06:57.000Z" title="发表于 2022-03-26 15:06:57">2022-03-26</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-12T15:48:24.760Z" title="更新于 2026-03-12 23:48:24">2026-03-12</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Redis/">Redis</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <p>很多公司面试的时候都喜欢问为什么 Redis 那么快？这就得益于 Redis的 <code>事件驱动模块 </code>，什么是 <code>事件驱动</code> 呢？通俗来说，<code>事件驱动</code> 指的是当某一事件发生触发某一处理过程。举个例子，当发生火灾时，就会触发消防队救火，在这个例子中，事件是发生火灾，而处理过程是消防队救火。而在 Redis 中的事件指的是客户端连接就绪（可接收或者可发送数据），所以当客户端连接就绪时，就会触发 Redis 的处理过程（调用某一个处理函数）去处理客户端连接。</p>
+<p>一般来说，客户端连接（socket）需要添加到多路复用IO句柄中进行监听，多路复用IO可以监听到客户端连接的状态变化，当客户端连接状态发生变化时（变为可读或可写），多路复用IO就会把状态发生变化的客户端连接列表返回给调用方。如下图：</p>
+<p><img src="/Redis%20%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8%E5%88%86%E6%9E%90/640.jpg" alt="Image"></p>
+<p>不同的操作系统有不同的多路复用IO接口，比如 Linux 系统中使用的是 epoll，而 FreeBSD 系统中使用的 kqueue。由于Redis支持多操作系统平台，所以 Redis 为了跨平台对多路复用IO进行封装。</p>
+<p>下面主要讨论 Redis 在 Linux 操作系统下对事件驱动库的封装。</p>
+<h2 id="Redis-事件驱动库的使用"><a href="#Redis-事件驱动库的使用" class="headerlink" title="Redis 事件驱动库的使用"></a>Redis 事件驱动库的使用</h2><h4 id="1-创建事件驱动对象"><a href="#1-创建事件驱动对象" class="headerlink" title="1. 创建事件驱动对象"></a>1. 创建事件驱动对象</h4><p>要使用Redis的事件驱动库，首先需要调用 <code>aeCreateEventLoop()</code> 函数创建一个事件驱动对象，其原型如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aeEventLoop *aeCreateEventLoop(int setsize);</span><br></pre></td></tr></table></figure>
+
+<p>参数 <code>setsize</code> 指定了事件驱动库能够监听多少个客户端连接，<code>aeCreateEventLoop()</code> 函数返回一个类型为 <code>aeEventLoop </code>的对象（结构体）。</p>
+<h4 id="2-添加监听的客户端连接"><a href="#2-添加监听的客户端连接" class="headerlink" title="2. 添加监听的客户端连接"></a>2. 添加监听的客户端连接</h4><p>要监听一个客户端连接的状态变化，需要调用 <code>aeCreateFileEvent()</code> 函数把客户端连接添加到事件驱动对象中进行监听， <code>aeCreateFileEvent()</code> 函数原型如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask, aeFileProc *proc, void *clientData);</span><br></pre></td></tr></table></figure>
+
+<p>下面介绍一下 <code>aeCreateFileEvent()</code> 函数各个参数的作用：</p>
+<ul>
+<li><code>eventLoop</code>：由 <code>aeCreateEventLoop()</code> 函数创建的事件驱动对象。</li>
+<li><code>fd</code>：客户端连接socket句柄。</li>
+<li><code>mask</code>：监听客户端连接的事件，有 <code>AE_READABLE（读）</code> 和 <code>AE_WRITABLE（写）</code> 两种事件。</li>
+<li><code>proc</code>：事件发生时的处理函数。</li>
+<li><code>clientData</code>：<code>proc</code> 函数的参数。</li>
+</ul>
+<h4 id="3-删除监听的客户端连接"><a href="#3-删除监听的客户端连接" class="headerlink" title="3. 删除监听的客户端连接"></a>3. 删除监听的客户端连接</h4><p>当我们不希望某个客户端连接被事件驱动库监听时，可以通过调用 <code>aeDeleteFileEvent()</code> 把客户端连接从事件驱动库中删除，其原型如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void aeDeleteFileEvent(aeEventLoop *eventLoop, int fd, int mask);</span><br></pre></td></tr></table></figure>
+
+<p>下面介绍一下 <code>aeDeleteFileEvent()</code> 函数各个参数的作用：</p>
+<ul>
+<li><code>eventLoop</code>：由 <code>aeCreateEventLoop()</code> 函数创建的事件驱动对象。</li>
+<li><code>fd</code>：客户端连接socket句柄。</li>
+<li><code>mask</code>：监听客户端连接的事件，有 <code>AE_READABLE（读）</code> 和 <code>AE_WRITABLE（写）</code> 两种事件。</li>
+</ul>
+<h4 id="4-等待客户端连接状态变化"><a href="#4-等待客户端连接状态变化" class="headerlink" title="4. 等待客户端连接状态变化"></a>4. 等待客户端连接状态变化</h4><p>当我们通过调用 <code>aeCreateEventLoop()</code> 函数把客户端连接添加到事件驱动库进行监听后，需要调用 <code>aeMain()</code> 函数等待客户端连接状态发生变化，其原型如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void aeMain(aeEventLoop *eventLoop);</span><br></pre></td></tr></table></figure>
+
+<p><code>aeMain()</code> 函数只有一个参数，就是由 <code>aeCreateEventLoop()</code> 函数创建的事件驱动对象。</p>
+<h4 id="5-事件驱动库使用示例"><a href="#5-事件驱动库使用示例" class="headerlink" title="5. 事件驱动库使用示例"></a>5. 事件驱动库使用示例</h4><p>下面我们通过一个 demo 来说明事件驱动库的使用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">#include &quot;ae.h&quot;</span><br><span class="line"></span><br><span class="line">// 把socket设置为非阻塞</span><br><span class="line">void set_nonblock(int sockfd) &#123;</span><br><span class="line">    flags = fcntl(sockfd, F_GETFL, 0);            // 获取socket的flags值。</span><br><span class="line">    fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);   // 设置成非阻塞模式；</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建一个socket并监听端口</span><br><span class="line">int listen_socket(short port) &#123;</span><br><span class="line">    int sockfd;</span><br><span class="line">    sockaddr_in sin;</span><br><span class="line"></span><br><span class="line">    sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // 创建监听端口的socket</span><br><span class="line"></span><br><span class="line">    sin.sin_family = AF_INET;</span><br><span class="line">    sin.sin_port = htons(port);</span><br><span class="line">    sin.sin_addr.S_un.S_addr = INADDR_ANY;</span><br><span class="line"></span><br><span class="line">    bind(sockfd, (struct sockaddr*)&amp;sin, sizeof(sin));  // 绑定IP地址和端口</span><br><span class="line">    listen(sockfd, 10);                                 // 开始监听</span><br><span class="line">    set_nonblock(sockfd);                               // 把socket设置为非阻塞(比较重要, 否则可能会阻塞进程)</span><br><span class="line"></span><br><span class="line">    return sockfd;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">    int serverfd;</span><br><span class="line">    aeEventLoop *eventLoop;</span><br><span class="line"></span><br><span class="line">    serverfd = listen_socket(8080);                                           // 创建监听端口的socket</span><br><span class="line"></span><br><span class="line">    eventLoop = aeCreateEventLoop(1024);                                      // 创建事件驱动对象</span><br><span class="line">    aeCreateFileEvent(eventLoop, serverfd, AE_READABLE, accept_client, NULL); // 把socket添加到事件驱动对象中进行监听</span><br><span class="line">    aeMain(eventLoop);                                                        // 开始等待socket的状态发生变化</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 处理接收到的连接</span><br><span class="line">void accept_client(struct aeEventLoop *eventLoop, int serverfd, void *data, int mask) &#123;</span><br><span class="line">    while (1) &#123;</span><br><span class="line">        int clientfd;</span><br><span class="line"></span><br><span class="line">        clientfd = accept(serverfd, (struct sockaddr*)NULL, NULL);</span><br><span class="line">        if (clientfd == -1) &#123;</span><br><span class="line">            break;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        set_nonblock(clientfd); // 把客户端socket设置为非阻塞(比较重要, 否则可能会阻塞进程)</span><br><span class="line"></span><br><span class="line">        // 把客户端连接添加到事件驱动库中进行监听</span><br><span class="line">        aeCreateFileEvent(eventLoop, clientfd, AE_READABLE, process_client, NULL);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 处理客户端连接的请求</span><br><span class="line">void process_client(struct aeEventLoop *eventLoop, int clientfd, void *data, int mask) &#123;</span><br><span class="line">    // ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的示例主要展示了怎样使用 <code>Redis</code> 的事件驱动库，程序主要完成了以下几个部分：</p>
+<ul>
+<li>创建监听 <code>8080</code> 端口的socket句柄，然后设置为非阻塞。</li>
+<li>创建事件驱动对象，并把监听 <code>8080</code> 端口的socket句柄添加到事件驱动对象中进行监听，监听事件为 <code>读事件（AE_READABLE）</code>，当其状态发生变化（可读）时回调函数为 <code>accept_client()</code>。</li>
+<li><code>accept_client()</code> 函数会调用 <code>accpet()</code> 系统调用来接收客户端连接socket，并且把其添加到事件驱动对象中进行监听，监听事件为 <code>读事件（AE_READABLE）</code>，当其状态发生变化（可读）时回调函数为 <code>process_client()</code>，<code>process_client()</code> 函数可以处理客户端连接的请求。</li>
+</ul>
+<blockquote>
+<p>注意：使用 <code>Redis</code> 事件驱动库时，必须把socket设置为非阻塞状态，如果socket是阻塞状态，那么可能会导致接收或发生数据时阻塞进程。</p>
+</blockquote>
+<h2 id="Redis-事件驱动库源码分析"><a href="#Redis-事件驱动库源码分析" class="headerlink" title="Redis 事件驱动库源码分析"></a>Redis 事件驱动库源码分析</h2><p>前面说过，不同的操作系统平台有不同的 <code>多路复用I/O</code> 接口，Redis 为了跨平台，使用了面向接口的编程模式。如果使用 <code>Java</code> 或者 <code>Golang</code> 这些编程语言的同学可能接触过接口，以 Golang 为例，如果某一个对象（结构）实现接口的所有方法，那么就可以把这个对象（结构）当成这个接口。</p>
+<p>但 Redis 是使用 <code>C语言</code> 编写的，C语言是没有接口这个概念的，所以必须使用某种方式来模拟接口。Redis 为不同的操作系统平台定义了不同的实现文件，而这些文件都实现相同的方法，然后根据不同的平台引入实现文件即可。例如，在 Linux 系统的实现文件是 <code>ae_epoll.c</code>，在 FreeBSD 系统的实现文件是 <code>ae_kqueue.c</code>，在 Soliris 系统的实现文件是 <code>ae_evport.c</code>，其他系统是 <code>ae_select.c</code>。打开这些文件可以发现，它们都实现了以下几个函数（方法）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">aeApiCreate()      // 用于创建平台对应的事件驱动上下文, 比如epoll就是创建epoll句柄</span><br><span class="line">aeApiResize()      // 用于扩展事件驱动库能够监听的的客户端连接</span><br><span class="line">aeApiFree()        // 用于释放由aeApiCreate()创建的上下文</span><br><span class="line">aeApiAddEvent()    // 用于把客户端连接添加到事件驱动上下文中</span><br><span class="line">aeApiDelEvent()    // 用于把客户端连接从事件驱动上下文中删除</span><br><span class="line">aeApiPoll()        // 用于等待监听的客户端连接状态发生变化</span><br><span class="line">aeApiName()        // 用于获取正在使用的事件驱动的类型(如epoll、kqueue、select等)</span><br></pre></td></tr></table></figure>
+
+<p>然后在 <code>ae.c</code> 文件中可以发现以下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#ifdef HAVE_EVPORT</span><br><span class="line">#include &quot;ae_evport.c&quot;</span><br><span class="line">#else</span><br><span class="line">    #ifdef HAVE_EPOLL</span><br><span class="line">    #include &quot;ae_epoll.c&quot;</span><br><span class="line">    #else</span><br><span class="line">        #ifdef HAVE_KQUEUE</span><br><span class="line">        #include &quot;ae_kqueue.c&quot;</span><br><span class="line">        #else</span><br><span class="line">        #include &quot;ae_select.c&quot;</span><br><span class="line">        #endif</span><br><span class="line">    #endif</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码意思是：如果是 Soliris 系统就引入 <code>ae_evport.c</code> 文件，如果是 Linux 系统就引入 <code>ae_epoll.c</code> 文件，如果是 FreeBSD 系统就引入 <code>ae_kqueue.c</code> 文件，而其他系统就引入 <code>ae_select.c</code> 文件。</p>
+<h3 id="Linux-系统下的实现"><a href="#Linux-系统下的实现" class="headerlink" title="Linux 系统下的实现"></a>Linux 系统下的实现</h3><p>下面主要分析 Linux 平台的实现，也就是 <code>ae_epoll.c</code> 文件的实现，我们主要分析几个比较重要的方法：<code>aeApiCreate()</code>、<code>aeApiAddEvent()</code> 和 <code>aeApiPoll()</code>。</p>
+<h4 id="aeApiCreate-函数"><a href="#aeApiCreate-函数" class="headerlink" title="aeApiCreate() 函数"></a>aeApiCreate() 函数</h4><p><code>aeApiCreate()</code> 函数用于创建平台对应的事件驱动上下文，其代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">static int aeApiCreate(aeEventLoop *eventLoop) &#123;</span><br><span class="line">    aeApiState *state = zmalloc(sizeof(aeApiState));</span><br><span class="line">    ...</span><br><span class="line">    state-&gt;events = zmalloc(sizeof(struct epoll_event)*eventLoop-&gt;setsize);</span><br><span class="line">    ...</span><br><span class="line">    state-&gt;epfd = epoll_create(1024); /* 1024 is just a hint for the kernel */</span><br><span class="line">    ...</span><br><span class="line">    eventLoop-&gt;apidata = state;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Redis 定义了一个 <code>aeApiState</code> 结构体用于保存事件驱动上下文，在 <code>ae_epoll.c</code> 文件下的定义如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">typedef struct aeApiState &#123;</span><br><span class="line">    int epfd;</span><br><span class="line">    struct epoll_event *events;</span><br><span class="line">&#125; aeApiState;</span><br></pre></td></tr></table></figure>
+
+<p><code>aeApiState</code> 结构体中的 <code>epfd</code> 字段用于保存使用 <code>epoll_create()</code> 系统调用创建的 epoll 文件句柄，而 <code>events</code> 字段是个 <code>epoll_event</code> 结构的数组，用于保存所有就绪（可读或可写）的客户端连接。</p>
+<p><code>aeApiCreate()</code> 函数的实现比较简单，主要完成以下几件事情：</p>
+<ul>
+<li>首先申请一个 <code>aeApiState</code> 结构。</li>
+<li>然后初始化其 <code>events</code> 字段（申请 <code>events</code> 数组需要的内存）。</li>
+<li>接着调用 <code>epoll_create()</code> 函数创建一个 epoll 句柄并保存到 <code>epfd</code> 字段中。</li>
+<li>最后把 <code>aeApiState</code> 结构保存到事件驱动对象的 <code>apidata</code> 字段中。</li>
+</ul>
+<h4 id="aeApiAddEvent-函数"><a href="#aeApiAddEvent-函数" class="headerlink" title="aeApiAddEvent() 函数"></a>aeApiAddEvent() 函数</h4><p><code>aeApiAddEvent()</code> 函数用于把客户端连接添加到事件驱动上下文中进行监听，其代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">static int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask) &#123;</span><br><span class="line">    aeApiState *state = eventLoop-&gt;apidata;</span><br><span class="line">    struct epoll_event ee = &#123;0&#125;;</span><br><span class="line">    int op = eventLoop-&gt;events[fd].mask == AE_NONE ? EPOLL_CTL_ADD : EPOLL_CTL_MOD;</span><br><span class="line"></span><br><span class="line">    ee.events = 0;</span><br><span class="line">    mask |= eventLoop-&gt;events[fd].mask; /* Merge old events */</span><br><span class="line">    if (mask &amp; AE_READABLE) ee.events |= EPOLLIN;     // 监听读事件</span><br><span class="line">    if (mask &amp; AE_WRITABLE) ee.events |= EPOLLOUT;    // 监听写事件</span><br><span class="line">    ee.data.fd = fd;</span><br><span class="line">    if (epoll_ctl(state-&gt;epfd,op,fd,&amp;ee) == -1) return -1; // 把客户端连接添加到epoll中进行监听</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>aeApiAddEvent()</code> 函数的参数作用如下：</p>
+<ul>
+<li><code>eventLoop</code>：事件驱动对象。</li>
+<li><code>fd</code>：添加要进行监听的客户端连接socket句柄。</li>
+<li><code>mask</code>：要监听的事件（读或写）。</li>
+</ul>
+<p><code>aeApiAddEvent()</code> 函数主要通过调用 <code>epoll_ctl()</code> 系统调用把客户端连接添加到事件驱动上下文（epoll句柄）中进行监听，当然添加前要指定监听的事件，在epoll 中 <code>EPOLLIN</code> 表示读事件，而 <code>EPOLLOUT</code> 表示写事件。</p>
+<h4 id="aeApiPoll-函数"><a href="#aeApiPoll-函数" class="headerlink" title="aeApiPoll()函数"></a>aeApiPoll()函数</h4><p><code>aeApiPoll()</code> 函数用于等待监听的客户端连接状态发生变化，也就是等待客户端连接变为可读或者可写状态，其代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">static int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp) &#123;</span><br><span class="line">    aeApiState *state = eventLoop-&gt;apidata;</span><br><span class="line">    int retval, numevents = 0;</span><br><span class="line"></span><br><span class="line">    retval = epoll_wait(state-&gt;epfd,state-&gt;events,eventLoop-&gt;setsize,</span><br><span class="line">            tvp ? (tvp-&gt;tv_sec*1000 + tvp-&gt;tv_usec/1000) : -1);</span><br><span class="line">    if (retval &gt; 0) &#123;</span><br><span class="line">        int j;</span><br><span class="line"></span><br><span class="line">        numevents = retval;</span><br><span class="line">        for (j = 0; j &lt; numevents; j++) &#123;</span><br><span class="line">            int mask = 0;</span><br><span class="line">            struct epoll_event *e = state-&gt;events+j;</span><br><span class="line"></span><br><span class="line">            if (e-&gt;events &amp; EPOLLIN) mask |= AE_READABLE;</span><br><span class="line">            if (e-&gt;events &amp; EPOLLOUT) mask |= AE_WRITABLE;</span><br><span class="line">            if (e-&gt;events &amp; EPOLLERR) mask |= AE_WRITABLE|AE_READABLE;</span><br><span class="line">            if (e-&gt;events &amp; EPOLLHUP) mask |= AE_WRITABLE|AE_READABLE;</span><br><span class="line">            eventLoop-&gt;fired[j].fd = e-&gt;data.fd;</span><br><span class="line">            eventLoop-&gt;fired[j].mask = mask;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return numevents;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>tvp</code> 参数表示要等待多长时间，如果在等待的时间内没有客户端连接的状态发生变化，那么就会超时。<code>aeApiPoll()</code> 函数主要通过调用 <code>epoll_wait()</code> 系统调用来等待被监听的客户端连接的状态发生变化，<code>epoll_wait()</code> 系统调用会将就绪的客户端连接保存到 <code>events</code> 参数中，并且通过返回值告知其数量。最后，<code>aeApiPoll()</code> 函数会把就绪的客户端连接（socket句柄和发生的事件）记录到事件驱动对象的 <code>fired</code> 字段中。</p>
+<h3 id="事件驱动库封装"><a href="#事件驱动库封装" class="headerlink" title="事件驱动库封装"></a>事件驱动库封装</h3><p>前面介绍了在 Linux 系统下的事件驱动实现，但为了跨平台的需要，Redis 还需要把这些函数进行一层封装，封装成统一的对外接口，也就是前面介绍过的事件驱动库接口。</p>
+<p>这里，我们主要介绍以下几个接口的实现：<code>aeCreateEventLoop()</code>、<code>aeCreateFileEvent()</code> 和 <code>aeMain()</code>。</p>
+<h4 id="aeCreateEventLoop-函数"><a href="#aeCreateEventLoop-函数" class="headerlink" title="aeCreateEventLoop() 函数"></a>aeCreateEventLoop() 函数</h4><p><code>aeCreateEventLoop()</code> 函数的主要作用是创建一个类型为 <code>aeEventLoop</code> 的事件驱动对象，<code>aeEventLoop</code> 的定义如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">typedef struct aeEventLoop &#123;</span><br><span class="line">    int maxfd;   /* highest file descriptor currently registered */</span><br><span class="line">    int setsize; /* max number of file descriptors tracked */</span><br><span class="line">    ...</span><br><span class="line">    aeFileEvent *events; /* Registered events */</span><br><span class="line">    aeFiredEvent *fired; /* Fired events */</span><br><span class="line">    ...</span><br><span class="line">    int stop;</span><br><span class="line">    void *apidata; /* This is used for polling API specific data */</span><br><span class="line">    ...</span><br><span class="line">&#125; aeEventLoop;</span><br></pre></td></tr></table></figure>
+
+<p>我们去掉了定时器相关的字段，下面介绍一下 <code>aeEventLoop</code> 结构各个字段的作用：</p>
+<ul>
+<li><code>maxfd</code>：所有被监听的客户端连接中最大的句柄号，<code>select</code> 这种多路复用I&#x2F;O需要用到。</li>
+<li><code>setmax</code>：事件驱动对象最大能够监听的客户端连接数。</li>
+<li><code>events</code>：所有注册到事件驱动对象中的客户端连接事件。</li>
+<li><code>fired</code>：所有就绪的客户端连接事件。</li>
+<li><code>stop</code>：是否要停止监听。</li>
+<li><code>apidata</code>：用于保存前面介绍过的事件驱动上下文。</li>
+</ul>
+<p><code>aeCreateEventLoop()</code> 函数的实现如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">aeEventLoop *aeCreateEventLoop(int setsize) &#123;</span><br><span class="line">    aeEventLoop *eventLoop;</span><br><span class="line">    int i;</span><br><span class="line"></span><br><span class="line">    if ((eventLoop = zmalloc(sizeof(*eventLoop))) == NULL) goto err;</span><br><span class="line">    eventLoop-&gt;events = zmalloc(sizeof(aeFileEvent)*setsize);</span><br><span class="line">    eventLoop-&gt;fired = zmalloc(sizeof(aeFiredEvent)*setsize);</span><br><span class="line">    if (eventLoop-&gt;events == NULL || eventLoop-&gt;fired == NULL) goto err;</span><br><span class="line">    eventLoop-&gt;setsize = setsize;</span><br><span class="line">    ...</span><br><span class="line">    eventLoop-&gt;stop = 0;</span><br><span class="line">    eventLoop-&gt;maxfd = -1;</span><br><span class="line">    ...</span><br><span class="line">    if (aeApiCreate(eventLoop) == -1) goto err;</span><br><span class="line">    </span><br><span class="line">    for (i = 0; i &lt; setsize; i++)</span><br><span class="line">        eventLoop-&gt;events[i].mask = AE_NONE;</span><br><span class="line">    return eventLoop;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>aeCreateEventLoop()</code> 函数的实现比较简单，主要是创建和初始化 <code>aeEventLoop</code> 对象。值得注意的是，<code>aeCreateEventLoop()</code> 函数调用了 <code>aeApiCreate()</code> 函数来创建事件驱动上下文。所以，<code>aeCreateEventLoop()</code> 函数主要是对 <code>aeApiCreate()</code> 函数的封装。</p>
+<h4 id="aeCreateFileEvent-函数"><a href="#aeCreateFileEvent-函数" class="headerlink" title="aeCreateFileEvent() 函数"></a>aeCreateFileEvent() 函数</h4><p><code>aeCreateFileEvent()</code> 函数用于添加被监听的客户端连接，其实现如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">int aeCreateFileEvent(aeEventLoop *eventLoop, int fd,</span><br><span class="line">        int mask, aeFileProc *proc, void *clientData)</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">    aeFileEvent *fe = &amp;eventLoop-&gt;events[fd];</span><br><span class="line"></span><br><span class="line">    if (aeApiAddEvent(eventLoop, fd, mask) == -1) // 把客户端连接添加到事件驱动上下文中</span><br><span class="line">        return AE_ERR;</span><br><span class="line">    fe-&gt;mask |= mask;</span><br><span class="line">    if (mask &amp; AE_READABLE) fe-&gt;rfileProc = proc; // 设置读事件的回调函数</span><br><span class="line">    if (mask &amp; AE_WRITABLE) fe-&gt;wfileProc = proc; // 设置写事件的回调函数</span><br><span class="line">    fe-&gt;clientData = clientData;                  // 设置回调函数的参数</span><br><span class="line">    if (fd &gt; eventLoop-&gt;maxfd)</span><br><span class="line">        eventLoop-&gt;maxfd = fd;</span><br><span class="line">    return AE_OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>aeCreateFileEvent()</code> 函数的参数前面已经介绍过，这里就不再重复了。</p>
+<p><code>aeCreateFileEvent()</code> 函数首先会调用 <code>aeApiAddEvent()</code> 函数把客户端连接添加到事件驱动上下文（也就是epoll句柄）中进行监听，然后设置事件的回调函数和回调函数的参数。所以，<code>aeCreateFileEvent()</code> 函数主要是对 <code>aeApiAddEvent()</code> 函数的封装。</p>
+<h4 id="aeMain-函数"><a href="#aeMain-函数" class="headerlink" title="aeMain() 函数"></a>aeMain() 函数</h4><p><code>aeMain()</code> 函数用于等待客户端连接的状态发生变化，并且调用客户端连接的事件回调函数进行处理。代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">void aeMain(aeEventLoop *eventLoop) &#123;</span><br><span class="line">    eventLoop-&gt;stop = 0;</span><br><span class="line">    while (!eventLoop-&gt;stop) &#123;</span><br><span class="line">        aeProcessEvents(eventLoop, AE_ALL_EVENTS|</span><br><span class="line">                                   AE_CALL_BEFORE_SLEEP|</span><br><span class="line">                                   AE_CALL_AFTER_SLEEP);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上面的代码可以看出，<code>aeMain()</code> 函数里面是一个无限循环，循环的停止条件是事件驱动对象的 <code>stop</code> 字段被设置为1。在循环里，每次都会调用 <code>aeProcessEvents()</code> 函数来监听客户端连接的状态变化，并且调用事件相关的回调函数对客户端连接进行处理。 <code>aeProcessEvents()</code> 函数的实现如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">int aeProcessEvents(aeEventLoop *eventLoop, int flags)</span><br><span class="line">&#123;</span><br><span class="line">    int processed = 0, numevents;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">    if (eventLoop-&gt;maxfd != -1 ||</span><br><span class="line">        ((flags &amp; AE_TIME_EVENTS) &amp;&amp; !(flags &amp; AE_DONT_WAIT))) &#123;</span><br><span class="line">        ...</span><br><span class="line">        numevents = aeApiPoll(eventLoop, tvp); // 等待客户端连接就绪</span><br><span class="line">        ...</span><br><span class="line">        for (j = 0; j &lt; numevents; j++) &#123;</span><br><span class="line">            aeFileEvent *fe = &amp;eventLoop-&gt;events[eventLoop-&gt;fired[j].fd];</span><br><span class="line">            int mask = eventLoop-&gt;fired[j].mask;</span><br><span class="line">            int fd = eventLoop-&gt;fired[j].fd;</span><br><span class="line">            int fired = 0; /* Number of events fired for current fd. */</span><br><span class="line"></span><br><span class="line">            int invert = fe-&gt;mask &amp; AE_BARRIER;</span><br><span class="line"></span><br><span class="line">            if (!invert &amp;&amp; fe-&gt;mask &amp; mask &amp; AE_READABLE) &#123; // 处理读事件</span><br><span class="line">                fe-&gt;rfileProc(eventLoop,fd,fe-&gt;clientData,mask);</span><br><span class="line">                fired++;</span><br><span class="line">                fe = &amp;eventLoop-&gt;events[fd]; /* Refresh in case of resize. */</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            /* Fire the writable event. */</span><br><span class="line">            if (fe-&gt;mask &amp; mask &amp; AE_WRITABLE) &#123; // 处理写事件</span><br><span class="line">                if (!fired || fe-&gt;wfileProc != fe-&gt;rfileProc) &#123;</span><br><span class="line">                    fe-&gt;wfileProc(eventLoop,fd,fe-&gt;clientData,mask);</span><br><span class="line">                    fired++;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            if (invert) &#123;</span><br><span class="line">                fe = &amp;eventLoop-&gt;events[fd]; /* Refresh in case of resize. */</span><br><span class="line">                if ((fe-&gt;mask &amp; mask &amp; AE_READABLE) &amp;&amp;</span><br><span class="line">                    (!fired || fe-&gt;wfileProc != fe-&gt;rfileProc))</span><br><span class="line">                &#123;</span><br><span class="line">                    fe-&gt;rfileProc(eventLoop,fd,fe-&gt;clientData,mask);</span><br><span class="line">                    fired++;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            processed++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    return processed; /* return the number of processed file/time events */</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>aeProcessEvents()</code> 函数首先会调用 <code>aeApiPoll()</code> 函数等待客户端连接的状态变化。然后遍历就绪的客户端连接，判断其发生的事件类型（读事件还是写事件）。如果发生的是读事件，那么就调用读事件回调函数对客户端连接进行处理。如果发生的是写事件，那么就调用写事件回调函数对客户端连接进行处理。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这篇文章主要介绍了 Redis 的事件驱动库的使用与原理实现，Redis的事件驱动库主要使用了 多路复用I&#x2F;O 来对客户端连接进行监听，如果客户端连接从不可用变为就绪，那么事件驱动库就会调用事件相关的回调函数对连接进行处理。</p>
+<p>另外本文未对 Redis 事件驱动库的定时器进行分析，有兴趣的同学可以自行阅读代码分析。</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2. Linux I/O 多路复用实现 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2. Linux I/O 多路复用实现">
+<meta property="og:url" content="https://iideas18.github.io/2022/04/27/Linux/IO 多路/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-04-27T07:55:34.000Z">
+<meta property="article:modified_time" content="2026-03-12T15:48:24.740Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/04/27/Linux/IO 多路/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '2. Linux I/O 多路复用实现',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-12 23:48:24'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">2. Linux I/O 多路复用实现</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-04-27T07:55:34.000Z" title="发表于 2022-04-27 15:55:34">2022-04-27</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-12T15:48:24.740Z" title="更新于 2026-03-12 23:48:24">2026-03-12</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Linux/">Linux</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h2 id="1-什么是多路复用IO"><a href="#1-什么是多路复用IO" class="headerlink" title="1. 什么是多路复用IO"></a>1. 什么是多路复用IO</h2><p>多路复用IO (IO multiplexing)<code>是指内核一旦发现进程指定的一个或者多个IO条件准备读取，它就通知该进程。在Linux系统中，常用的</code>多路复用IO<code>手段有</code>select<code>、</code>poll<code>和</code>epoll。</p>
+<p>多路复用IO<code>主要用于处理网络请求，例如可以把多个请求句柄添加到</code>select<code>中进行监听，当有请求可进行IO的时候就会告知进程，并且把就绪的请求句柄保存下来，进程只需要对这些就绪的请求进行IO操作即可。下面通过一幅图来展示</code>select 的使用方式（图片来源于网络）：</p>
+<p><img src="/IO%20%E5%A4%9A%E8%B7%AF/640.jpg" alt="Image"></p>
+<h2 id="2-多路复用IO实现原理"><a href="#2-多路复用IO实现原理" class="headerlink" title="2. 多路复用IO实现原理"></a>2. 多路复用IO实现原理</h2><p>为了更简明的解释 <code>多路复用IO</code> 的原理，这里使用 <code>select</code> 系统调用作为分析对象。因为 <code>select</code> 的实现比较简单，而现在流行的 <code>epoll</code> 由于处于性能考虑，实现则比较复杂，不便于理解 <code>多路复用IO</code> 的原理，当然当理解了 <code>select</code> 的实现原理后，对 <code>epoll</code> 的实现就能应刃而解了。</p>
+<h3 id="2-1-select系统调用的使用"><a href="#2-1-select系统调用的使用" class="headerlink" title="2.1 select系统调用的使用"></a>2.1 select系统调用的使用</h3><p>要使用 <code>select</code> 来监听socket是否可以进行IO，首先需要把其添加到一个类型为 <code>fd_set</code> 的结构中，然后通过调用 <code>select()</code> 系统调用来进行监听，下面代码介绍了怎么使用 <code>select</code> 来对socket进行监听的：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">socket_can_read</span><span class="params">(<span class="type">int</span> fd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> retval;</span><br><span class="line">    fd_set set;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">timeval</span> tv;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">FD_ZERO</span>(&amp;set);</span><br><span class="line">    <span class="built_in">FD_SET</span>(fd, &amp;set);</span><br><span class="line"></span><br><span class="line">    tv.tv_sec = tv.tv_usec = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    retval = <span class="built_in">select</span>(fd<span class="number">+1</span>, &amp;set, <span class="literal">NULL</span>, <span class="literal">NULL</span>, &amp;tv);</span><br><span class="line">    <span class="keyword">if</span> (retval &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">FD_ISSET</span>(fd, &amp;set) ? <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过上面的函数，可以监听一个socket句柄是否可读。</p>
+<h3 id="2-2-select系统调用的实现"><a href="#2-2-select系统调用的实现" class="headerlink" title="2.2 select系统调用的实现"></a>2.2 select系统调用的实现</h3><p>接下来我们分析一下 <code>select</code> 系统调用的实现，用户程序通过调用 <code>select</code> 系统调用后会进入到内核态并且调用 <code>sys_select()</code> 函数，<code>sys_select()</code> 函数的实现如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">asmlinkage <span class="type">long</span></span></span><br><span class="line"><span class="function"><span class="title">sys_select</span><span class="params">(<span class="type">int</span> n, fd_set *inp, fd_set *outp, fd_set *exp, <span class="keyword">struct</span> timeval *tvp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    fd_set_bits fds;</span><br><span class="line">    <span class="type">char</span> *bits;</span><br><span class="line">    <span class="type">long</span> timeout;</span><br><span class="line">    <span class="type">int</span> ret, size;</span><br><span class="line"></span><br><span class="line">    timeout = MAX_SCHEDULE_TIMEOUT;</span><br><span class="line">    <span class="keyword">if</span> (tvp) &#123;</span><br><span class="line">        <span class="type">time_t</span> sec, usec;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">if</span> ((<span class="type">unsigned</span> <span class="type">long</span>) sec &lt; MAX_SELECT_SECONDS) &#123;</span><br><span class="line">            timeout = <span class="built_in">ROUND_UP</span>(usec, <span class="number">1000000</span>/HZ);</span><br><span class="line">            timeout += sec * (<span class="type">unsigned</span> <span class="type">long</span>) HZ;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (n &gt; current-&gt;files-&gt;max_fdset)</span><br><span class="line">        n = current-&gt;files-&gt;max_fdset;</span><br><span class="line"></span><br><span class="line">    ret = -ENOMEM;</span><br><span class="line">    size = <span class="built_in">FDS_BYTES</span>(n);</span><br><span class="line">    bits = <span class="built_in">select_bits_alloc</span>(size);</span><br><span class="line"></span><br><span class="line">    fds.in = (<span class="type">unsigned</span> <span class="type">long</span> *)bits;</span><br><span class="line">    fds.out = (<span class="type">unsigned</span> <span class="type">long</span> *)(bits + size);</span><br><span class="line">    fds.ex = (<span class="type">unsigned</span> <span class="type">long</span> *)(bits + <span class="number">2</span>*size);</span><br><span class="line">    fds.res_in = (<span class="type">unsigned</span> <span class="type">long</span> *)(bits + <span class="number">3</span>*size);</span><br><span class="line">    fds.res_out = (<span class="type">unsigned</span> <span class="type">long</span> *)(bits + <span class="number">4</span>*size);</span><br><span class="line">    fds.res_ex = (<span class="type">unsigned</span> <span class="type">long</span> *)(bits + <span class="number">5</span>*size);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((ret = <span class="built_in">get_fd_set</span>(n, inp, fds.in)) ||</span><br><span class="line">        (ret = <span class="built_in">get_fd_set</span>(n, outp, fds.out)) ||</span><br><span class="line">        (ret = <span class="built_in">get_fd_set</span>(n, exp, fds.ex)))</span><br><span class="line">        <span class="keyword">goto</span> out;</span><br><span class="line">    <span class="built_in">zero_fd_set</span>(n, fds.res_in);</span><br><span class="line">    <span class="built_in">zero_fd_set</span>(n, fds.res_out);</span><br><span class="line">    <span class="built_in">zero_fd_set</span>(n, fds.res_ex);</span><br><span class="line"></span><br><span class="line">    ret = <span class="built_in">do_select</span>(n, &amp;fds, &amp;timeout);</span><br><span class="line">    ...</span><br><span class="line">    <span class="built_in">set_fd_set</span>(n, inp, fds.res_in);</span><br><span class="line">    <span class="built_in">set_fd_set</span>(n, outp, fds.res_out);</span><br><span class="line">    <span class="built_in">set_fd_set</span>(n, exp, fds.res_ex);</span><br><span class="line"></span><br><span class="line">out:</span><br><span class="line">    <span class="built_in">select_bits_free</span>(bits, size);</span><br><span class="line">out_nofds:</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>sys_select()</code> 函数主要把用户态的参数复制到内核态，然后再通过调用 <code>do_select()</code> 函数进行监听操作， <code>do_select()</code>函数实现如下（由于实现有点复杂，所以我们分段来分析）：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">do_select</span><span class="params">(<span class="type">int</span> n, fd_set_bits *fds, <span class="type">long</span> *timeout)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    poll_table table, *wait;</span><br><span class="line">    <span class="type">int</span> retval, i, off;</span><br><span class="line">    <span class="type">long</span> __timeout = *timeout;</span><br><span class="line">    ...</span><br><span class="line">    <span class="built_in">poll_initwait</span>(&amp;table);</span><br><span class="line">    wait = &amp;table;</span><br><span class="line">    <span class="keyword">if</span> (!__timeout)</span><br><span class="line">        wait = <span class="literal">NULL</span>;</span><br><span class="line">    retval = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>上面这段代码主要通过调用 <code>poll_initwait()</code> 函数来初始化类型为 <code>poll_table</code> 结构的变量 <code>table</code>。要理解 <code>poll_table</code>结构的作用，我们先来看看下面的知识点：</p>
+<blockquote>
+<p>因为每个socket都有个等待队列，当某个进程需要对socket进行读写的时候，如果发现此socket并不能读写， 那么就可以添加到此socket的等待队列中进行休眠，当此socket可以读写时再唤醒队列中的进程。</p>
+</blockquote>
+<p>而 <code>poll_table</code> 结构就是为了把进程添加到socket的等待队列中而创造的，我们先跳过这部分，后面分析到socket相关的知识点再来说明。</p>
+<p>我们接着分析 <code>do_select()</code> 函数的实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (;;) &#123;</span><br><span class="line">    <span class="built_in">set_current_state</span>(TASK_INTERRUPTIBLE);</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span> ; i &lt; n; i++) &#123;</span><br><span class="line">        ...</span><br><span class="line">        file = <span class="built_in">fget</span>(i);</span><br><span class="line">        mask = POLLNVAL;</span><br><span class="line">        <span class="keyword">if</span> (file) &#123;</span><br><span class="line">            mask = DEFAULT_POLLMASK;</span><br><span class="line">            <span class="keyword">if</span> (file-&gt;f_op &amp;&amp; file-&gt;f_op-&gt;poll)</span><br><span class="line">                mask = file-&gt;f_op-&gt;<span class="built_in">poll</span>(file, wait);</span><br><span class="line">            <span class="built_in">fput</span>(file);</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码首先通过调用文件句柄的 <code>poll()</code> 接口来检查文件是否能够进行IO操作，对于socket来说，这个 <code>poll()</code> 接口就是 <code>sock_poll()</code>，所以我们来看看 <code>sock_poll()</code> 函数的实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">unsigned</span> <span class="type">int</span> <span class="title">sock_poll</span><span class="params">(<span class="keyword">struct</span> file *file, poll_table * wait)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">socket</span> *sock;</span><br><span class="line"></span><br><span class="line">    sock = <span class="built_in">socki_lookup</span>(file-&gt;f_dentry-&gt;d_inode);</span><br><span class="line">    <span class="keyword">return</span> sock-&gt;ops-&gt;<span class="built_in">poll</span>(file, sock, wait);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>sock_poll()</code> 函数的实现很简单，首先通过 <code>socki_lookup()</code> 函数来把文件句柄转换成socket结构，接着调用socket结构的 <code>poll()</code> 接口，而对应 <code>TCP</code> 类型的socket，这个接口对应的是 <code>tcp_poll()</code> 函数，实现如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">unsigned</span> <span class="type">int</span> <span class="title">tcp_poll</span><span class="params">(<span class="keyword">struct</span> file * file, <span class="keyword">struct</span> socket *sock, poll_table *wait)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">int</span> mask;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">sock</span> *sk = sock-&gt;sk;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">tcp_opt</span> *tp = &amp;(sk-&gt;tp_pinfo.af_tcp);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">poll_wait</span>(file, sk-&gt;sleep, wait); <span class="comment">// 把文件添加到sk-&gt;sleep队列中进行等待</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> mask;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>tcp_poll()</code> 函数通过调用 <code>poll_wait()</code> 函数把进程添加到socket的等待队列中。然后检测socket是否可读写，并通过mask返回可读写的状态。所以在 <code>do_select()</code> 函数中的 <code>mask = file-&gt;f_op-&gt;poll(file, wait);</code> 这行代码其实调用的是 <code>tcp_poll()</code> 函数。</p>
+<p>接着分析 <code>do_select()</code> 函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((mask &amp; POLLIN_SET) &amp;&amp; <span class="built_in">ISSET</span>(bit, __IN(fds,off))) &#123;</span><br><span class="line">    <span class="built_in">SET</span>(bit, __RES_IN(fds,off));</span><br><span class="line">    retval++;</span><br><span class="line">    wait = <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> ((mask &amp; POLLOUT_SET) &amp;&amp; <span class="built_in">ISSET</span>(bit, __OUT(fds,off))) &#123;</span><br><span class="line">    <span class="built_in">SET</span>(bit, __RES_OUT(fds,off));</span><br><span class="line">    retval++;</span><br><span class="line">    wait = <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> ((mask &amp; POLLEX_SET) &amp;&amp; <span class="built_in">ISSET</span>(bit, __EX(fds,off))) &#123;</span><br><span class="line">    <span class="built_in">SET</span>(bit, __RES_EX(fds,off));</span><br><span class="line">    retval++;</span><br><span class="line">    wait = <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为 <code>mask</code> 变量保存了socket的可读写状态，所以上面这段代码主要通过判断socket的可读写状态来把socket放置到合适的返回集合中。如果socket可读，那么就把socket放置到可读集合中，如果socket可写，那么就放置到可写集合中。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">        wait = <span class="literal">NULL</span>;</span><br><span class="line">        <span class="keyword">if</span> (retval || !__timeout || <span class="built_in">signal_pending</span>(current))</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">if</span>(table.error) &#123;</span><br><span class="line">            retval = table.error;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        __timeout = <span class="built_in">schedule_timeout</span>(__timeout);</span><br><span class="line">    &#125;</span><br><span class="line">    current-&gt;state = TASK_RUNNING;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">poll_freewait</span>(&amp;table);</span><br><span class="line"></span><br><span class="line">    *timeout = __timeout;</span><br><span class="line">    <span class="keyword">return</span> retval;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后这段代码的作用是，如果监听的socket集合中有可读写的socket，那么就直接返回（retval不为0时）。另外，如果调用 <code>select()</code> 时超时了，或者进程接收到信号，也需要返回。</p>
+<p>否则，通过调用 <code>schedule_timeout()</code> 来进行一次进程调度。因为前面把进程的运行状态设置成 <code>TASK_INTERRUPTIBLE</code>，所以进行进程调度时就会把当前进程从运行队列中移除，进程进入休眠状态。那么什么时候进程才会变回运行状态呢？</p>
+<p>前面我们说过，每个socket都有个等待队列，所以当socket可读写时便会把队列中的进程唤醒。这里分析一下当socket变成可读时，怎么唤醒等待队列中的进程的。</p>
+<p>网卡接收到数据时，会进行一系列的接收数据操作，对于TCP协议来说，接收数据的调用链是： <code>tcp_v4_rcv() -&gt; tcp_data() -&gt; tcp_data_queue() -&gt; sock_def_readable()</code>，我们来看看 <code>sock_def_readable()</code> 函数的实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">sock_def_readable</span><span class="params">(<span class="keyword">struct</span> sock *sk, <span class="type">int</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">read_lock</span>(&amp;sk-&gt;callback_lock);</span><br><span class="line">    <span class="keyword">if</span> (sk-&gt;sleep &amp;&amp; <span class="built_in">waitqueue_active</span>(sk-&gt;sleep))</span><br><span class="line">        <span class="built_in">wake_up_interruptible</span>(sk-&gt;sleep);</span><br><span class="line">    <span class="built_in">sk_wake_async</span>(sk,<span class="number">1</span>,POLL_IN);</span><br><span class="line">    <span class="built_in">read_unlock</span>(&amp;sk-&gt;callback_lock);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出 <code>sock_def_readable()</code> 函数最终会调用 <code>wake_up_interruptible()</code> 函数来把等待队列中的进程唤醒，这时调用 <code>select()</code> 的进程从休眠状态变回运行状态。</p>
+<h1 id="2-Linux-I-O-多路复用实现"><a href="#2-Linux-I-O-多路复用实现" class="headerlink" title="2. Linux I&#x2F;O 多路复用实现"></a>2. Linux I&#x2F;O 多路复用实现</h1><p>Linux在2.6内核之后，引入了epoll系统调用实现多路复用，显著提升了高并发场景下的吞吐量，其最大的功能就是获取事件的时候，无须遍历整个被侦听的描述符集，只要遍历那些被内核I&#x2F;O事件异步唤醒而加入就绪队列的描述符集合就行了。应用程序一般都会通过libc这样的库函数来使用封装过后的epoll调用，在libc中，封装了三个和epoll相关的系统调用函数：</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

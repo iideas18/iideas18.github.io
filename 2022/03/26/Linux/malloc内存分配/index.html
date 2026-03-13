@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>malloc内存分配 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="malloc内存分配">
+<meta property="og:url" content="https://iideas18.github.io/2022/03/26/Linux/malloc内存分配/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-03-26T14:19:57.000Z">
+<meta property="article:modified_time" content="2026-03-12T15:48:24.751Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/03/26/Linux/malloc内存分配/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'malloc内存分配',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-12 23:48:24'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">malloc内存分配</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-03-26T14:19:57.000Z" title="发表于 2022-03-26 22:19:57">2022-03-26</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-12T15:48:24.751Z" title="更新于 2026-03-12 23:48:24">2026-03-12</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Linux/">Linux</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>由于malloc()的源码十分的繁琐，并且会调用OS所提供的API，所以我不在对malloc()的源码进行分析了，而只是会分析malloc()的动作，这就已经足够了。</p>
+<h2 id="一、malloc-分配出的内存空间"><a href="#一、malloc-分配出的内存空间" class="headerlink" title="一、malloc()分配出的内存空间"></a>一、malloc()分配出的内存空间</h2><p>在前边的文章中已经提及到了，当malloc()分配空间时，并不是要多少就分配多少，而是会额外的加上首部和尾部，其中一些较为简单的部分我会在这里进行解释，而较为重要的部分我会在本文下面的分析中逐步的完善。图片取自侯捷C++内存分配系列教程讲义</p>
+<p><img src="/malloc%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/640.png" alt="Image"></p>
+<p>这张图片去除掉了上下两块cookie和下边的填补区pad。</p>
+<p>浅绿色的fill是调用malloc()时向系统申请的内存，该函数返回时，也会返回这块区域开头的指针。这里申请了0x100 byte的内存.</p>
+<p>fill上下两块gap预先被填充为了0xfdfdfdfd，用来分隔客户可以使用的内存区和不可使用的内存区，同时，当这块内存被归还时，编辑器也可以通过下gap的值区判断当前内存块是否被越界使用了。</p>
+<p>上gap向上连续的7个内存空间共同组成了debug header，从上向下标号为1-7</p>
+<ul>
+<li>1、2两块空间保存了两根指针，目的是使多个内存块连接成链表。</li>
+<li>3空间保存了申请本内存块的文件名</li>
+<li>4- 空间保存了申请本内存块的代码行数</li>
+<li>5空间记录了本内存块中实际可以被用户使用的内存空间的大小</li>
+<li>6空间记录了当前内存块的流水号，即是链表中的第几个，从1开始</li>
+<li>7空间记录了当前内存块被分配的形式，后边会进行分析</li>
+</ul>
+<h2 id="二、内存分配"><a href="#二、内存分配" class="headerlink" title="二、内存分配"></a>二、内存分配</h2><h3 id="1-内存管理所用到的结构层次"><a href="#1-内存管理所用到的结构层次" class="headerlink" title="1.内存管理所用到的结构层次"></a>1.内存管理所用到的结构层次</h3><p>首先，在进入程序之前，系统就已经分配出了一个结构去管理内存，我们先来看看这个结构</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/wqfIPAmgib2Wmqo6CbhQQetwicO2XF87XxyahnN5o5MMJqY9pkTp52x2fybQ2C236SdI7AicfzCm0sJg0aq9ZUHHA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
+<p>代码比较难看懂，我这里分析一下。</p>
+<p>系统首先会调用__cdecl_heap_init()函数去分配一个堆空间，用在这里分配的堆空间去管理程序中会产生的动态分配内存的请求。而在__cdecl_heap_init()这个函数中，回去创建一个长度为16的类型为HEADER的链表，这个链表的每个节点将在以后的程序中去管理1MB的内存。</p>
+<p>我们去看下这个链表的节点的结构：</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/wqfIPAmgib2Wmqo6CbhQQetwicO2XF87XxjkiaibkXGzXNw72n3KkOsejBpSeLrVW3ibZWL7hKUSjPMVHkPiaicXK8lvA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
+<p>这里需要重点关注的是两根指针：</p>
+<ul>
+<li>指针pHeapData将被指向这个header所管理的那1MB的内存空间的开头。</li>
+<li>pRegion将会被指向一个管理用的结构，这个结构将会在下边展开</li>
+</ul>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/wqfIPAmgib2Wmqo6CbhQQetwicO2XF87XxiaQ5L5uoHm66bkXMFULt92uHvCVsVzWfTpGXsRibo79EPMSHDZaYzA6Q/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
+<p>这张图对应了上边的关系</p>
+<p>在这个图中显示的，pHeapData指向的是虚拟地址空间，没错，现在还是虚拟的，并没有为其分配内存，我们可以将他想象成门牌号的集合。这里只保存了门牌号，但是房子还没有建起来。这里以后将要分配的空间一共是1MB，将被分为32个32KB的内存段。</p>
+<p>接下来我们详细去看pRegion所指向的结构，也就是tagRegion；</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/wqfIPAmgib2Wmqo6CbhQQetwicO2XF87XxhIyhZqdz3DahUnRjubp4icm9O75axuGU2KW3Dk16uumdYpkTZOWf4EQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/wqfIPAmgib2Wmqo6CbhQQetwicO2XF87XxCO1mJkJEpphyJ3ELvY2BvmoicDwemtfFk80qmXoribicRSezcL53iaCOGg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
+<ul>
+<li>indGroupUse表示了当前会提供内存的group编号，从0开始</li>
+<li>cntRegionSize[64]用64个字节去对应后边group所将会展开链表，当对应链表挂在有内存时，将会变成1.</li>
+<li>bitvGroupHi和bitvGroupLo共同构成了一个的byteMap共64个byte(分为32组)，将来用于对应每个group中所挂载的64条双向链表，当对应的位置挂载有内存时，会变成1.</li>
+<li>grpHeadList就是32个group，每个group负责32KB</li>
+</ul>
+<p><img src="/malloc%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/640-1648304283875.png" alt="Image"></p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/wqfIPAmgib2Wmqo6CbhQQetwicO2XF87XxsSzZw773Tr8Kibh6lTwRmn7vZriaGwPUKStxM34I9thdSD6K7pwZMa9A/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
+<ul>
+<li>这里的cntEntries代表当前链表中挂载的内存块被切分的次数</li>
+<li>listHead对应64对指针，也就是形成了64条链表，用于挂载不同大小的内存块，间隔为16byte，最后一条链表将挂载所有大于等于1K的内存块</li>
+</ul>
+<p>编号1就是上边所说的每grop中的那64条双向链表现在只有最后一条双向链表中挂载有内存页。</p>
+<p>编号2是这个group所对应的那32K的内存段，将他分为了8份，每份就是4K，将这8个内存页串成链表，由于每一个内存页都大于1K，所以都将挂载在最后一条链表上。</p>
+<p>当一切准备好，挂载的对应方式如下图：</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/wqfIPAmgib2Wmqo6CbhQQetwicO2XF87XxcXREWibJLFgWRyibxWywPOJV8vVJrhzpDPbicqTUQiaaviarJLnhyUrVrnA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
+<ul>
+<li>编号1是当前header所管理的1MB的空间，将其32等分，每一份的32KB由一个group去负责分配</li>
+<li>编号2是一个group所管理的32K的空间，将其分为8个4KB大小的内存页挂载于最后一条链表上</li>
+<li>编号3是分割好的内存页链表，他们被串成一个双向链表。</li>
+<li>编号4是一个group中的64条链表</li>
+</ul>
+<h3 id="2-内存页的划分"><a href="#2-内存页的划分" class="headerlink" title="2.内存页的划分"></a>2.内存页的划分</h3><p>下面我们来看每个崭新的内存页的内容</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/wqfIPAmgib2Wmqo6CbhQQetwicO2XF87Xx9A9C5L1NYCsxwFtWmdk0F2psMh39KpNJfChd5MBsjJu3Dm9xfbsEWg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
+<p>这是一个4K大小的内存页：</p>
+<ul>
+<li>中间的空白区域代表了可共malloc()索取的4080byte的内存空间</li>
+<li>空白的最下边和红色的最上边，两个标有4080的空间是用来记录剩余可用空间大小的cookie</li>
+<li>剩余的两块红色部分是两根指针，指向链表中前边和后边的内存页</li>
+<li>黄色的标有0xfdfdfdfd的是两根分割区域，具体作用上边已经提及</li>
+<li>最上边的保留区域是为了让下边空白区域成为16byte的整数倍</li>
+</ul>
+<h4 id="内存页划分的规则"><a href="#内存页划分的规则" class="headerlink" title="内存页划分的规则"></a>内存页划分的规则</h4><p>当申请一个内存空间时，首先先去符合的链表中寻找，如果链表中没有挂载内存块，就从编号较大的链表中最近的挂有内存块的链表中划分。</p>
+<h4 id="内存页被划分之后的情况"><a href="#内存页被划分之后的情况" class="headerlink" title="内存页被划分之后的情况"></a>内存页被划分之后的情况</h4><p><img src="https://mmbiz.qpic.cn/mmbiz_png/wqfIPAmgib2Wmqo6CbhQQetwicO2XF87XxPc9kTmrBhU5hWWWGZkRJBZkKf7UA0FSnDjibfRhhaHJU99DXeicYfmFA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
+<p>最左边原先是一个崭新的内存页(4K &#x3D; ff0)，然后我们从内存页中划分出0x130 byte的空间：</p>
+<ul>
+<li>编号为1的是被划分出的实际空间</li>
+<li>编号2是实际可以为用户所使用的实际空间，这个空间应该是0x100</li>
+<li>上下两根cookie记录了被划分出去的实际空间，至于为什么是0x131，之前的文章有提及</li>
+<li>内存被划分出去后，malloc()再对其进行复写，然后将实际空间交付给客户。</li>
+</ul>
+<p>当这块内存被分配出去之后，原来内存页中的cookie &#x3D; ff0-130 &#x3D; ec0，此时仍然大于1KB，所以不用转移挂载的位置。</p>
+<h3 id="3-内存分配的动作"><a href="#3-内存分配的动作" class="headerlink" title="3.内存分配的动作"></a>3.内存分配的动作</h3><p>我们刚刚分配出了0x130的空间，我们先看看这个空间分配出去之后的动作</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/wqfIPAmgib2Wmqo6CbhQQetwicO2XF87XxRYPJ5r9UIa7VkT7JbSIxj7UUv8lxQVChaibWng25sT5hbKm42eiaB1oA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
+<ul>
+<li>编号1：此时由group0分配内存，所以Region 中的 indGroupUse被设置为0</li>
+<li>编号2：整个group的内存页被划分了一次，所以Group 中的 cntEntries被置为1</li>
+<li>编号3：此时group0只有最后一个链表空间上挂载了链表，所以Region 中对应的byte被置为1</li>
+</ul>
+<p>此时page1中剩余空间为ec0 byte;</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/wqfIPAmgib2Wmqo6CbhQQetwicO2XF87Xx3qCJRL6LFhdZZdKCKSXwnH3UebicuS6PQd20bzZJRs9zvOawhibcBB3w/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
+<p>当某一次分配时，group0中没有比当前需求大的内存块了，此时就需要开辟另一个group去服务了</p>
+<ul>
+<li>编号1：由于当前是group1再分配内存，所以Region 中的 indGroupUse设置为1</li>
+<li>编号2：将group1中最后一条链表再bitMap中对应的位设置为1</li>
+<li>编号3：group1整个的内存页被划分了一次，所以Group 中的 cntEntries被置为1</li>
+</ul>
+<p>此时再分配内存就会从group中去分配了</p>
+<h3 id="4-内存归还的动作"><a href="#4-内存归还的动作" class="headerlink" title="4.内存归还的动作"></a>4.内存归还的动作</h3><p>当多次连续分配之后，出现了一次归还空间的动作</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/wqfIPAmgib2Wmqo6CbhQQetwicO2XF87Xx853axcbhfQd8mNDAUoic31QYtR5toqUXdkuHq0yoIicg8zqBeLMicds2w/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
+<ul>
+<li>编号1：当前group分配出的内存块-1</li>
+<li>编号2：由于此次归还的内存大小为0x240应该挂载于第35号链表，所以将第35号链表对应的bite设为1(这里将byteMap中每四个byte写成了一个16进制数)</li>
+<li>编号3：当前还是group所分配内存，所以所以Region 中的 indGroupUse仍为0</li>
+<li>编号4：这时被归还的内存被复写，两个cookie从0x241变回0x240，表示没有被使用,两根指针连入35号链表。</li>
+</ul>
+<h2 id="三、将内存归还给OS"><a href="#三、将内存归还给OS" class="headerlink" title="三、将内存归还给OS"></a>三、将内存归还给OS</h2><p>我们来探讨几个问题：</p>
+<h3 id="Q1、当多个group被启用时，怎么去寻找归还的内存属于哪个group？"><a href="#Q1、当多个group被启用时，怎么去寻找归还的内存属于哪个group？" class="headerlink" title="Q1、当多个group被启用时，怎么去寻找归还的内存属于哪个group？"></a>Q1、当多个group被启用时，怎么去寻找归还的内存属于哪个group？</h3><p>答案很简单，夹杀法：我们知道每一个group对应内存的起始地址和结尾地址，我们只需要去判断被归还的指针中地址的大小是否在这二者之间，就能判断出是否属于当前的group。而去寻找所对应的header的方法也是如此。</p>
+<h3 id="Q2、怎么将内存还给操作系统？"><a href="#Q2、怎么将内存还给操作系统？" class="headerlink" title="Q2、怎么将内存还给操作系统？&#96;"></a>Q2、怎么将内存还给操作系统？&#96;</h3><p>这里时malloc和之前讲过的分配器本质上的区别，我们能将收回的内存还给操作系统，具体步骤如下：</p>
+<ol>
+<li>对于回收的连续的内存空间进行合并 这个实现时基于上下两个cookie的实现完成的</li>
+</ol>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/wqfIPAmgib2Wmqo6CbhQQetwicO2XF87Xxf2Khs6INaMXhjLYL38xAL4mayoWqAzj56KalHHdOFQJiaCC5RmS7Psg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image">这里我们假设还的的1号空间，我们能看到 2、3两个空间的cookie结尾都是0，所以也是空闲的，也就是说这三块连续的空间可以合并。</p>
+<p>向下合并：我们首先有一个指向1号空间的指针，他通过cookie可以知道自己有多大，所以下调对应的大小就可以到达2号空间的开头，查看2号空间的cookie可以知道他的大小，也可以知道它是空闲的，所以可以将他们两个合并。</p>
+<p>向上合并：我们首先有一个指向1号空间的指针，他向上调整两个int的长度，可以到达3号空间的cookie，通过三号空间的cookie可以知道3号空间的大小，也可以知道3号空间是空闲的，所以就可以将他们两个合并。重复上边两个步骤，我们可以将相连的N块空闲内存全部合并，并计算大小调整连接位置。</p>
+<ol>
+<li>判断分配的空间的全回收</li>
+</ol>
+<p>这也很简单，我们再每个group都记录了分配出去的次数，每当我们回收的时候，就将这个值-1，所以当它再次为0的时候，就证明这个group的内存全部回收了。</p>
+<ol>
+<li>当内存全回收之后的状态</li>
+</ol>
+<p>由于有上边的合并机制，所以当一个group的内存全回收之后，他的状态就和最开始时一样，也就是最后一个链表上连接着8个4KB大小的内存块，这时我们就可以将他还给操作系统了。</p>
+<h3 id="Q3：当一个group全回收之后，我们需要将他立刻还给系统么？"><a href="#Q3：当一个group全回收之后，我们需要将他立刻还给系统么？" class="headerlink" title="Q3：当一个group全回收之后，我们需要将他立刻还给系统么？"></a>Q3：当一个group全回收之后，我们需要将他立刻还给系统么？</h3><p>答案肯定是否定的，因为如果我们全回收一个就还一个，那么当下一次在需要分配时，我们还需要重新分配。所以全回收的group不会立刻被还给系统，而是等待下一个全回收的group出现，就会将前一个group对应的内存free掉。</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

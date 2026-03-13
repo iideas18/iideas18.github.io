@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Go-协程机制 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go-协程机制">
+<meta property="og:url" content="https://iideas18.github.io/2022/04/12/golang/Goroute/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-04-12T08:49:22.000Z">
+<meta property="article:modified_time" content="2026-03-12T15:48:24.808Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/04/12/golang/Goroute/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Go-协程机制',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-12 23:48:24'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">Go-协程机制</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-04-12T08:49:22.000Z" title="发表于 2022-04-12 16:49:22">2022-04-12</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-12T15:48:24.808Z" title="更新于 2026-03-12 23:48:24">2026-03-12</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/golang/">golang</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="Go-协程机制"><a href="#Go-协程机制" class="headerlink" title="Go-协程机制"></a>Go-协程机制</h1><h2 id="一、线程-VS-协程"><a href="#一、线程-VS-协程" class="headerlink" title="一、线程 VS 协程"></a>一、线程 VS 协程</h2><h3 id="1、线程和协程"><a href="#1、线程和协程" class="headerlink" title="1、线程和协程"></a>1、线程和协程</h3><p>​       在理解Go的协程机制之前，我们需要先理解线程和协程的区别。表面上看协程和线程似乎是同一个东西，能达到的效果也相同，但是在底层的实现上却有着非常大的区别，在服务器端的绝大部分应用中，协程要比线程节省资源的多。</p>
+<p>通俗易懂的讲，线程是操作系统的资源，当java程序创建一个线程，虚拟机会向操作系统请求创建一个线程，虚拟机本身没有能力创建线程。而线程又是昂贵的系统资源，创建、切换、停止等线程属性都是重量级的系统操作，非常消耗资源，所以在java程序中每创建一个线程都需要经过深思熟虑的思考，否则很容易把系统资源消耗殆尽。</p>
+<p> 而协程，看起来和线程差不多，但创建一个协程却不用调用操作系统的功能，编程语言自身就能完成这项操作，所以协程也被称作用户态线程。我们知道无论是java还是go程序，都拥有一个主线程，这个线程不用显示编码创建，程序启动时默认就会创建。协程是可以跑在这种线程上的，你可以创建多个协程，这些协程跑在主线程上，它们和线程的关系是一对多。如果你要创建一个线程，那么你必须进行操作系统调用，创建的线程和主线程是同一种东西。显然，协程比线程要轻量的多。</p>
+<p>既然协程这么优秀，为什么不彻底替代线程呢？事实上协程和线程完全不是两个相同层面的东西，完全谈不上替代一说，协程可以说是一个独立于线程的功能，它是在线程的基础上，针对某些应用场景进一步发展出来的功能。我们知道，线程在多核的环境下是能做到真正意义上的并行执行的，注意，是并行，不是并发，而协程是为并发而生的。</p>
+<p>打个简单的比方吧，射雕英雄传看过吧，周伯通教郭靖一手画圆，一手画方，两只手同时操作，左右互搏，这个就是并行。普通人肯定做不到，不信你试试。你不能并行，却可以并发，你先左手画一笔，然后右手画一笔，同一时候只有一只手在操作，来回交替，直到完成两个图案是，这就是并发，协程主要的功能。</p>
+<p>我们画一个示意图如下：</p>
+<p><img src="/image-20220412164209625.png" alt="image-20220412164209625"></p>
+<p>​		想象一下业务场景，你需要执行两个互不依赖的sql查询，为了减少等待时间，常规的操作肯定主线程执行sqlB的同时另起一个线程执行sqlA，使两个sql并行执行。然而你会发现，执行两个sql的线程大多数时间只是在等待数据库服务器的响应，线程只是处于阻塞等待状态，而不是疯狂运转，而线程的创建、切换又很消耗系统资源，显然这很浪费。这个时候就该协程大展身手了，你可以在主线程中创建一个协程用于执行sqlB，然后再在主线程中执行sqlA，协程和线程一样，不会阻塞主线程，所以sqlB得到结果后，你可以通过语言的api去看看在协程中的sql执行完毕了没有，如果没有则等待，如果执行完毕了就拿结果，和线程操作几乎一摸一样。至于sqlA和sqlB是否真正在并行执行根本无所谓。为什么呢？ 我们假设执行一个sql需要三步，提交sql、等待、获得结果 ，其中第一步和第三步极省时，只要1毫秒一步，而第二步却要1000毫秒，那么使用并行的多线程执行两个sql，你只要花掉1002毫秒，而使用并发的协程你要花掉1004毫秒，但是线程比协程多消耗一个线程的资源，请问你会为了这2毫秒而选择多线程吗，显然不可能，创建线程的开销都要大于节省下来的时间，这就是协程存在的理由。</p>
+<p><img src="/image-20220412164310371.png" alt="image-20220412164310371"></p>
+<p>​		而服务器端开发中，大多数时候都是要花大量等待时间的场景，也就是所谓的IO密集，协程极为适合这种场景，而go又主打协程，直接从语法层面支持，切中了以往开发高性能程序太过于复杂的痛点，因此广受程序员们的欢迎。java其实也可以模拟出协程的效果，比如用nio和多线程，也能假装goroutines的效果，但实际操作起来太过于麻烦，还要掌握一大堆枯涩的概念，完全没有goroutines的优雅。所以在并发性能上，go完胜java。换言之，go比java更适应高并发场景，能更优雅方便的写出高并发程序。</p>
+<p><img src="/image-20220412164337690.png" alt="image-20220412164337690"></p>
+<p>注：上面这部分内容是参看了知乎博主的经典回答，略有改动，原文链接：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/169426477">https://zhuanlan.zhihu.com/p/169426477</a></p>
+<h3 id="2、创建时默认栈（stack）的大小比较"><a href="#2、创建时默认栈（stack）的大小比较" class="headerlink" title="2、创建时默认栈（stack）的大小比较"></a>2、创建时默认栈（stack）的大小比较</h3><ul>
+<li>JDK5以后，Java Thread Stack 默认为 1M。</li>
+<li>Groutine 的 Stack 初始化大小为 2K。</li>
+</ul>
+<p>相比之下，协程的栈大小就小很多了，创建起来也会更快，也更节省系统资源。</p>
+<h3 id="3、和内核调度实体-KSE-的对应关系比较"><a href="#3、和内核调度实体-KSE-的对应关系比较" class="headerlink" title="3、和内核调度实体 KSE 的对应关系比较"></a>3、和内核调度实体 KSE 的对应关系比较</h3><p>KSE (Kernel Scheduling Entity)</p>
+<ul>
+<li>Java Thread 是 1 : 1</li>
+<li>Groutine 是多对多 M:N</li>
+</ul>
+<p>那么这种多对多的对应关系对我们程序有什么意义呢？</p>
+<p> 如果是1:1，那么我们的线程（thread）是由我们的内核实体直接进行调度，这种方式，它的调度效率非常高，但是这里有一个问题，如果线程之间发生切换时，会牵扯到内核对象的相互切换，这将是一个消耗非常大的事儿。</p>
+<p>  相对来说如果是多个协程由同一个内核实体来调度，那么协程之间的切换不涉及内核对象间的切换，在内部就能完成，它们之间的切换就会小非常多了，Go 也就是主打这个方面。</p>
+<p>a、1:1</p>
+<p><img src="/image-20220412164803921.png" alt="image-20220412164803921"></p>
+<p>b、1:N</p>
+<p><img src="/image-20220412164817744.png" alt="image-20220412164817744"></p>
+<h2 id="二、Go-的调度机制"><a href="#二、Go-的调度机制" class="headerlink" title="二、Go 的调度机制"></a>二、Go 的调度机制</h2><p>Go的协程处理器（Processor）是挂在系统线程（System thread）下面的，协程处理器下面又挂有准备运行的协程队列（Goroutine）,每个协程队列中每次有一个协程是是正在运行中的。</p>
+<p>如果正在运行的协程执行时间特别长，会不会堵塞注协程队列呢？</p>
+<p>Go的处理机制是这样的，Go 在允许协程时，会启动一个守护线程去计数，计每个 Processor 完成的协程数量，当它发现一段时间后某个 Processor 完成的协程数量没有任何变化后，它就会往协程的任务栈里面插入一个特殊的标记，当协程允许遇到非内联函数时就会读到这个标记，就会把自己中断下来，插入到协程队列的队尾，然后切换到下一个协程继续运行。</p>
+<p>另个并发机制是这样的，当某个系统线程被系统中断了，例如I&#x2F;O需要等待的时候，为了提高整体的并发，Processor会拖家带口的移到另一个系统线程当中，继续执行它所挂的协程队列里面的协程。当上次中断的线程又被重新唤醒后，它又会拖家带口的回来。中断期间，协程的允许状态，会保存在协程对象里，当协程再次有允许机会的时候，这些数据优惠重新写入寄存器，然后继续运行。</p>
+<p><img src="/image-20220412164841768.png" alt="image-20220412164841768"></p>
+<h2 id="三、Go协程的使用"><a href="#三、Go协程的使用" class="headerlink" title="三、Go协程的使用"></a>三、Go协程的使用</h2><p>Go协程的使用很简单，只需要在 方法前面加一个 go 关键字即可，目前我的测试结果为，只能用匿名函数的方式进行调用，不能在 go 关键字后面跟一个 package 里面的方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> goroutine</span><br><span class="line"> </span><br><span class="line"><span class="title function_">import</span> <span class="params">(</span></span><br><span class="line"><span class="params">	<span class="string">&quot;fmt&quot;</span></span></span><br><span class="line"><span class="params">	<span class="string">&quot;testing&quot;</span></span></span><br><span class="line"><span class="params">)</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">//Go 协程的使用</span></span><br><span class="line">func <span class="title function_">TestGoroutine</span><span class="params">(t *testing.T)</span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ &#123;</span><br><span class="line">		<span class="comment">//Go协程的使用很简单，只需要在 方法前面加一个 go 关键字即可。</span></span><br><span class="line">		go <span class="title function_">func</span><span class="params">(num <span class="type">int</span>)</span> &#123;</span><br><span class="line">			fmt.Println(num)</span><br><span class="line">		&#125;(i)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

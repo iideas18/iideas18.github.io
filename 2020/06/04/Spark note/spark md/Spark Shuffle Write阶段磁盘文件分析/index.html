@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>[Spark Shuffle Write阶段磁盘文件分析](https://www.cnblogs.com/itboys/p/9226461.html) | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Spark Shuffle Write阶段磁盘文件分析](https://www.cnblogs.com/itboys/p/9226461.html)">
+<meta property="og:url" content="https://iideas18.github.io/2020/06/04/Spark note/spark md/Spark Shuffle Write阶段磁盘文件分析/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2020-06-04T06:04:42.000Z">
+<meta property="article:modified_time" content="2026-03-12T15:48:24.778Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2020/06/04/Spark note/spark md/Spark Shuffle Write阶段磁盘文件分析/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '[Spark Shuffle Write阶段磁盘文件分析](https://www.cnblogs.com/itboys/p/9226461.html)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-12 23:48:24'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">[Spark Shuffle Write阶段磁盘文件分析](https://www.cnblogs.com/itboys/p/9226461.html)</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2020-06-04T06:04:42.000Z" title="发表于 2020-06-04 14:04:42">2020-06-04</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-12T15:48:24.778Z" title="更新于 2026-03-12 23:48:24">2026-03-12</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Spark note/">Spark note</a>
+            
+            <a class="post-meta-categories" href="/categories/spark md/">spark md</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="Spark-Shuffle-Write阶段磁盘文件分析"><a href="#Spark-Shuffle-Write阶段磁盘文件分析" class="headerlink" title="Spark Shuffle Write阶段磁盘文件分析"></a><a target="_blank" rel="noopener" href="https://www.cnblogs.com/itboys/p/9226461.html">Spark Shuffle Write阶段磁盘文件分析</a></h1><p>这篇文章会详细介绍，Sort Based Shuffle Write 阶段是如何进行落磁盘的</p>
+<h2 id="流程分析"><a href="#流程分析" class="headerlink" title="流程分析"></a>流程分析</h2><p>入口处:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">org.apache.spark.scheduler.<span class="type">ShuffleMapTask</span>.runTask</span><br></pre></td></tr></table></figure>
+
+<p>runTask对应的代码为：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> manager = <span class="type">SparkEnv</span>.get.shuffleManager</span><br><span class="line">writer = manager.getWriter[<span class="type">Any</span>, <span class="type">Any</span>](</span><br><span class="line">                              dep.shuffleHandle, </span><br><span class="line">                              partitionId, </span><br><span class="line">                              context)</span><br><span class="line">writer.write(rdd.iterator(partition, context).asInstanceOf[<span class="type">Iterator</span>[_ &lt;: <span class="type">Product2</span>[<span class="type">Any</span>, <span class="type">Any</span>]]])</span><br><span class="line">writer.stop(success = <span class="literal">true</span>).get</span><br></pre></td></tr></table></figure>
+
+<p>这里manager 拿到的是</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">org.apache.spark.shuffle.sort.<span class="type">SortShuffleWriter</span></span><br></pre></td></tr></table></figure>
+
+<p>我们看他是如何拿到可以写磁盘的那个sorter的。我们分析的线路假设需要做mapSideCombine</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sorter = <span class="keyword">if</span> (dep.mapSideCombine) &#123;  </span><br><span class="line"> require(dep.aggregator.isDefined, <span class="string">&quot;Map-side combine without Aggregator specified!&quot;</span>)  </span><br><span class="line"> <span class="keyword">new</span> <span class="type">ExternalSorter</span>[<span class="type">K</span>, <span class="type">V</span>, <span class="type">C</span>](</span><br><span class="line">                 dep.aggregator, </span><br><span class="line">                 <span class="type">Some</span>(dep.partitioner), </span><br><span class="line">                 dep.keyOrdering, de.serializer)</span><br></pre></td></tr></table></figure>
+
+<p>接着将map的输出放到sorter当中：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sorter.insertAll(records)</span><br></pre></td></tr></table></figure>
+
+<p>其中insertAll 的流程是这样的：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (records.hasNext) &#123;  </span><br><span class="line"> addElementsRead()  kv = records.next() </span><br><span class="line"> map.changeValue((getPartition(kv._1), kv._1), update)</span><br><span class="line"> maybeSpillCollection(usingMap = <span class="literal">true</span>)&#125;</span><br></pre></td></tr></table></figure>
+
+<p>里面的map 其实就是PartitionedAppendOnlyMap，这个是全内存的一个结构。当把这个写满了，才会触发spill操作。你可以看到maybeSpillCollection在PartitionedAppendOnlyMap每次更新后都会被调用。</p>
+<p>一旦发生spill后，产生的文件名称是:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;temp_shuffle_&quot;</span> + id</span><br></pre></td></tr></table></figure>
+
+<p>逻辑在这：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> (blockId, file) = diskBlockManager.createTempShuffleBlock() </span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">createTempShuffleBlock</span></span>(): (<span class="type">TempShuffleBlockId</span>, <span class="type">File</span>) = &#123;  </span><br><span class="line">  <span class="keyword">var</span> blockId = <span class="keyword">new</span> <span class="type">TempShuffleBlockId</span>(<span class="type">UUID</span>.randomUUID()) </span><br><span class="line">        <span class="keyword">while</span> (getFile(blockId).exists()) &#123;   </span><br><span class="line">           blockId = <span class="keyword">new</span> <span class="type">TempShuffleBlockId</span>(<span class="type">UUID</span>.randomUUID())  </span><br><span class="line">        &#125;  </span><br><span class="line">  (blockId, getFile(blockId))</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>产生的所有 spill文件被被记录在一个数组里：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> spills = <span class="keyword">new</span> <span class="type">ArrayBuffer</span>[<span class="type">SpilledFile</span>]</span><br></pre></td></tr></table></figure>
+
+<p>迭代完一个task对应的partition数据后，会做merge操作，把磁盘上的spill文件和内存的，迭代处理，得到一个新的iterator，这个iterator的元素会是这个样子的：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(p, mergeWithAggregation(  </span><br><span class="line">             iterators, </span><br><span class="line">             aggregator.get.mergeCombiners, keyComparator,</span><br><span class="line">             ordering.isDefined))</span><br></pre></td></tr></table></figure>
+
+<p>其中p 是reduce 对应的partitionId, p对应的所有数据都会在其对应的iterator中。</p>
+<p>接着会获得最后的输出文件名：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> outputFile = shuffleBlockResolver.getDataFile(dep.shuffleId, mapId)</span><br></pre></td></tr></table></figure>
+
+<p>文件名格式会是这样的：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;shuffle_&quot;</span> + shuffleId + <span class="string">&quot;_&quot;</span> + mapId + <span class="string">&quot;_&quot;</span> + reduceId + <span class="string">&quot;.data&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中reduceId 是一个固定值NOOP_REDUCE_ID，默认为0。</p>
+<p>然后开始真实写入文件</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> partitionLengths = sorter.writePartitionedFile(</span><br><span class="line">   blockId, </span><br><span class="line">   context, </span><br><span class="line">   outputFile)</span><br></pre></td></tr></table></figure>
+
+<p>写入文件的过程过程是这样的：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> ((id, elements) &lt;- <span class="keyword">this</span>.partitionedIterator) &#123; </span><br><span class="line"> <span class="keyword">if</span> (elements.hasNext) &#123;   </span><br><span class="line"> </span><br><span class="line"><span class="keyword">val</span> writer = blockManager.getDiskWriter(blockId,</span><br><span class="line">      outputFile, </span><br><span class="line">      serInstance,</span><br><span class="line">      fileBufferSize,  </span><br><span class="line">      context.taskMetrics.shuffleWriteMetrics.get)   </span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (elem &lt;- elements) &#123;     </span><br><span class="line">     writer.write(elem._1, elem._2)   </span><br><span class="line"> &#125;   </span><br><span class="line"> </span><br><span class="line">writer.commitAndClose()    </span><br><span class="line"><span class="keyword">val</span> segment = writer.fileSegment()   </span><br><span class="line">lengths(id) = segment.length  </span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>刚刚我们说了，这个 this.partitionedIterator 其实内部元素是reduce partitionID -&gt; 实际record 的 iterator，所以它其实是顺序写每个分区的记录，写完形成一个fileSegment,并且记录偏移量。这样后续每个的reduce就可以根据偏移量拿到自己需要的数据。对应的文件名，前面也提到了，是：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;shuffle_&quot;</span> + shuffleId + <span class="string">&quot;_&quot;</span> + mapId + <span class="string">&quot;_&quot;</span> + <span class="type">NOOP_REDUCE_ID</span> + <span class="string">&quot;.data&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>刚刚我们说偏移量，其实是存在内存里的，所以接着要持久化，通过下面的writeIndexFile来完成：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shuffleBlockResolver.writeIndexFile(</span><br><span class="line">           dep.shuffleId,</span><br><span class="line">           mapId, </span><br><span class="line">          partitionLengths)</span><br></pre></td></tr></table></figure>
+
+<p>具体的文件名是：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;shuffle_&quot;</span> + shuffleId + <span class="string">&quot;_&quot;</span> + mapId + <span class="string">&quot;_&quot;</span> + <span class="type">NOOP_REDUCE_ID</span> + <span class="string">&quot;.index&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>至此，一个task的写入操作完成，对应一个文件。</p>
+<h2 id="最终结论"><a href="#最终结论" class="headerlink" title="最终结论"></a>最终结论</h2><p>所以最后的结论是，一个Executor 最终对应的文件数应该是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MapNum (注：不包含index文件)</span><br></pre></td></tr></table></figure>
+
+<p>同时持有并且会进行写入的文件数最多为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CoreNum</span><br></pre></td></tr></table></figure>
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>图解Spark Shuffle的发展历程 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图解Spark Shuffle的发展历程">
+<meta property="og:url" content="https://iideas18.github.io/2019/10/17/Spark note/spark md/Spark Shuffle的发展历程/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2019-10-16T19:38:14.000Z">
+<meta property="article:modified_time" content="2026-03-12T15:48:24.778Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2019/10/17/Spark note/spark md/Spark Shuffle的发展历程/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '图解Spark Shuffle的发展历程',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-12 23:48:24'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">图解Spark Shuffle的发展历程</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2019-10-16T19:38:14.000Z" title="发表于 2019-10-17 03:38:14">2019-10-17</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-12T15:48:24.778Z" title="更新于 2026-03-12 23:48:24">2026-03-12</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Spark note/">Spark note</a>
+            
+            <a class="post-meta-categories" href="/categories/spark md/">spark md</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="图解Spark-Shuffle的发展历程"><a href="#图解Spark-Shuffle的发展历程" class="headerlink" title="图解Spark Shuffle的发展历程"></a>图解Spark Shuffle的发展历程</h1><p>2018-09-12 15:31:02  更多</p>
+<p>版权声明：本文为博主原创文章，遵循<a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-sa/4.0/"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。本文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/dmy1115143060/article/details/82661801">https://blog.csdn.net/dmy1115143060/article/details/82661801</a></p>
+<h1 id="一、Spark-Hash-Shuffle"><a href="#一、Spark-Hash-Shuffle" class="headerlink" title="一、Spark Hash Shuffle"></a>一、Spark Hash Shuffle</h1><p>​       基于Hash的Shuffle Write操作较为简单，这种Shuffle方式中，Shuffle Map Task会根据下游生成的Partition个数来创建中间文件来存储对应的Partition数据。如下图所示，下游生成3个Partition，此时每个Shuffle Map Task会生成3个中间文件来存储3个Partition中的数据。如一个Shuffle Map Task在处理数据&lt;1, 1&gt;, &lt;2, 1&gt;, &lt;3, 1&gt;时，会分别将&lt;1, 1&gt;, &lt;2, 2&gt;, &lt;3,3&gt;写入到Partition 1（1 % 3 &#x3D; 1）, Partition 2（2 % 3 &#x3D; 2）和Partition 0（3 % 3 &#x3D; 0）对应的文件中。</p>
+<p>​       基于Hash的Shuffle Write操作虽然较为简单，但是带来的问题是会创建大量的中间文件，假设Shuffle Map Task个数记为 M, 下游生成的Partition个数为 P，此时生成的<strong>中间文件个数为 M * P</strong>。而对于这种Shuffle中间文件比较小的情况，多次的磁盘IO开销是不容忽视的。</p>
+<p><img src="https://img-blog.csdn.net/20180912150108866?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RteTExMTUxNDMwNjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img"></p>
+<h1 id="二、Spark-Consolidate-Shuffle"><a href="#二、Spark-Consolidate-Shuffle" class="headerlink" title="二、Spark Consolidate Shuffle"></a>二、Spark Consolidate Shuffle</h1><p>​        Spark Consolidate Shuffle是对Spark Hash Shuffle的优化，相比较于Spark Hash Shuffle中的每个Shuffle Map Task都会生成多个Shuffle中间文件的问题，Spark Consolidate Shuffle采用同一个Core上运行的Shuffle Map Task输出的中间数据放在相同的中间文件中。具体做法如下图所示：Core 1上先运行一个Shuffle Map Task，然后改Shuffle Map Task会创建3个Shuffle中间文件并完成Shuffle中间数据的写入（此步骤和Spark Hash Shuffle一样）。而对于Core 1上接下来运行的Shuffle Map Task则不会继续创建Shuffle中间文件，此时后继的Shuffle Map Task会在已创建的Shuffle中间文件中追加数据。</p>
+<p>​        Spark Consolidate Shuffle将同一个Core上的Shuffle Map Task输出的中间数据保存到相同的Shuffle中间文件中，有效的减少了中间的个数。假设参与Shuffle运算的核数记为 C，下游生成的Partition个数记为 P，则Shuffle过程生成的中间文件个数为 C * P。这种方式虽然在一定程度上减少了Shuffle中间文件的个数，但是当并行度较大时，仍然会带来大量的磁盘IO。</p>
+<p><img src="https://img-blog.csdn.net/20180912150209535?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RteTExMTUxNDMwNjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img"></p>
+<h1 id="三、-Spark-Sort-Based-Shuffle"><a href="#三、-Spark-Sort-Based-Shuffle" class="headerlink" title="三、 Spark Sort Based Shuffle"></a>三、 Spark Sort Based Shuffle</h1><p>​       为了解决Shuffle过程中生成大量Shuffle中间文件问题，Spark采用了Sort Based Shuffle。这种方式下，上游的每个Shuffle Map Task只会生成一个Shuffle中间文件和一个Index索引文件。Shuffle Map Task在处理数据时，借助一个AppendOnlyMap数据结构来保存中间数据，当达到阈值时，会将AppendOnlyMap中的数据溢写到磁盘上生成一个SpillMap文件，当Shuffle Map Task完成时，则会将生成的SpillMap文件和内存中剩余的数据进行合并成一个文件。在此过程实际上会涉及到排序，但是Spark为了避免不必要的排序，只会在需要进行聚集运算时才会对数据进行排序，否则只会按照Partition ID进行排序。</p>
+<p>​        Spar Sort Based Shuffle有效地解决了Shuffle过程中生成大量中间文件的问题，假设Shuffle Map Task的个数为 M，则最终生成的中间文件个数为 2 * M。</p>
+<p><img src="https://img-blog.csdn.net/201809121504157?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RteTExMTUxNDMwNjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img"></p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

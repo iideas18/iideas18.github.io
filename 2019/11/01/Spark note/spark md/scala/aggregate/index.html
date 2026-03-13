@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>spark aggregate函数详解 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="spark aggregate函数详解">
+<meta property="og:url" content="https://iideas18.github.io/2019/11/01/Spark note/spark md/scala/aggregate/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2019-10-31T20:10:04.000Z">
+<meta property="article:modified_time" content="2026-03-12T15:48:24.795Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2019/11/01/Spark note/spark md/scala/aggregate/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'spark aggregate函数详解',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-12 23:48:24'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">spark aggregate函数详解</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2019-10-31T20:10:04.000Z" title="发表于 2019-11-01 04:10:04">2019-11-01</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-12T15:48:24.795Z" title="更新于 2026-03-12 23:48:24">2026-03-12</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Spark note/">Spark note</a>
+            
+            <a class="post-meta-categories" href="/categories/spark md/">spark md</a>
+            
+            <a class="post-meta-categories" href="/categories/scala/">scala</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="spark-aggregate函数详解"><a href="#spark-aggregate函数详解" class="headerlink" title="spark aggregate函数详解"></a>spark aggregate函数详解</h1><p>2017-09-25 18:53:39 更多</p>
+<p>版权声明：本文为博主原创文章，遵循<a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-sa/4.0/"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。本文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/bitcarmanlee/article/details/78088304">https://blog.csdn.net/bitcarmanlee/article/details/78088304</a></p>
+<p>aggregate算是spark中比较常用的一个函数，理解起来会比较费劲一些，现在通过几个详细的例子带大家来着重理解一下aggregate的用法。</p>
+<h2 id="1-先看看aggregate的函数签名"><a href="#1-先看看aggregate的函数签名" class="headerlink" title="1.先看看aggregate的函数签名"></a>1.先看看aggregate的函数签名</h2><p>在spark的源码中，可以看到aggregate函数的签名如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">def aggregate[U: ClassTag](zeroValue: U)(seqOp: (U, T) =&gt; U, combOp: (U, U) =&gt; U): U1</span><br></pre></td></tr></table></figure>
+
+<p>可以看出，这个函数是个柯里化的方法，输入参数分为了两部分：<code>(zeroValue: U)</code>与<code>(seqOp: (U, T) =&gt; U, combOp: (U, U) =&gt; U)</code></p>
+<h2 id="2-aggregate的用法"><a href="#2-aggregate的用法" class="headerlink" title="2.aggregate的用法"></a>2.aggregate的用法</h2><p>函数签名比较复杂，可能有的小伙伴看着就晕菜了。别捉急，我们再来看看函数前面的注释，关于此函数的用法我们就会比较清楚。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Aggregate the elements of each partition, and then the results for all the partitions, using</span><br><span class="line"> * given combine functions and a neutral &quot;zero value&quot;. This function can return a different result</span><br><span class="line"> * type, U, than the type of this RDD, T. Thus, we need one operation for merging a T into an U</span><br><span class="line"> * and one operation for merging two U&#x27;s, as in scala.TraversableOnce. Both of these functions are</span><br><span class="line"> * allowed to modify and return their first argument instead of creating a new U to avoid memory</span><br><span class="line"> * allocation.</span><br><span class="line"> *</span><br><span class="line"> * @param zeroValue the initial value for the accumulated result of each partition for the</span><br><span class="line"> *                  `seqOp` operator, and also the initial value for the combine results from</span><br><span class="line"> *                  different partitions for the `combOp` operator - this will typically be the</span><br><span class="line"> *                  neutral element (e.g. `Nil` for list concatenation or `0` for summation)</span><br><span class="line"> * @param seqOp an operator used to accumulate results within a partition</span><br><span class="line"> * @param combOp an associative operator used to combine results from different partitions</span><br><span class="line"> */123456789101112131415</span><br></pre></td></tr></table></figure>
+
+<p>翻译过来就是：aggregate先对每个分区的元素做聚集，然后对所有分区的结果做聚集，聚集过程中，使用的是给定的聚集函数以及初始值”zero value”。这个函数能返回一个与原始RDD不同的类型U，因此，需要一个合并RDD类型T到结果类型U的函数，还需要一个合并类型U的函数。这两个函数都可以修改和返回他们的第一个参数，而不是重新新建一个U类型的参数以避免重新分配内存。<br>参数zeroValue：<code>seqOp</code>运算符的每个分区的累积结果的初始值以及<code>combOp</code>运算符的不同分区的组合结果的初始值 - 这通常将是初始元素（例如“Nil”表的列表 连接或“0”表示求和）<br>参数seqOp： 每个分区累积结果的聚集函数。<br>参数combOp： 一个关联运算符用于组合不同分区的结果</p>
+<h2 id="3-求平均值"><a href="#3-求平均值" class="headerlink" title="3.求平均值"></a>3.求平均值</h2><p>看来了上面的原理介绍，接下来我们看干货。<br>首先可以看网上最多的一个例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">val list = List(1,2,3,4,5,6,7,8,9)</span><br><span class="line">val (mul, sum, count) = sc.parallelize(list, 2).aggregate((1, 0, 0))(</span><br><span class="line">    (acc, number) =&gt; (acc._1 * number, acc._2 + number, acc._3 + 1),</span><br><span class="line">    (x, y) =&gt; (x._1 * y._1, x._2 + y._2, x._3 + y._3)</span><br><span class="line">        )</span><br><span class="line">    (sum / count, mul)123456</span><br></pre></td></tr></table></figure>
+
+<p>在常见的求均值的基础上稍作了变动，sum是求和，count是累积元素的个数，mul是求各元素的乘积。<br>解释一下具体过程：<br>1.初始值是(1, 0 ,0)<br>2.number是函数中的T，也就是List中的元素，此时类型为Int。而acc的类型为(Int, Int, Int)。acc._1 * num是各元素相乘(初始值为1)，acc._2 + number为各元素相加。<br>3.sum &#x2F; count为计算平均数。</p>
+<h2 id="4-另外的例子"><a href="#4-另外的例子" class="headerlink" title="4.另外的例子"></a>4.另外的例子</h2><p>为了加深理解，看另外一个的例子。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">val raw = List(&quot;a&quot;, &quot;b&quot;, &quot;d&quot;, &quot;f&quot;, &quot;g&quot;, &quot;h&quot;, &quot;o&quot;, &quot;q&quot;, &quot;x&quot;, &quot;y&quot;)</span><br><span class="line">val (biggerthanf, lessthanf) = sc.parallelize(raw, 1).aggregate((0, 0))(</span><br><span class="line">    (cc, str) =&gt; &#123;</span><br><span class="line">        var biggerf = cc._1</span><br><span class="line">        var lessf = cc._2</span><br><span class="line">        if (str.compareTo(&quot;f&quot;) &gt;= 0) biggerf = cc._1 + 1</span><br><span class="line">        else if(str.compareTo(&quot;f&quot;) &lt; 0) lessf = cc._2 + 1</span><br><span class="line">        (biggerf, lessf)</span><br><span class="line">    &#125;,</span><br><span class="line">    (x, y) =&gt; (x._1 + y._1, x._2 + y._2)</span><br><span class="line">)1234567891011</span><br></pre></td></tr></table></figure>
+
+<p>这个例子中，我们想做的就是统计一下在raw这个list中，比”f”大与比”f”小的元素分别有多少个。代码本身的逻辑也比较简单，就不再更多解释。</p>
+<h2 id="5-aggregateByKey与combineByKey的比较"><a href="#5-aggregateByKey与combineByKey的比较" class="headerlink" title="5.aggregateByKey与combineByKey的比较"></a>5.aggregateByKey与combineByKey的比较</h2><p>aggregate是针对序列的操作，aggregateByKey则是针对k,v对的操作。顾名思义，aggregateByKey则是针对key做aggregate操作。spark中函数的原型如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">def aggregateByKey[U: ClassTag](zeroValue: U)(seqOp: (U, V) =&gt; U,</span><br><span class="line">    combOp: (U, U) =&gt; U): RDD[(K, U)] = self.withScope &#123;</span><br><span class="line">  aggregateByKey(zeroValue, defaultPartitioner(self))(seqOp, combOp)</span><br><span class="line">&#125;1234</span><br></pre></td></tr></table></figure>
+
+<p>都是针对k,v对的操作，spark中还有一个combineByKey的操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">def combineByKey[C](</span><br><span class="line">    createCombiner: V =&gt; C,</span><br><span class="line">    mergeValue: (C, V) =&gt; C,</span><br><span class="line">    mergeCombiners: (C, C) =&gt; C): RDD[(K, C)] = self.withScope &#123;</span><br><span class="line">  combineByKeyWithClassTag(createCombiner, mergeValue, mergeCombiners)(null)</span><br><span class="line">&#125;123456</span><br></pre></td></tr></table></figure>
+
+<p>为了看清楚两个的联系，我们再看看 aggregateByKey里面的真正实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">def aggregateByKey[U: ClassTag](zeroValue: U, partitioner: Partitioner)(seqOp: (U, V) =&gt; U,</span><br><span class="line">    combOp: (U, U) =&gt; U): RDD[(K, U)] = self.withScope &#123;</span><br><span class="line">  // Serialize the zero value to a byte array so that we can get a new clone of it on each key</span><br><span class="line">  val zeroBuffer = SparkEnv.get.serializer.newInstance().serialize(zeroValue)</span><br><span class="line">  val zeroArray = new Array[Byte](zeroBuffer.limit)</span><br><span class="line">  zeroBuffer.get(zeroArray)</span><br><span class="line"></span><br><span class="line">  lazy val cachedSerializer = SparkEnv.get.serializer.newInstance()</span><br><span class="line">  val createZero = () =&gt; cachedSerializer.deserialize[U](ByteBuffer.wrap(zeroArray))</span><br><span class="line"></span><br><span class="line">  // We will clean the combiner closure later in `combineByKey`</span><br><span class="line">  val cleanedSeqOp = self.context.clean(seqOp)</span><br><span class="line">  combineByKeyWithClassTag[U]((v: V) =&gt; cleanedSeqOp(createZero(), v),</span><br><span class="line">    cleanedSeqOp, combOp, partitioner)</span><br><span class="line">&#125;123456789101112131415</span><br></pre></td></tr></table></figure>
+
+<p>从上面这段源码可以清晰看出，aggregateByKey调用的就是combineByKey方法。seqOp方法就是mergeValue，combOp方法则是mergeCombiners，cleanedSeqOp(createZero(), v)是createCombiner, 也就是传入的seqOp函数, 只不过其中一个值是传入的zeroValue而已！<br>因此, 当createCombiner和mergeValue函数的操作相同, aggregateByKey更为合适！</p>
+<h1 id="spark-aggregate与treeAggregate的理解"><a href="#spark-aggregate与treeAggregate的理解" class="headerlink" title="spark-aggregate与treeAggregate的理解"></a>spark-aggregate与treeAggregate的理解</h1><p>2018-01-14 16:41:13 更多</p>
+<p>版权声明：本文为博主原创文章，遵循<a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-sa/4.0/"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。本文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/u011724402/article/details/79057450">https://blog.csdn.net/u011724402/article/details/79057450</a></p>
+<p>spark-mllib中许多算法用到了treeAggregate这个方法，使用该方法而不是aggregate方法能够提升算法的性能。比如mllib中的GaussianMixture模型可以提升20%的性能，见<a target="_blank" rel="noopener" href="https://issues.apache.org/jira/browse/SPARK-17033">treeAggregate</a></p>
+<p>此前对这种聚合方式不是很了解，因此这里记录一下。</p>
+<h4 id="1-一个例子"><a href="#1-一个例子" class="headerlink" title="1. 一个例子"></a>1. 一个例子</h4><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">  <span class="keyword">val</span> spark = <span class="type">SparkSession</span></span><br><span class="line">    .builder</span><br><span class="line">    .appName(<span class="string">s&quot;agg&quot;</span>)</span><br><span class="line">    .master(<span class="string">&quot;local&quot;</span>)</span><br><span class="line">    .getOrCreate()</span><br><span class="line">  <span class="keyword">val</span> sc = spark.sparkContext</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">seqOp</span></span>(s1:<span class="type">Int</span>, s2:<span class="type">Int</span>):<span class="type">Int</span> = &#123;</span><br><span class="line">    println(<span class="string">&quot;seq: &quot;</span>+s1+<span class="string">&quot;:&quot;</span>+s2)</span><br><span class="line">    s1 + s2</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">combOp</span></span>(c1: <span class="type">Int</span>, c2: <span class="type">Int</span>): <span class="type">Int</span> = &#123;</span><br><span class="line">    println(<span class="string">&quot;comb: &quot;</span>+c1+<span class="string">&quot;:&quot;</span>+c2)</span><br><span class="line">    c1 + c2</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">val</span> rdd = sc.parallelize(<span class="number">1</span> to <span class="number">12</span>).repartition(<span class="number">6</span>)</span><br><span class="line">  <span class="keyword">val</span> res1 = rdd.aggregate(<span class="number">0</span>)(seqOp, combOp)</span><br><span class="line"><span class="comment">// val res2 = rdd.treeAggregate(0)(seqOp, combOp)</span></span><br><span class="line">  println(res1)</span><br><span class="line"><span class="comment">// println(res2)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>aggregate:</p>
+<blockquote>
+<p>seq: 0:6<br>seq: 6:12<br>comb: 0:18<br>seq: 0:1<br>seq: 1:7<br>comb: 18:8<br>seq: 0:2<br>seq: 2:8<br>comb: 26:10<br>seq: 0:3<br>seq: 3:9<br>comb: 36:12<br>seq: 0:4<br>seq: 4:10<br>comb: 48:14<br>seq: 0:5<br>seq: 5:11<br>comb: 62:16<br>78</p>
+</blockquote>
+<p>treeAggregate:</p>
+<blockquote>
+<p>seq: 0:6<br>seq: 6:12<br>seq: 0:1<br>seq: 1:7<br>seq: 0:2<br>seq: 2:8<br>seq: 0:3<br>seq: 3:9<br>seq: 0:4<br>seq: 4:10<br>seq: 0:5<br>seq: 5:11<br>[Stage 2:&gt; (0 + 0) &#x2F; 2]</p>
+<p>comb: 18:10<br>comb: 28:14<br>comb: 8:12<br>comb: 20:16<br>comb: 42:36<br>78</p>
+</blockquote>
+<h4 id="2-Aggregate"><a href="#2-Aggregate" class="headerlink" title="2. Aggregate"></a>2. Aggregate</h4><p>treeAggregate是aggregate的一种特殊形式，因此了解treeAggregate首先需要了解aggregate的如何对数据做聚合操作。方法定义如下：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">aggregate</span></span>[<span class="type">U</span>: <span class="type">ClassTag</span>](zeroValue: <span class="type">U</span>)(seqOp: (<span class="type">U</span>, <span class="type">T</span>) =&gt; <span class="type">U</span>, combOp: (<span class="type">U</span>, <span class="type">U</span>) =&gt; <span class="type">U</span>): <span class="type">U1</span></span><br></pre></td></tr></table></figure>
+
+<p>从aggregate方法的定义中，可以看到它需要传入三个参数：</p>
+<ol>
+<li>聚合的初始值：zeroValue: U</li>
+<li>对序列操作的函数：seqOp</li>
+<li>聚合函数：combOp</li>
+</ol>
+<p>aggregate函数将每个分区进行seqOp，且从zeroValue开始遍历分区里的所有元素。然后用combOp。从zeroValue开始遍历所有分区的结果。</p>
+<p>注：每个partition的seqOp只应用一次zeroValue，最后的combOp也应用一次zeroValue。</p>
+<p>用一张图来说明上面的计算过程：</p>
+<p><img src="https://img-blog.csdn.net/20180114163912311?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMTcyNDQwMg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="aggregate"></p>
+<h4 id="3-treeAggregate"><a href="#3-treeAggregate" class="headerlink" title="3. treeAggregate"></a>3. treeAggregate</h4><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">treeAggregate</span></span>[<span class="type">U</span>: <span class="type">ClassTag</span>](zeroValue: <span class="type">U</span>)(</span><br><span class="line">  seqOp: (<span class="type">U</span>, <span class="type">T</span>) =&gt; <span class="type">U</span>,</span><br><span class="line">  combOp: (<span class="type">U</span>, <span class="type">U</span>) =&gt; <span class="type">U</span>,</span><br><span class="line">  depth: <span class="type">Int</span> = <span class="number">2</span>): <span class="type">U1234</span></span><br></pre></td></tr></table></figure>
+
+<p> 与aggregate不同的是treeAggregate多了depth的参数，其他参数含义相同。aggregate在执行完SeqOp后会将计算结果拿到driver端使用CombOp遍历一次SeqOp计算的结果，最终得到聚合结果。而treeAggregate不会一次就Comb得到最终结果，SeqOp得到的结果也许很大，直接拉到driver可能会OutOfMemory，因此它会先把分区的结果做局部聚合(reduceByKey)，如果分区数过多时会做分区合并，之后再把结果拿到driver端做reduce。</p>
+<p>注：与aggregate不同的地方是：在每个分区，会做两次或者多次combOp，避免将所有局部的值传给driver端。另外，初始值zeroValue不会参与combOp。</p>
+<p>具体可以参见源码：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Aggregates the elements of this RDD in a multi-level tree pattern.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @param depth suggested depth of the tree (default: 2)</span></span><br><span class="line"><span class="comment"> * @see [[org.apache.spark.rdd.RDD#aggregate]]</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">treeAggregate</span></span>[<span class="type">U</span>: <span class="type">ClassTag</span>](zeroValue: <span class="type">U</span>)(</span><br><span class="line">    seqOp: (<span class="type">U</span>, <span class="type">T</span>) =&gt; <span class="type">U</span>,</span><br><span class="line">    combOp: (<span class="type">U</span>, <span class="type">U</span>) =&gt; <span class="type">U</span>,</span><br><span class="line">    depth: <span class="type">Int</span> = <span class="number">2</span>): <span class="type">U</span> = withScope &#123;</span><br><span class="line">  require(depth &gt;= <span class="number">1</span>, <span class="string">s&quot;Depth must be greater than or equal to 1 but got <span class="subst">$depth</span>.&quot;</span>)</span><br><span class="line">  <span class="keyword">if</span> (partitions.length == <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="type">Utils</span>.clone(zeroValue, context.env.closureSerializer.newInstance())</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">val</span> cleanSeqOp = context.clean(seqOp)</span><br><span class="line">    <span class="keyword">val</span> cleanCombOp = context.clean(combOp)</span><br><span class="line">    <span class="keyword">val</span> aggregatePartition =</span><br><span class="line">      (it: <span class="type">Iterator</span>[<span class="type">T</span>]) =&gt; it.aggregate(zeroValue)(cleanSeqOp, cleanCombOp)</span><br><span class="line">    <span class="keyword">var</span> partiallyAggregated = mapPartitions(it =&gt; <span class="type">Iterator</span>(aggregatePartition(it)))</span><br><span class="line">    <span class="keyword">var</span> numPartitions = partiallyAggregated.partitions.length</span><br><span class="line">    <span class="keyword">val</span> scale = math.max(math.ceil(math.pow(numPartitions, <span class="number">1.0</span> / depth)).toInt, <span class="number">2</span>)</span><br><span class="line">    <span class="comment">// If creating an extra level doesn&#x27;t help reduce</span></span><br><span class="line">    <span class="comment">// the wall-clock time, we stop tree aggregation.</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Don&#x27;t trigger TreeAggregation when it doesn&#x27;t save wall-clock time</span></span><br><span class="line">    <span class="keyword">while</span> (numPartitions &gt; scale + math.ceil(numPartitions.toDouble / scale)) &#123;</span><br><span class="line">      numPartitions /= scale</span><br><span class="line">      <span class="keyword">val</span> curNumPartitions = numPartitions</span><br><span class="line">      partiallyAggregated = partiallyAggregated.mapPartitionsWithIndex &#123;</span><br><span class="line">        (i, iter) =&gt; iter.map((i % curNumPartitions, _))</span><br><span class="line">      &#125;.reduceByKey(<span class="keyword">new</span> <span class="type">HashPartitioner</span>(curNumPartitions), cleanCombOp).values</span><br><span class="line">    &#125;</span><br><span class="line">    partiallyAggregated.reduce(cleanCombOp)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;<span class="number">1234567891011121314151617181920212223242526272829303132333435</span></span><br></pre></td></tr></table></figure>
+
+<p>还是用一张图来说明：<br><img src="https://img-blog.csdn.net/20180114163949967?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMTcyNDQwMg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="treeAggregate"></p>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/drawwindows/p/5762392.html">https://www.cnblogs.com/drawwindows/p/5762392.html</a></p>
+<p><a target="_blank" rel="noopener" href="http://blog.csdn.net/lookqlp/article/details/52121057">http://blog.csdn.net/lookqlp/article/details/52121057</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/27222830d21a">https://www.jianshu.com/p/27222830d21a</a></p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

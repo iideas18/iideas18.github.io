@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spark RPC 通信机制 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark RPC 通信机制">
+<meta property="og:url" content="https://iideas18.github.io/2020/06/07/Spark note/spark md/Spark RPC 通信机制/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2020-06-07T10:01:15.000Z">
+<meta property="article:modified_time" content="2026-03-12T15:48:24.777Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2020/06/07/Spark note/spark md/Spark RPC 通信机制/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Spark RPC 通信机制',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-12 23:48:24'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">Spark RPC 通信机制</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2020-06-07T10:01:15.000Z" title="发表于 2020-06-07 18:01:15">2020-06-07</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-12T15:48:24.777Z" title="更新于 2026-03-12 23:48:24">2026-03-12</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Spark note/">Spark note</a>
+            
+            <a class="post-meta-categories" href="/categories/spark md/">spark md</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="Spark-RPC-通信机制"><a href="#Spark-RPC-通信机制" class="headerlink" title="Spark RPC 通信机制"></a>Spark RPC 通信机制</h1><p><a target="_blank" rel="noopener" href="https://www.jianshu.com/u/5e1464c67d6e"><img src="https://upload.jianshu.io/users/upload_avatars/6112189/781f4fd2-269d-4722-ab2a-499f90f2e812?imageMogr2/auto-orient/strip%7CimageView2/1/w/96/h/96/format/webp" alt="img"></a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/u/5e1464c67d6e">wangdy12</a>关注</p>
+<p>0.0722018.07.21 20:50:38字数 4,101阅读 1,356</p>
+<h2 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h2><p>主要涉及RpcEnv，RpcEndpoint，RpcEndpointRef，其中RpcEnv是通信的基础，每个通信节点上都需要实现该类，其内部实现了消息的传输处理机制，RpcEndpoint表示一个可以接收RPC消息的对象，远程节点通过RpcEndpointRef向相应的RpcEndpoint发送消息</p>
+<h2 id="RpcEnv"><a href="#RpcEnv" class="headerlink" title="RpcEnv"></a>RpcEnv</h2><p><strong>RpcEnv</strong> 抽象类表示一个 RPC Environment，管理着整个<code>RpcEndpoint</code>的生命周期，目前唯一的实现类是<code>NettyRpcEnv</code>，具体功能是</p>
+<ul>
+<li>注册<code>RpcEndpoint</code></li>
+<li>将来自 <code>RpcEndpointRef</code>的消息发送给相应的<code>RpcEndpoint</code></li>
+</ul>
+<p><code>RpcEnv</code>会在所有的通信节点上创建，例如master，worker，driver，executor都会创建一个RpcEnv</p>
+<p>Driver端上的<code>RpcEnv</code>在SparkEnv初始化时创建:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">val</span> systemName = <span class="keyword">if</span> (isDriver) driverSystemName <span class="keyword">else</span> executorSystemName</span><br><span class="line">    <span class="keyword">val</span> rpcEnv = <span class="type">RpcEnv</span>.create(systemName, bindAddress, advertiseAddress, port.getOrElse(<span class="number">-1</span>), conf,</span><br><span class="line">      securityManager, numUsableCores, !isDriver)</span><br><span class="line"><span class="type">RpcEnv</span>.create`内部通过工厂方法创建`<span class="type">RpcEnv</span>`，具体是通过实现`<span class="type">RpcEnvFactory</span>`接口的`<span class="type">NettyRpcEnvFactory</span>`工厂类，创建`<span class="type">RpcEnv</span>`的具体实现类`<span class="type">NettyRpcEnv</span></span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//指明该RpcEnv的名称，监听地址和端口</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create</span></span>(</span><br><span class="line">    name: <span class="type">String</span>,</span><br><span class="line">    bindAddress: <span class="type">String</span>,</span><br><span class="line">    advertiseAddress: <span class="type">String</span>,</span><br><span class="line">    port: <span class="type">Int</span>,</span><br><span class="line">    conf: <span class="type">SparkConf</span>,</span><br><span class="line">    securityManager: <span class="type">SecurityManager</span>,</span><br><span class="line">    numUsableCores: <span class="type">Int</span>,</span><br><span class="line">    clientMode: <span class="type">Boolean</span>): <span class="type">RpcEnv</span> = &#123;</span><br><span class="line">  <span class="keyword">val</span> config = <span class="type">RpcEnvConfig</span>(conf, name, bindAddress, advertiseAddress, port, securityManager,</span><br><span class="line">    numUsableCores, clientMode)</span><br><span class="line">  <span class="keyword">new</span> <span class="type">NettyRpcEnvFactory</span>().create(config)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="RpcEndpoint"><a href="#RpcEndpoint" class="headerlink" title="RpcEndpoint"></a>RpcEndpoint</h3><p><strong>RpcEndPoint</strong> 代表具体的通信节点，例如Master、Worker、CoarseGrainedSchedulerBackend中的DriverEndpoint、CoarseGrainedExecutorBackend等，都实现了该接口，在具体的函数中定义了消息传递来时的处理逻辑，整个生命周期是<code>constructor -&gt; onStart -&gt; receive* -&gt; onStop</code>，即调用构造函数，然后向RpcEnv注册，内部调用onStart,之后如果收到消息，RpcEnv会调用<code>receive*</code>方法，结束时调用onStop方法</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span>[spark] <span class="class"><span class="keyword">trait</span> <span class="title">RpcEndpoint</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 当前RpcEndpoint注册的RpcEnv</span></span><br><span class="line">  <span class="keyword">val</span> rpcEnv: <span class="type">RpcEnv</span></span><br><span class="line">  <span class="comment">// 获取该RpcEndpoint对应的RpcEndpointRef</span></span><br><span class="line">  <span class="keyword">final</span> <span class="function"><span class="keyword">def</span> <span class="title">self</span></span>: <span class="type">RpcEndpointRef</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 处理RpcEndpointRef.send发送的消息</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">receive</span></span>: <span class="type">PartialFunction</span>[<span class="type">Any</span>, <span class="type">Unit</span>]</span><br><span class="line">  <span class="comment">// 处理RpcEndpointRef.ask发送的消息,通过RpcCallContext返回消息或异常</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">receiveAndReply</span></span>(context: <span class="type">RpcCallContext</span>): <span class="type">PartialFunction</span>[<span class="type">Any</span>, <span class="type">Unit</span>]</span><br><span class="line"></span><br><span class="line">  <span class="comment">//一系列的回调函数</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">onError</span></span>(cause: <span class="type">Throwable</span>): <span class="type">Unit</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">onConnected</span></span>(remoteAddress: <span class="type">RpcAddress</span>): <span class="type">Unit</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">onDisconnected</span></span>(remoteAddress: <span class="type">RpcAddress</span>): <span class="type">Unit</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">onNetworkError</span></span>(cause: <span class="type">Throwable</span>, remoteAddress: <span class="type">RpcAddress</span>): <span class="type">Unit</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">onStart</span></span>(): <span class="type">Unit</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">onStop</span></span>(): <span class="type">Unit</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 停止RpcEndpoint</span></span><br><span class="line">  <span class="keyword">final</span> <span class="function"><span class="keyword">def</span> <span class="title">stop</span></span>(): <span class="type">Unit</span> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它的子类是<code>ThreadSafeRpcEndpoint</code>，Spark中实现的Endpoint大多是继承这个类，应该线程安全的处理消息，即<code>RpcEnv</code>中的<code>Dispatcher</code>在处理该<code>Endpoint</code>对应的<code>Inbox</code>内的消息时，只能单线程处理消息，不能进行多线程同时处理多个消息</p>
+<h3 id="RpcEndpointRef"><a href="#RpcEndpointRef" class="headerlink" title="RpcEndpointRef"></a>RpcEndpointRef</h3><p><strong>RpcEndPointRef</strong> 是对远程RpcEndpoint的一个引用，内部记录了RpcEndpoint的位置信息</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span>[spark] <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">RpcEndpointRef</span>(<span class="params">conf: <span class="type">SparkConf</span></span>)</span></span><br><span class="line">  <span class="keyword">extends</span> <span class="type">Serializable</span> <span class="keyword">with</span> <span class="type">Logging</span> &#123;</span><br><span class="line">  <span class="comment">// 最大重连次数(3)，重新尝试的等待事件(3s)，默认的超时事件(120s)</span></span><br><span class="line">  <span class="keyword">private</span>[<span class="keyword">this</span>] <span class="keyword">val</span> maxRetries = <span class="type">RpcUtils</span>.numRetries(conf)</span><br><span class="line">  <span class="keyword">private</span>[<span class="keyword">this</span>] <span class="keyword">val</span> retryWaitMs = <span class="type">RpcUtils</span>.retryWaitMs(conf)</span><br><span class="line">  <span class="keyword">private</span>[<span class="keyword">this</span>] <span class="keyword">val</span> defaultAskTimeout = <span class="type">RpcUtils</span>.askRpcTimeout(conf)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 对应RpcEndpoint的地址，名称</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">address</span></span>: <span class="type">RpcAddress</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">name</span></span>: <span class="type">String</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 发送一个消息</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">send</span></span>(message: <span class="type">Any</span>): <span class="type">Unit</span></span><br><span class="line">  <span class="comment">// 发送消息到相应的`RpcEndpoint.receiveAndReply`，异步</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">ask</span></span>[<span class="type">T</span>: <span class="type">ClassTag</span>](message: <span class="type">Any</span>, timeout: <span class="type">RpcTimeout</span>): <span class="type">Future</span>[<span class="type">T</span>]</span><br><span class="line">  <span class="comment">// 发送消息到相应的`RpcEndpoint.receiveAndReply`，阻塞等待回复的结果</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">askSync</span></span>[<span class="type">T</span>: <span class="type">ClassTag</span>](message: <span class="type">Any</span>): <span class="type">T</span></span><br><span class="line">  ....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="地址表示"><a href="#地址表示" class="headerlink" title="地址表示"></a>地址表示</h3><ul>
+<li><code>RpcAddress(host: String, port: Int)</code>：Rpc environment的地址</li>
+<li><code>RpcEndpointAddress(rpcAddress: RpcAddress, name: String)</code>：RPC endpoint的地址，其中的rpcAddress指的是endpoint所在的RpcEnv地址，name指的是endpoint的名称</li>
+</ul>
+<hr>
+<h2 id="NettyRpcEnv实现"><a href="#NettyRpcEnv实现" class="headerlink" title="NettyRpcEnv实现"></a>NettyRpcEnv实现</h2><h3 id="NettyRpcEnvFactory"><a href="#NettyRpcEnvFactory" class="headerlink" title="NettyRpcEnvFactory"></a>NettyRpcEnvFactory</h3><ul>
+<li>通过<code>RpcEnvConfig</code>创建<code>NettyRpcEnv</code></li>
+<li>如果非<code>clientMode</code>，在特定的地址和端口上启动服务端<code>startServer(bindAddress: String, port: Int)</code></li>
+</ul>
+<h3 id="NettyRpcEnv"><a href="#NettyRpcEnv" class="headerlink" title="NettyRpcEnv"></a>NettyRpcEnv</h3><p>内部涉及的部分字段和函数如下：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span>[netty] <span class="class"><span class="keyword">class</span> <span class="title">NettyRpcEnv</span>(<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="class">    val conf: <span class="type">SparkConf</span>,</span></span></span><br><span class="line"><span class="params"><span class="class">    <span class="comment">//JavaSerializerInstance可以在多线性情况下运行</span></span></span></span><br><span class="line"><span class="params"><span class="class">    javaSerializerInstance: <span class="type">JavaSerializerInstance</span>,</span></span></span><br><span class="line"><span class="params"><span class="class">    host: <span class="type">String</span>,</span></span></span><br><span class="line"><span class="params"><span class="class">    securityManager: <span class="type">SecurityManager</span>,</span></span></span><br><span class="line"><span class="params"><span class="class">    numUsableCores: <span class="type">Int</span></span>) <span class="keyword">extends</span> <span class="title">RpcEnv</span>(<span class="params">conf</span>) <span class="keyword">with</span> <span class="title">Logging</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span>[netty] <span class="keyword">val</span> transportConf : <span class="type">TransportConf</span> 传输上下文的配置信息，其中默认的netty线程数目为<span class="number">8</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">val</span> dispatcher: <span class="type">Dispatcher</span> 消息分发器，负责将<span class="type">RPC</span>消息发送到对应的endpoint</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">val</span> streamManager : <span class="type">NettyStreamManager</span> 用于文件传输</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">val</span> transportContext : <span class="type">TransportContext</span> 传输的核心，用来创建<span class="type">TransportServer</span>和<span class="type">TransportClientFactory</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">val</span> clientFactory : <span class="type">TransportClientFactory</span> 用来创建<span class="type">TransportClient</span></span><br><span class="line">  <span class="meta">@volatile</span> <span class="keyword">private</span> <span class="keyword">var</span> fileDownloadFactory: <span class="type">TransportClientFactory</span> 用来创建用于file下载的<span class="type">TransportClient</span>，使得与主<span class="type">RPC</span>传输分离</span><br><span class="line">  <span class="keyword">val</span> timeoutScheduler : <span class="type">ScheduledThreadPoolExecutor</span> 线程池，超时控制相关</span><br><span class="line">  <span class="keyword">private</span>[netty] <span class="keyword">val</span> clientConnectionExecutor：<span class="type">ThreadPoolExecutor</span> 客户端连接线程池，线程池默认最大线程数目<span class="number">64</span></span><br><span class="line">  <span class="meta">@volatile</span> <span class="keyword">private</span> <span class="keyword">var</span> server: <span class="type">TransportServer</span></span><br><span class="line">  <span class="comment">// 向远程RpcAddress发送消息时，将消息放到相应的Outbox中即可</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">val</span> outboxes = <span class="keyword">new</span> <span class="type">ConcurrentHashMap</span>[<span class="type">RpcAddress</span>, <span class="type">Outbox</span>]()</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 在特定地址端口上启动服务 即创建一个TransportServer</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">startServer</span></span>(bindAddress: <span class="type">String</span>, port: <span class="type">Int</span>): <span class="type">Unit</span></span><br><span class="line">  <span class="comment">//该RpcEnv监听的地址 地址+端口</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">address</span></span>: <span class="type">RpcAddress</span></span><br><span class="line">  <span class="comment">//注册RpcEndpoint,返回RpcEndpointRef</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">setupEndpoint</span></span>(name: <span class="type">String</span>, endpoint: <span class="type">RpcEndpoint</span>): <span class="type">RpcEndpointRef</span></span><br><span class="line">  <span class="comment">//检索出对应的RpcEndpointRef</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">setupEndpointRef</span></span>(address: <span class="type">RpcAddress</span>, endpointName: <span class="type">String</span>): <span class="type">RpcEndpointRef</span></span><br><span class="line">  <span class="comment">// 获取RpcEndpoint对应的RpcEndpointRef</span></span><br><span class="line">  <span class="keyword">private</span>[rpc] <span class="function"><span class="keyword">def</span> <span class="title">endpointRef</span></span>(endpoint: <span class="type">RpcEndpoint</span>): <span class="type">RpcEndpointRef</span></span><br><span class="line">  <span class="comment">// 等待RpcEnv退出</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">awaitTermination</span></span>(): <span class="type">Unit</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Dispatcher"><a href="#Dispatcher" class="headerlink" title="Dispatcher"></a>Dispatcher</h4><p>进行消息的异步处理，内部有一个线程池，每个线程执行<em>MessageLoop</em>任务，不停将放置在阻塞队列中<code>receivers</code>中的<code>EndpointData</code>消息取出分发到相应的endpoint，如果为<code>PoisonPill</code>消息，关闭线程池</p>
+<p>其内部记录了该节点上所有的<code>RpcEndpoint</code></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> endpoints: <span class="type">ConcurrentMap</span>[<span class="type">String</span>, <span class="type">EndpointData</span>]</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> endpointRefs: <span class="type">ConcurrentMap</span>[<span class="type">RpcEndpoint</span>, <span class="type">RpcEndpointRef</span>]</span><br><span class="line"><span class="comment">// 存储EndpointData数据的阻塞队列</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> receivers = <span class="keyword">new</span> <span class="type">LinkedBlockingQueue</span>[<span class="type">EndpointData</span>]</span><br><span class="line"><span class="comment">// 创建一个线程名前缀名称为dispatcher-event-loop的线程池，默认线程数目是JVM可获取的核数与2的最大值，用来处理消息InboxMessage</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> threadpool: <span class="type">ThreadPoolExecutor</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册RpcEndpoint 将相关信息添加到endpoints和endpointRefs，receivers集合中</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">registerRpcEndpoint</span></span>(name: <span class="type">String</span>, endpoint: <span class="type">RpcEndpoint</span>)</span><br><span class="line"><span class="comment">// 是否存在该endpoint</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">verify</span></span>(name: <span class="type">String</span>): <span class="type">Boolean</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 内部的线程池，如果没有指定线程数目，使用核数作为线程数目</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> threadpool: <span class="type">ThreadPoolExecutor</span> = &#123;</span><br><span class="line">  <span class="keyword">val</span> availableCores =</span><br><span class="line">    <span class="keyword">if</span> (numUsableCores &gt; <span class="number">0</span>) numUsableCores <span class="keyword">else</span> <span class="type">Runtime</span>.getRuntime.availableProcessors()</span><br><span class="line">  <span class="keyword">val</span> numThreads = nettyEnv.conf.getInt(<span class="string">&quot;spark.rpc.netty.dispatcher.numThreads&quot;</span>,</span><br><span class="line">    math.max(<span class="number">2</span>, availableCores))</span><br><span class="line">  <span class="keyword">val</span> pool = <span class="type">ThreadUtils</span>.newDaemonFixedThreadPool(numThreads, <span class="string">&quot;dispatcher-event-loop&quot;</span>)</span><br><span class="line">  <span class="keyword">for</span> (i &lt;- <span class="number">0</span> until numThreads) &#123;</span><br><span class="line">    pool.execute(<span class="keyword">new</span> <span class="type">MessageLoop</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  pool</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="EndpointData"><a href="#EndpointData" class="headerlink" title="EndpointData"></a>EndpointData</h4><p>每个endpoint都有一个对应的<code>EndpointData</code>，<code>EndpointData</code>内部包含了<code>RpcEndpoint</code>、<code>NettyRpcEndpointRef</code>信息，与一个<code>Inbox</code>，收信箱<code>Inbox</code>内部有一个<code>InboxMessage</code>链表，发送到该endpoint的消息，就是添加到该链表，同时将整个<code>EndpointData</code>添加Dispatcher到阻塞队列<code>receivers</code>中，由Dispatcher线程异步处理</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">InboxMessage`是`Inbox`内的消息，所有的RPC消息都继承自`InboxMessage</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>OneWayMessage：不需要Endpoint回复的消息</li>
+<li>RpcMessage：需要Endpoint回复的消息</li>
+<li>OnStart：<code>Inbox</code>实例化后自动添加一个<code>OnStart</code>，用于通知对应的RpcEndpoint启动</li>
+<li>OnStop：用于关闭对应的RpcEndpoint</li>
+<li>RemoteProcessConnected、RemoteProcessDisconnected、RemoteProcessConnectionError：告诉所有的endpoints,远程连接状态相关的信息</li>
+</ul>
+<h4 id="注册RpcEndpoint"><a href="#注册RpcEndpoint" class="headerlink" title="注册RpcEndpoint"></a>注册RpcEndpoint</h4><p>NettyRpcEnv内注册RpcEndpoint</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">setupEndpoint</span></span>(name: <span class="type">String</span>, endpoint: <span class="type">RpcEndpoint</span>): <span class="type">RpcEndpointRef</span> = &#123;</span><br><span class="line">  dispatcher.registerRpcEndpoint(name, endpoint)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Dispatcher.registerRpcEndpoint</code>调用：</p>
+<ul>
+<li>创建<code>RpcEndpointAddress</code>，记录endpoint的地址，端口，名称</li>
+<li>创建一个对应的<code>RpcEndpointRef</code></li>
+<li>创建一个<code>EndpointData</code>（内部的Inbox内在构造时会放入OnStart消息）,放入endpoints缓存</li>
+<li>记录<code>RpcEndpoint</code>和<code>RpcEndpointRef</code>的映射关系到endpointRefs缓存</li>
+<li>将<code>EndpointData</code>放入阻塞队列<code>receives</code>，分发器异步调用对应的<code>OnStart</code>函数</li>
+<li>返回<code>RpcEndpointRef</code></li>
+</ul>
+<h4 id="RpcCallContext"><a href="#RpcCallContext" class="headerlink" title="RpcCallContext"></a>RpcCallContext</h4><p>当发送的消息类型是<code>RpcMessage</code>时，需要回复消息，需要在其中封装<code>NettyRpcCallContext</code>，用来向客户端发送消息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span>[spark] trait RpcCallContext &#123;</span><br><span class="line">  <span class="comment">// 回复消息给发送方</span></span><br><span class="line">  def <span class="title function_">reply</span><span class="params">(response: Any)</span>: Unit</span><br><span class="line">  <span class="comment">// 回复失败给发送方</span></span><br><span class="line">  def <span class="title function_">sendFailure</span><span class="params">(e: Throwable)</span>: Unit</span><br><span class="line">  <span class="comment">// 获取发送方地址</span></span><br><span class="line">  def senderAddress: RpcAddress</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>NettyRpcCallContext</code>为实现<code>RpcCallContext</code>接口的抽象类，有两个具体的实现类</p>
+<ul>
+<li>LocalNettyRpcCallContext : 接收方和发送方在地址相同，即同一进程，直接通过Promise进行回调</li>
+<li>RemoteNettyRpcCallContext ： 不在一起的时候，使用远程连接式的回调</li>
+</ul>
+<hr>
+<h3 id="TransportContext"><a href="#TransportContext" class="headerlink" title="TransportContext"></a>TransportContext</h3><p>传输上下文TransportContext，内部包含传输配置信息TransportConf，以及对收到的RPC消息进行处理的RpcHandler，用来创建TransportServer和TransportClientFactory，底层依赖Netty实现</p>
+<blockquote>
+<p>Netty中的相关概念：<br>每个<code>Channel</code>都有一个 <code>ChannelPipeline</code>，在Channel创建时会被自动创建</p>
+<ul>
+<li>ChannelPipeline：内部有一个由<code>ChannelHandlerContext</code>组成的双向链表，每个<code>ChannelHandlerContext</code>对应一个<code>ChannelHandler</code></li>
+<li>ChannelHandler：处理I&#x2F;O事件或拦截I&#x2F;O操作，并将其转发到<code>ChannelPipeline</code>中的下一个ChannelHandler，子接口<code>ChannelOutboundHandler</code>、<code>ChannelInboundHandler</code>分别用于处理发送和接收的I&#x2F;O</li>
+</ul>
+</blockquote>
+<h4 id="TransportConf"><a href="#TransportConf" class="headerlink" title="TransportConf"></a>TransportConf</h4><p>传输上下文的配置信息，使用<code>SparkTransportConf.fromSparkConf</code>方法来构造</p>
+<p>内部实际使用的是一份克隆的<code>SparkConf</code>存储配置属性，默认分配给网络传输的IO线程数是系统可用处理器的数量，但线程数目最多为8，最终确定的线程数将被用于设置客户端传输线程数（<code>spark.$module.io.clientThreads</code>）和服务端传输线程数（<code>spark.$module.io.serverThreads</code>），此外还将<code>spark.rpc.io.numConnectionsPerPeer</code>属性设置为1</p>
+<p>内部包含大量io相关的配置属性，及其默认值，例如IO模式，缓存大小，线程数目等，属性名称为<code>&quot;spark.&quot; + 模块名称 + &quot;.&quot; + 后缀</code>，其中模块名称为<code>rpc</code>,在<code>NettyRpcEnv</code>中创建TransportConf时指定</p>
+<h4 id="TransportClientFactory"><a href="#TransportClientFactory" class="headerlink" title="TransportClientFactory"></a>TransportClientFactory</h4><p>由<code>TransportContext.createClientFactory</code>方法创建，是用来创建TransportClient的工厂类，内部包含一个连接池<code>ConcurrentHashMap connectionPool</code>，进行缓存，方便重复使用</p>
+<p>连接池中每个SocketAddress对应一个客户端池<code>ClientPool</code>，其内有一个<code>TransportClient</code>数组，数组大大小由<code>spark.rpc.io.numConnectionsPerPeer</code>指定，即本节点和远程节点建立的连接数目，默认为1</p>
+<p>TransportClientFactory构造函数中包含内部Netty客户端相关的配置,具体类型取决于ioMode：NIO或者EPOLL（Java NIO 在Linux下默认使用的就是epoll）</p>
+<ul>
+<li>事件处理：NioEventLoopGroup&#x2F;EpollEventLoopGroup</li>
+<li>通道：NioSocketChannel&#x2F;EpollSocketChannel</li>
+<li>缓存分配器：PooledByteBufAllocator</li>
+</ul>
+<p>每个<code>TransportClient</code>和一个远程地址通信，由<code>TransportClientFactory</code>创建，流程如下</p>
+<ul>
+<li>通过host和port构造未解析的远程连接地址<code>InetSocketAddress</code></li>
+<li>从连接池<code>connectionPool</code>中获取该地址对应的<code>ClientPool</code>，为空则初始化一个客户端池</li>
+<li>从<code>ClientPool</code>中随机选取一个<code>TransportClient</code></li>
+<li>如果<code>TransportClient</code>不为空并且处于活跃状态，更新该客户端的最后一次请求事件，直接返回该<code>TransportClient</code></li>
+<li>否则创建一个新的<code>TransportClient</code></li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/6112189-f4e72c35d40b790b?imageMogr2/auto-orient/strip%7CimageView2/2/w/1046/format/webp" alt="img"></p>
+<p>image</p>
+<p>Channel中处理 I&#x2F;O 事件的ChanelHandler核心是<code>TransportChannelHandler</code>，此外还有编解码相关和空闲状态检查相关的handler</p>
+<h4 id="TransportClientBootstrap"><a href="#TransportClientBootstrap" class="headerlink" title="TransportClientBootstrap"></a>TransportClientBootstrap</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TransportClientFactory`创建Client成功连接到远程服务端以后，先执行引导程序，主要用来进行初始信息交互，例如`SaslClientBootstrap`进行SASL认证，完成后才会返回该新建的`TransportClient</span><br></pre></td></tr></table></figure>
+
+<h4 id="TransportClient"><a href="#TransportClient" class="headerlink" title="TransportClient"></a>TransportClient</h4><p><code>TransportClient</code>内部包含一个通道<code>Channel</code>，以及一个<code>TransportResponseHandler</code>，此类用于向服务器发出请求，而<code>TransportResponseHandler</code>负责处理来自服务器的响应，是线程安全的，可以从多个线程调用</p>
+<p>client用来发送五种<code>RequestMessage</code>：ChunkFetchRequest、OneWayMessage、RpcRequest、StreamRequest、UploadStream</p>
+<ul>
+<li>发送RPC请求<code>sendRpc</code>：每个<code>RpcRequest</code>对应一个使用UUID生成的requestId，将requestId与对应的<code>RpcResponseCallback</code>映射关系记录到<code>TransportResponseHandler</code>的<code>outstandingRpcs</code>字段中，当收到返回消息时调用相应的回调，主要功能是通过<code>Channel.writeAndFlush</code>将RPC请求发送出去</li>
+<li>请求块数据<code>fetchChunk</code>：首先使用流的标记和块的索引创建<code>StreamChunkId</code>，向<code>TransportResponseHandler</code>的<code>outstandingFetches</code>添加索引与<code>ChunkReceivedCallback</code>回调的映射关系，使用<code>channel.writeAndFlush</code>发送<code>ChunkFetchRequest</code>请求，接收到服务器端的相应时，执行相应的回调</li>
+<li>请求流数据<code>stream</code>：在<code>TransportResponseHandler</code>的<code>streamCallbacks</code>添加<code>streamId</code>与<code>StreamCallback</code>回调的映射关系，发送<code>StreamRequest</code>请求，收到响应时执行对应的回调</li>
+<li>发送不需要回复的数据<code>send</code>，直接通过<code>Channel.writeAndFlush</code>发送<code>OneWayMessage</code></li>
+<li>发送流数据<code>uploadStream</code>：发送<code>UploadStream</code>数据流到远端</li>
+</ul>
+<h4 id="TransportServerBootstrap"><a href="#TransportServerBootstrap" class="headerlink" title="TransportServerBootstrap"></a>TransportServerBootstrap</h4><p>当客户端和服务器建立连接后，在服务端对应的管道上运行的引导程序</p>
+<h4 id="TransportServer"><a href="#TransportServer" class="headerlink" title="TransportServer"></a>TransportServer</h4><p>RPC框架的服务端，只要<code>RpcEnvConfig.clientMode</code>不为ture，都会启动服务</p>
+<p>调用<code>TransportServer.startServer</code>启动服务，通过<code>TransportContext.createServer</code>创建服务端，然后内部会向<code>NettyRpcEnv</code>的<code>dispatcher</code>中注册本身的<code>RpcEndpoint</code>,名称为<em>endpoint-verifier</em>，类型为<code>RpcEndpointVerifier</code></p>
+<p>它的作用是，当远程节点需要创建该RpcEnv上的Endpoint的一个引用时(<code>setupEndpointRef</code>方法)，因为每个RpcEnv上都有<code>RpcEndpointVerifier</code>，所以远端可以直接创建一个<code>RpcEndpointVerifier</code>对应的ref，通过它发送<code>CheckExistence(name: String)</code>消息，查询该dispatcher内部的endpoints缓存中是否存在的名称为name的endpoint,从而确定是否可以创建该<code>RpcEndpointRef</code></p>
+<p><code>TransportServer</code>内部包含的变量如下：</p>
+<ul>
+<li>context:传输上下文TransportContext，用来配置channelHandler</li>
+<li>conf:传输配置TransportContext</li>
+<li>appRpcHandler:RPC请求处理器RpcHandler</li>
+<li>bootstraps:TransportServerBootstrap类型，当客户端连接到服务器端时，在通道创建时执行的引导程序</li>
+</ul>
+<p>其创建过程就是标准的netty服务端创建方式，对于已经链接进来的client Chanel，ChanelHandler的配置和客户端配置类似</p>
+<h4 id="RpcHandler"><a href="#RpcHandler" class="headerlink" title="RpcHandler"></a>RpcHandler</h4><p>对<code>TransportClient.sendRpc</code>发送的RPC消息进行处理，内部通过Dispatcher将收到的RPC分发到对应的Endpoint</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// RpcHandler部分定义</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">RpcHandler</span> &#123;</span><br><span class="line">  <span class="comment">// 接收一个RPC消息，具体逻辑执行由子类实现，处理完成后通过RpcResponseCallback回调，如果不需要回调返回消息的，传入参数为OneWayRpcCallback，只打印日志</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title function_">receive</span><span class="params">(</span></span><br><span class="line"><span class="params">      TransportClient client,</span></span><br><span class="line"><span class="params">      ByteBuffer message,</span></span><br><span class="line"><span class="params">      RpcResponseCallback callback)</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 获取StreamManager</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">abstract</span> StreamManager <span class="title function_">getStreamManager</span><span class="params">()</span>;</span><br><span class="line">  <span class="comment">// Channel处于活跃状态时调用</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">channelActive</span><span class="params">(TransportClient client)</span> &#123; &#125;</span><br><span class="line">  <span class="comment">// 非活跃状态时调用</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">channelInactive</span><span class="params">(TransportClient client)</span> &#123; &#125;</span><br><span class="line">  <span class="comment">// 产生异常时调用</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">exceptionCaught</span><span class="params">(Throwable cause, TransportClient client)</span> &#123; &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>NettyStreamManager</code>用于提供<code>NettyRpcEnv</code>的文件流服务，可以将文件，目录和jar包注册到其中，然后根据请求，将相应文件的信息封装为<code>FileSegmentManagedBuffer</code>，可以用来处理<code>StreamRequest</code>类型的消息</p>
+<h4 id="管道初始化"><a href="#管道初始化" class="headerlink" title="管道初始化"></a>管道初始化</h4><p>管道初始化过程中都使用了<code>TransportContext.initializePipeline</code>创建的<code>TransportChannelHandler</code></p>
+<p><code>TransportChannelHandler</code>是单个传输层的通道handler，用于将请求委派给<code>TransportRequestHandler</code>并响应<code>TransportResponseHandler</code>。在传输层中创建的所有通道都是双向的。当客户端使用<code>RequestMessage</code>发送给Netty通道（由服务器的RequestHandler处理）时，服务器将生成<code>ResponseMessage</code>（由客户端的ResponseHandler处理）。但是，服务器也会在同一个Channel上获取句柄，因此它可能会向客户端发送<code>RequestMessages</code>。这意味着客户端还需要一个<code>RequestHandler</code>，而Server需要一个<code>ResponseHandler</code>，用于客户端对服务器请求的响应进行响应。</p>
+<p>此类还处理来自<code>io.netty.handler.timeout.IdleStateHandler</code>的超时信息。如果存在未完成的提取<code>fetch</code>或RPC请求但是在“requestTimeoutMs”时间内通道上没有的流量，我们认为连接超时。注意这是双工通道;如果客户端不断发送但是没有响应，为简单起见不认为是超时</p>
+<p><code>TransportChannelHandler</code>内部使用<code>MessageHandler</code>处理<code>Message</code>，其中<code>MessageHandler</code>有两种类型，分别用来处理客户端请求&#x2F;处理服务端的响应，<code>Message</code>共有10种类型</p>
+<h4 id="TransportRequestHandler"><a href="#TransportRequestHandler" class="headerlink" title="TransportRequestHandler"></a>TransportRequestHandler</h4><p>处理客户端的五种请求信息<code>RequestMessage</code>，内部包含<code>RpcHandler</code>处理RPC信息，<code>TransportClient</code>用来和请求方通信</p>
+<ul>
+<li><code>RpcRequest</code>:通过<code>RpcHandler</code>接收请求，实际类型为<code>NettyRpcHandler</code>，这里将<code>ByteBuffer</code>类型的RPC请求转换为<code>RequestMessage</code>，加入到对应endpoint的inbox内，由Dispatcher负责处理，通过<code>RpcResponseCallback</code>回复<code>RpcResponse/RpcFailure</code></li>
+<li><code>OneWayMessage</code>:类似前一种情况，最后不对客户端进行回复</li>
+<li><code>ChunkFetchRequest</code>：通过<code>StreamManager.getChunk</code>处理要请求的数据块，同时返回结果描述<code>ChunkFetchSuccess/ChunkFetchFailure</code></li>
+<li><code>StreamRequest</code>:通过<code>StreamManager.openStream</code>获取请求的流数据，最后返回结果<code>StreamResponse/StreamFailure</code>给客户端</li>
+<li><code>UploadStream</code>:处理客户端上传的流</li>
+</ul>
+<p><code>SaslServerBootstrap</code>类型的引导首先会对服务器端的<code>RPCHandler</code>进行代理，与客户端进行认证交互，认证成功后，将加解密的Handler添加到通道的Pipeline中，后续的消息交给被代理的<code>RPCHandler</code>进行代理</p>
+<h4 id="TransportResponseHandler"><a href="#TransportResponseHandler" class="headerlink" title="TransportResponseHandler"></a>TransportResponseHandler</h4><p>处理服务端对请求的响应，内部会记录需要回复的请求的ID，以及对应的callback函数，一共由六种<code>ResponseMessage</code>，根据消息类型和ID，执行响应的回调</p>
+<ul>
+<li>ChunkFetchFailure</li>
+<li>ChunkFetchSuccess</li>
+<li>RpcFailure</li>
+<li>RpcResponse</li>
+<li>StreamFailure</li>
+<li>StreamResponse</li>
+</ul>
+<h4 id="其他ChannelHandler"><a href="#其他ChannelHandler" class="headerlink" title="其他ChannelHandler"></a>其他ChannelHandler</h4><ul>
+<li>MessageEncoder:对<code>Message</code>进行编码，frame格式如下</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">length(long类型，消息长度，8字节)|message type(消息类型，1个字节)|message meta(消息元数据，例如RpcRequest消息的元数据长度为12，包括requestId和消息体长度bodysize)|message body(消息体，具体的信息，例如ChunkFetchSuccess中的块数据)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>MessageDecoder：解码，从中获取消息类型，和消息内容，创建对应的消息</li>
+<li>TransportFrameDecoder:处理TCP中的粘包拆包，得到一个完整的消息，内部主要依靠的就是每个frame前8个字节，表示整个frame的长度</li>
+<li>IdleStateHandler：实现心跳功能，触发IdleStateEvent事件，当通道内没有执行读取，写入操作时，底层通过向线程任务队列中添加定时任务，如果空闲超时，则会触发<code>TransportChannelHandler.userEventTriggered</code>方法。在这个方法如果确认超时，会关闭通道</li>
+</ul>
+<h4 id="Outbox"><a href="#Outbox" class="headerlink" title="Outbox"></a>Outbox</h4><p>可以理解为发出消息的盒子，每个地址对应个盒子</p>
+<p>NettyRpcEnv中<code>outboxes : ConcurrentHashMap[RpcAddress, Outbox]</code>字段，每个远程<code>RpcAddress</code>对应一个<code>Outbox</code>,<code>OutBox</code>其内部包含一个<code>OutboxMessage</code>的链表，所有向远端发送的消息都要封装为<code>OutboxMessage</code></p>
+<p>调用<code>Outbox.send</code>方法发送消息时，将消息添加到<code>OutboxMessage</code>链表中，如果远程连接还未建立，会先通过NettyRpcEnv中的<code>clientConnectionExecutor</code>线程池执行建立连接的任务，即创建特定<code>RpcAddress</code>上的<code>TransportClient</code>，然后发送消息</p>
+<p><code>OutboxMessage</code>有两个子类，<code>OneWayOutboxMessage</code>和<code>RpcOutboxMessage</code>，表明不会有回复和存在回复两种消息类型，分别对应调用RpcEndpoint的<code>receive</code>和<code>receiveAndReply</code>方法，当<code>TransportClient</code>发送消息时，如果Message是<code>RpcOutboxMessage</code>，先会创建一个UUID，底层<code>TransportResponseHandler</code>维护一个发送消息ID与其Callback的HashMap，当Netty收到完整的远程RpcResponse时候，做反序列化，回调相应的Callback，进而执行Spark中的业务逻辑，即Promise&#x2F;Future的响应</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/6112189-100a1872b14f7dc9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/834/format/webp" alt="img"></p>
+<p>Rpc底层通信框架</p>
+<hr>
+<h3 id="实际流程分析"><a href="#实际流程分析" class="headerlink" title="实际流程分析"></a>实际流程分析</h3><p>当通过<code>RpcEndpointRef</code>发送需要回复的消息时：</p>
+<ul>
+<li>RpcEndpointRef.ask</li>
+<li>NettyRpcEndpointRef.ask 构建<code>RequestMessage(senderAddress,receiver,message content)</code></li>
+</ul>
+<p>如果远程地址与当前NettyRpcEnv相同：</p>
+<ul>
+<li>NettyRpcEnv.ask，创建一个<code>Promise</code>对象，设定<code>Future</code>完成后的回调</li>
+<li>Dispatcher.postLocalMessage，构建<code>RpcMessage</code>和回调上下文<code>LocalNettyRpcCallContext</code></li>
+<li>Dispatcher.postMessage，将<code>RequestMessage</code>消息重构成<code>RpcMessage</code>，放置到对应endpoint的inbox内，dispatcher内部的线程池会取出消息，然后根据消息类型，执行不同的操作，调用endpoint的<code>receiveAndReply</code>，内部回调<code>RpcCallContext.reply</code>返回结果</li>
+</ul>
+<p>如果需要连接远程地址时：</p>
+<ul>
+<li>NettyRpcEnv.ask，将<code>RequestMessage</code>序列化，构造一个<code>RpcOutboxMessage</code>，设定消息成功和失败时对应的的回调</li>
+<li>NettyRpcEnv.postToOutbox,如果尚未创建对应的TransportClient，将消息放入目的地址相应的<code>Outbox</code>，必要时新建<code>Outbox</code>以及对应的<code>TransportClient</code></li>
+<li>通过<code>message.sendWith(client)</code>调用<code>TransportClient.sendRpc</code>发送<code>RpcRequest</code>消息，记录该requestId对应的回调<code>RpcResponseCallback</code>，用来收到回复后调用</li>
+</ul>
+<p>上述步骤都是异步执行的，当将消息放置到相应位置后，就会返回，然后：</p>
+<ul>
+<li>使用<code>timeoutScheduler</code>设定一个计时器，用于超时处理，超时抛出<code>TimeoutException</code>异常</li>
+</ul>
+<blockquote>
+<p>在Spark 1.6之前，底层使用的Akka进行PRC，它是基于Actor的RPC通信系统，但是无法适用大的package&#x2F;stream的数据传输，所以还有Netty通信框架，所以将两套通信框架合并统一使用netty，并且akka使用时版本必须保证一致，否则会出现很多问题。但是RpcEnv参照了Akka的思路，内部原理基本一致，都是按照MailBox的设计思路来实现的</p>
+</blockquote>
+<p><img src="https://upload-images.jianshu.io/upload_images/6112189-983e2815d1b57267.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/443/format/webp" alt="img"></p>
+<p>image</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/YS_RLOd0iVwDcwH6JMyB8g">这可能是目前最透彻的Netty原理架构解析</a></li>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000007282789#articleHeader0">Netty 源码分析之 一 揭开 Bootstrap 神秘的红盖头 (客户端)</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/imgxr/article/details/80131262">深入解析Spark中的RPC</a></li>
+<li><a target="_blank" rel="noopener" href="http://sharkdtu.com/posts/spark-network.html">Spark 底层网络模块</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.aboutyun.com/thread-21115-1-1.html">Spark为何使用Netty通信框架替代Akka</a></li>
+</ul>
+<p>其他Spark源码分析，记录在<a target="_blank" rel="noopener" href="https://legacy.gitbook.com/book/wangdy12/spark/details">GitBook</a></p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

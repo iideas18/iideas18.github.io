@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Docker网络管理 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker网络管理">
+<meta property="og:url" content="https://iideas18.github.io/2022/03/30/Docker/Docker 网络管理/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-03-30T09:40:23.000Z">
+<meta property="article:modified_time" content="2026-03-12T15:48:24.701Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/03/30/Docker/Docker 网络管理/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Docker网络管理',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-12 23:48:24'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">Docker网络管理</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-03-30T09:40:23.000Z" title="发表于 2022-03-30 17:40:23">2022-03-30</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-12T15:48:24.701Z" title="更新于 2026-03-12 23:48:24">2026-03-12</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Docker/">Docker</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="Docker网络管理"><a href="#Docker网络管理" class="headerlink" title="Docker网络管理"></a>Docker网络管理</h1><p>虚拟化技术是云计算的主要推动技术，而相较于服务器虚拟化及存储虚拟化的不断突破和成熟，网络虚拟化似乎有些跟不上节奏，成为目前云计算发展的一大瓶颈。Docker作为云计算领域的一颗耀眼新星，彻底释放了轻量级虚拟化的威力，使得计算资源的利用率提升到了一个新的层次，大有取代虚拟机的趋势。同时在前文提及，Docker借助强大的镜像技术，让应用的分发、部署与管理变得异常便捷。那么，Docker的网络功能又如何，能否满足各种场景的需求？本节就将介绍Docker网络的功能和实现方式。</p>
+<h2 id="1-Docker网络基础"><a href="#1-Docker网络基础" class="headerlink" title="1. Docker网络基础"></a>1. Docker网络基础</h2><p>在深入Docker内部的网络实现原理之前，先从一个用户的角度来直观感受一下Docker的网络架构与基本操作。</p>
+<h3 id="1-Docker网络架构"><a href="#1-Docker网络架构" class="headerlink" title="1. Docker网络架构"></a>1. Docker网络架构</h3><p>Docker在1.9版本中引入了一整套的docker network子命令和跨主机网络支持。这允许用户可以根据他们应用的拓扑结构创建虚拟网络并将容器接入其所对应的网络。其实，早在Docker1.7版本中，网络部分代码就已经被抽离并单独成为了Docker的网络库，即<strong>libnetwork</strong>。在此之后，容器的网络模式也被抽象变成了统一接口的驱动。</p>
+<p>为了标准化网络驱动的开发步骤和支持多种网络驱动，Docker公司在libnetwork中使用了CNM（Container Network Model）。CNM定义了构建容器虚拟化网络的模型，同时还提供了可以用于开发多种网络驱动的标准化接口和组件。</p>
+<p>libnetwork和Docker daemon及各个网络驱动的关系可以通过图进行形象的表示。</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330143641711.png" alt="image-20220330143641711"></p>
+<p>如图所示，Docker daemon通过调用libnetwork对外提供的API完成网络的创建和管理等功能。libnetwork中则使用了CNM来完成网络功能的提供。而CNM中主要有沙盒（sandbox）、端点（endpoint）和网络（network）这3种组件。libnetwork中内置的5种驱动则为libnetwork提供了不同类型的网络服务。</p>
+<p>下面分别对CNM中的3个核心组件和libnetwork中的5种内置驱动进行介绍。</p>
+<ol>
+<li>CNM中的3个核心组件如下:</li>
+</ol>
+<ul>
+<li><strong>沙盒</strong>：一个沙盒包含了一个容器网络栈的信息。沙盒可以对容器的接口、路由和DNS设置等进行管理。沙盒的实现可以是Linux network namespace、FreeBSD Jail或者类似的机制。一个沙盒可以有多个端点和多个网络。</li>
+<li><strong>端点</strong>：一个端点可以加入一个沙盒和一个网络。端点的实现可以是<strong>veth pair</strong>、<strong>Open vSwitch</strong>内部端口或者相似的设备。一个端点只可以属于一个网络并且只属于一个沙盒。</li>
+<li><strong>网络</strong>：一个网络是一组可以直接互相联通的端点。网络的实现可以是Linux bridge、VLAN等。一个网络可以包含多个端点。</li>
+</ul>
+<p>2.libnetwork中的5种内置驱动如下。</p>
+<ul>
+<li><p><strong>bridge驱动</strong>。此驱动为Docker的默认设置，使用这个驱动的时候，libnetwork将创建出来的Docker容器连接到Docker网桥上（Docker网桥稍后会做介绍）。作为最常规的模式，bridge模式已经可以满足Docker容器最基本的使用需求了。然而其与外界通信使用NAT，增加了通信的复杂性，在复杂场景下使用会有诸多限制。</p>
+</li>
+<li><p><strong>host驱动</strong>。使用这种驱动的时候，libnetwork将不为Docker容器创建网络协议栈，即不会创建独立的network namespace。Docker容器中的进程处于宿主机的网络环境中，相当于Docker容器和宿主机共用同一个network namespace，使用宿主机的网卡、IP和端口等信息。但是，容器其他方面，如文件系统、进程列表等还是和宿主机隔离的。host模式很好地解决了容器与外界通信的地址转换问题，可以直接使用宿主机的IP进行通信，不存在虚拟化网络带来的额外性能负担。但是host驱动也降低了容器与容器之间、容器与宿主机之间网络层面的隔离性，引起网络资源的竞争与冲突。因此可以认为host驱动适用于对于容器集群规模不大的场景。</p>
+</li>
+<li><p><strong>overlay驱动</strong>。此驱动采用IETF标准的VXLAN方式，并且是VXLAN中被普遍认为最适合大规模的云计算虚拟化环境的SDN controller模式。在使用的过程中，需要一个额外的配置存储服务，例如Consul、etcd或ZooKeeper。还需要在启动Docker daemon的的时候额外添加参数来指定所使用的配置存储服务地址。</p>
+</li>
+<li><p><strong>remote驱动</strong>。这个驱动实际上并未做真正的网络服务实现，而是调用了用户自行实现的网络驱动插件，使libnetwork实现了驱动的可插件化，更好地满足了用户的多种需求。用户只要根据libnetwork提供的协议标准，实现其所要求的各个接口并向Docker daemon进行注册。</p>
+</li>
+<li><p><strong>null驱动</strong>。使用这种驱动的时候，Docker容器拥有自己的network namespace，但是并不为Docker容器进行任何网络配置。也就是说，这个Docker容器除了network namespace自带的loopback网卡外，没有其他任何网卡、IP、路由等信息，需要用户为Docker容器添加网卡、配置IP等。这种模式如果不进行特定的配置是无法正常使用的，但是优点也非常明显，它给了用户最大的自由度来自定义容器的网络环境。</p>
+</li>
+</ul>
+<p>在初步了解了libnetwork中各个组件和驱动后，为了帮助读者更加深入地理解libnetwork中的CNM模型和熟悉docker network子命令的使用，这里介绍一个libnetwork官方GitHub上示例的搭建过程，并在搭建成功后对其中容器之间的连通性进行验证。</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144024141.png" alt="image-20220330144024141"></p>
+<p>在这个例子中，使用Docker默认的bridge驱动进行演示。在此例中，会在Docker上组成一个网络拓扑的应用。</p>
+<ul>
+<li>它有两个网络，其中backend network为后端网络，frontend network则为前端网络，两个网络互不联通。</li>
+<li>其中container1和container3各拥有一个端点，并且分别加入到后端网络和前端网络中。而container2则有两个端点，它们两个分别加入到后端网络和前端网络中。通过以下命令分别创建名为backend和frontend的两个网络。</li>
+</ul>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144040295.png" alt="image-20220330144040295"></p>
+<p>使用docker network ls可以查看这台主机上所有的Docker网络</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144055937.png" alt="image-20220330144055937"></p>
+<p>除了刚才创建的backend和frontend之外，还有3个网络。这3个网络是Docker daemon默认创建的，分别使用了3种不同的驱动，而这3种驱动则对应了Docker原来的3种网络模式，这个在后面做详细讲解。需要注意的是，3种内置的默认网络是无法使用docker network rm进行删除的。</p>
+<p>在创建了所需要的两个网络之后，接下来创建3个容器，并使用如下命令将名为container1和container2的容器加入到backend网络中，将名为container3的容器加入到frontend网络中。</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144114544.png" alt="image-20220330144114544"></p>
+<p>分别在container1和container3中使用ping命令测试其与container2的连通性，因为container1与container2都在backend网络中，所以两者可以连通。但是，因为container3和container2不在一个网络中，所以两个之间并不能连通。可以在container2中使用命令ifconfig来查看此容器中的网卡及其配置情况。可以看到，此容器中只有一块以太网卡，其名称为eth0，并且配置了和网桥backend同在一个IP段的IP地址，这个网卡就是CNM模型中的端点。最后，使用如下命令将container2加入到frontend网络中。</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144137491.png" alt="image-20220330144137491"></p>
+<p>再次，在container2中使用命令ifconfig来查看此容器中的网卡及其配置情况。发现多了一块名为eth1的以太网卡，并且其IP和网桥frontend同在一个IP段。测试container2与container3的连通性后，可以发现两者已经连通。可以看出，docker network connect命令会在所连接的容器中创建新的网卡，以完成其与所指定网络的连接。2. bridge驱动实现机制分析前面我们演示了bridge驱动下的CNM使用方式，接下来本节将会分析bridge驱动的实现机制。● docker0网桥当在一台未经特殊网络配置的Ubuntu机器上安装完Docker之后，在宿主机上通过使用ifconfig命令可以看到多了一块名为docker0的网卡，假设IP为172.17.0.1&#x2F;16。有了这样一块网卡，宿主机也会在内核路由表上添加一条到达相应网络的静态路由，可通过route -n命令查看。</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144148743.png" alt="image-20220330144148743"></p>
+<p>此条路由表示所有目的IP地址为172.17.0.0&#x2F;16的数据包从docker0网卡发出。然后使用docker run命令创建一个执行shell（&#x2F;bin&#x2F;bash）的Docker容器，假设容器名称为con1。在con1容器中可以看到它有两块网卡lo和eth0。lo设备不必多说，是容器的回环网卡；eth0即为容器与外界通信的网卡，eth0的IP为172.17.0.2&#x2F;16，和宿主机上的网桥docker0在同一个网段。查看con1的路由表，可以发现con1的默认网关正是宿主机的docker0网卡，通过测试，con1可以顺利访问外网和宿主机网络，因此表明con1的eth0网卡与宿主机的docker0网卡是相互连通的。这时在其他控制台窗口查看宿主机的网络设备，会发现有一块以“veth”开头的网卡，如vethe043f86，我们可以大胆猜测这块网卡肯定是veth设备了，而veth pair总是成对出现的。在3.1节中介绍过，veth pair通常用来连接两个network namespace，那么另一个应该是Docker容器con1中的eth0了。之前已经判断con1容器的eth0和宿主机的docker0是相连的，那么vethe043f86也应该是与docker0相连的，不难想到，docker0就不只是一个简单的网卡设备了，而是一个网桥。真实情况正是如此，图3-18即为Docker默认网络模式（bridge模式）下的网络环境拓扑图，创建了docker0网桥，并以veth pair连接各容器的网络，容器中的数据通过docker0网桥转发到eth0网卡上。</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144232372.png" alt="image-20220330144232372"></p>
+<p>这里网桥的概念等同于交换机，为连在其上的设备转发数据帧。网桥上的veth网卡设备相当于交换机上的端口，可以将多个容器或虚拟机连接在其上，这些端口工作在二层，所以是不需要配置IP信息的。图中docker0网桥就为连在其上的容器转发数据帧，使得同一台宿主机上的Docker容器之间可以相互通信。读者应该注意到docker0既然是二层设备，其上怎么也配置了IP呢？docker0是普通的Linux网桥，它是可以在上面配置IP的，可以认为其内部有一个可以用于配置IP信息的网卡接口（如同每一个Open vSwitch网桥都有一个同名的内部接口一样）。在Docker的桥接网络模式中，docker0的IP地址作为连于之上的容器的默认网关地址存在。在Linux中，可以使用brctl命令查看和管理网桥（需要安装bridge-utils软件包）如查看本机上的Linux网桥以及其上的端口：</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144310887.png" alt="image-20220330144310887"></p>
+<p>更多关于brctl命令的功能和使用方法，请读者通过man brctl或brctl ——help查阅，在第4章中，会大量用到此命令。docker0网桥是在Docker daemon启动时自动创建的，其IP默认为172.17.0.1&#x2F;16，之后创建的Docker容器都会在docker0子网的范围内选取一个未占用的IP使用，并连接到docker0网桥上。Docker提供了如下参数可以帮助用户自定义docker0的设置。❏ ——bip&#x3D;CIDR：设置docker0的IP地址和子网范围，使用CIDR格式，如192.168.100.1&#x2F;24。注意这个参数仅仅是配置docker0的，对其他自定义的网桥无效。并且在指定这个参数的时候，宿主机是不存在docker0的或者docker0已存在且docker0的IP和参数指定的IP一致才行。❏ ——fixed-cidr&#x3D;CIDR：限制Docker容器获取IP的范围。Docker容器默认获取的IP范围为Docker网桥（docker0网桥或者——bridge指定的网桥）的整个子网范围，此参数可将其缩小到某个子网范围内，所以这个参数必须在Docker网桥的子网范围内。如docker0的IP为172.17.0.1&#x2F;16，可将——fixed-cidr设为172.17.1.1&#x2F;24，那么Docker容器的IP范围将为172.17.1.1～172.17.1.254。❏ ——mtu&#x3D;BYTES：指定docker0的最大传输单元（MTU）。除了使用docker0网桥外，还可以使用自己创建的网桥，使用——bridge&#x3D;BRIDGE参数指定。使用如下命令添加一个名为br0的网桥，并且为其配置IP。</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144329390.png" alt="image-20220330144329390"></p>
+<p>然后在启动Docker daemon的时候使用——bridge&#x3D;br0指定使用br0网桥即可。注意此参数若和——bip参数同时使用会产生冲突。以上参数在Docker daemon启动时指定，如docker daemon ——fixed-cidr&#x3D;172.17.1.1&#x2F;24。在Ubuntu中，也可以将这些参数写在DOCKER_OPTS变量中（位于&#x2F;etc&#x2F;default&#x2F;docker文件中），然后重启Docker服务。● iptables规则Docker安装完成后，将默认在宿主机系统上增加一些iptables规则，以用于Docker容器和容器之间以及和外界的通信，可以使用iptables-save命令查看。其中nat表上的POSTROUTING链有这么一条规则：</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144352342.png" alt="image-20220330144352342"></p>
+<p>这条规则关系着Docker容器和外界的通信，含义是将源地址为172.17.0.0&#x2F;16的数据包（即Docker容器发出的数据），当不是从docker0网卡发出时做SNAT（源地址转换，将IP包的源地址替换为相应网卡的地址）。这样一来，从Docker容器访问外网的流量，在外部看来就是从宿主机上发出的，外部感觉不到Docker容器的存在。那么，外界想要访问Docker容器的服务时该怎么办？我们启动一个简单的Web服务容器，观察iptables规则有何变化。首先启动一个Web容器，将其5000端口映射到宿主机的5000端口上。</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144401967.png" alt="image-20220330144401967"></p>
+<p>然后查看iptables规则，省略部分无用信息。</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144431843.png" alt="image-20220330144431843"></p>
+<p>可以看到，在nat和filter的DOCKER链中分别增加了一条规则，这两条规则将访问宿主机5000端口的流量转发到172.17.0.4的5000端口上（真正提供服务的Docker容器IP端口），所以外界访问Docker容器是通过iptables做DNAT（目的地址转换）实现的。此外，Docker的forward规则默认允许所有的外部IP访问容器，可以通过在filter的DOCKER链上添加规则来对外部的IP访问做出限制，如只允许源IP为8.8.8.8的数据包访问容器，需要添加如下规则：</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144504830.png" alt="image-20220330144504830"></p>
+<p>不仅仅是与外界间通信，Docker容器之间互相通信也受到iptables规则限制。通过前面的学习，了解到同一台宿主机上的Docker容器默认都连在docker0网桥上，它们属于一个子网，这是满足相互通信的第一步。同时，Docker daemon会在filter的FORWARD链中增加一条ACCEPT的规则（——icc&#x3D;true）：</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144518279.png" alt="image-20220330144518279"></p>
+<p>这是满足相互通信的第二步。当Docker daemon启动参数——icc（icc参数表示是否允许容器间相互通信）设置为false时，以上规则会被设置为DROP, Docker容器间的相互通信就被禁止，这种情况下，想让两个容器通信就需要在docker run时使用——link选项。在Docker容器和外界通信的过程中，还涉及了数据包在多个网卡间的转发（如从docker0网卡到宿主机eth0的转发），这需要内核将ip-forward功能打开，即将ip_forward系统参数设为1。Dockerdaemon启动的时候默认会将其设为1（——ip-forward&#x3D;true），也可以通过以下命令手动设置：</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144549209.png" alt="image-20220330144549209"></p>
+<p>以上过程中所涉及的Docker daemon启动参数如下。❏ ——iptables：是否允许Docker daemon设置宿主机的iptables规则，默认为true。当设为false时，Docker daemon将不会改变你宿主机上的iptables规则。❏ ——icc：是否允许Docker容器间相互通信，默认为true。true或false改变的是FORWARD链中相应iptables规则的策略（ACCEPT、DROP）。由于操作的是iptables规则，所以需要——iptables&#x3D;true才能生效。❏ ——ip-forward：是否将ip_forward参数设为1，默认为true，用于打开Linux内核的ip数据包转发功能。这些参数也是在Docker daemon启动时进行设置的，所以可以设置在DOCKER_OPTS变量中。</p>
+<p>● Docker容器的DNS和主机名同一个Docker镜像可以启动很多个Docker容器，通过查看，它们的主机名并不一样，也即是说主机名并非是被写入镜像中的。在3.4节中已经提及，实际上容器中&#x2F;etc目录下有3个文件是容器启动后被虚拟文件覆盖掉的，分别是&#x2F;etc&#x2F;hostname、&#x2F;etc&#x2F;hosts、&#x2F;etc&#x2F;resolv.conf，通过在容器中运行mount命令可以查看。</p>
+<p><img src="/Docker%20%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86/image-20220330144613766.png" alt="image-20220330144613766"></p>
+<p>这样能解决主机名的问题，同时也能让DNS及时更新（改变resolv.conf）。由于这些文件的维护方法随着Docker版本演进而不断变化，因此尽量不修改这些文件，而是通过Docker提供的参数进行相关设置，参数配置方式如下。❏ -h HOSTNAME或者——hostname&#x3D;HOSTNAME：设置容器的主机名，此名称会写在&#x2F;etc&#x2F;hostname和&#x2F;etc&#x2F;hosts文件中，也会在容器的bash提示符中看到。但是在外部，容器的主机名是无法查看的，不会出现在其他容器的hosts文件中，即使使用docker ps命令也查看不到。此参数是docker run命令的参数，而非Docker daemon的启动参数。❏ ——dns&#x3D;IP_ADDRESS…：为容器配置DNS，写在&#x2F;etc&#x2F;resolv.conf中。该参数既可以在Docker daemon启动的时候设置也可以在docker run时设置，默认为8.8.8.8和8.8.4.4。注意对以上3个文件的修改不会被docker commit保存，也就是不会保存在镜像中，重启容器也会导致修改失效。另外，在不稳定的网络环境下使用需要特别注意DNS的设置。至此，Docker基础的网络使用方式已经介绍完了，相信通过本节的介绍，读者对如何选择使用libnetwork的5种驱动已经有了一定的理解。下一节开始，将针对Docker网络配置的原理进行分析。</p>
+<p>2 Docker daemon网络配置原理在对Docker的网络环境有了一定的认识之后，将深入到源代码中理解Docker的网络原理。在Docker1.6以及之前的版本中，Docker自身的网络主要分为两部分：Docker daemon的网络配置和libcontainer的网络配置。Docker daemon的网络指daemon启动时，在主机系统上所做的网络设置，可以被所有Docker容器所使用；libcontainer的网络配置则针对具体的容器，是在使用dockerrun命令启动容器时，根据传入的参数为容器做的网络配置工作。</p>
+<p>但是随着社区和用户对网络功能改善的需求日益迫切，Docker网络的代码也在飞速地变化，在1.7以及后续的版本中，Docker网络将变为Docker中的“一等公民”，所有跟网络相关的代码都已经从Docker daemon主代码和libcontainer的代码中分离出来，整合成为一个单独的库——libnetwork。libnetwork通过插件的形式允许用户可以根据自己的需求来实现自己的networkdriver。所谓driver，就是以前Docker daemon中网络相关代码加上libcontainer中网络相关的代码的集合。目前libnetwork实现了5种驱动，其中的bridge驱动为libnetwork的默认驱动，本书在代码解读的过程中也将以bridge驱动为主。Docker daemon在每次启动的过程中，都会初始化自身的网络环境，这样的网络环境最终为Docker容器提供网络通信服务。3.3节中已经介绍过了Docker daemon的启动流程，这里再着重介绍一下其中关于网络初始化的部分。</p>
+<p>1．与网络相关的配置参数Docker daemon启动的过程中，在配置参数Config结构体中保存了一个用于网络配置的结构体bridgeConfig。daemon启动过程中与网络相关的参数配置都定义在bridgeConfig中，主要包括以下几项：EnableIptables、EnableIpForward、EnableIpMasq、DefaultIp、Iface、IP、FixedCIDR、InterContainerCommunication，这些变量在Config中的默认值以及作用如下。❏ EnableIptables：默认值为true，对应于Docker daemon启动时的——iptables参数，作用为是否允许Docker daemon在宿主机上添加iptables规则。❏ EnableIpMasq：默认为true，对应于Docker daemon启动时的——ip-masq参数，作用为是否为Docker容器通往外界的包做SNAT。在3.8.1节中我们介绍过一个MASQUERADE的iptables规则，此变量即控制是否添加那条规则。</p>
+<p>❏ DefaultIp：对应——ip参数，默认值为“0.0.0.0”。这个变量的作用为：当启动容器做端口映射时，将DefaultIp作为默认使用的IP地址。❏ EnableIpForward、Iface、IP、FixedCIDR、InterContainerCommunication分别对应——ip-forward、——bridge、——bip、——fixed-cidr、——icc。Docker daemon通过这些配置项来决定如何初始化网络。每一个配置项都有其默认值，但用户可以使用Docker daemon的启动参数来改变其默认值，达到自定义Docker daemon网络的效果。</p>
+<p>2．初始化过程3.3节已经介绍了Docker daemon的启动过程，本节将关注其中与Docker网络初始化相关的细节。● 网络参数校验当Docker daemon启动时，首先对启动参数进行解析，将参数值赋予相应的变量。然后对这些配置选项进行判断和校验。关于网络方面，主要检查了3对互斥配置选项。首先是Iface和IP，也就是不能在指定自定义网桥的同时又指定新建网桥的IP。为什么？如果指定了自定义的网桥，那么该网桥已经存在，无需指定网桥的IP地址；相反，若用户指定网桥IP，那么该网桥肯定还未新建成功，则Docker daemon在新建网桥时使用默认网桥名docker0，并绑定IP。这也就是在3.8.1节中讲解——bip参数时，说此参数只能配置docker0网桥的原因。第二对互斥选项是EnableIptables和InterContainerCommunication,3.8.1节中介绍过——icc参数的原理，如果InterContainerCommunication为false，就需要修改iptables规则，</p>
+<p>，而EnableIptables为false则规定不允许Docker daemon修改宿主机的iptables规则，因此两参数不能同为false。此外，EnableIpMasq选项也与iptables规则相关，因此在iptables规则禁止的情况下，EnableIpMasq也不能为true。● 是否初始化bridge驱动</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>
