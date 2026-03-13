@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
 <meta property="article:published_time" content="2022-05-02T08:20:28.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:30:50.363Z">
+<meta property="article:modified_time" content="2026-03-13T07:12:39.182Z">
 <meta property="article:author" content="哎呦，好烦！">
 
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-03-13 06:30:50'
+  postUpdate: '2026-03-13 07:12:39'
 }</script>
 <noscript><style type="text/css">
   #nav { opacity: 1 }
@@ -78,7 +78,7 @@
             <span class="post-meta-separator">|</span>
             <i class="fas fa-history fa-fw post-meta-icon"></i>
             <span class="post-meta-label">更新于</span>
-            <time class="post-meta-date-updated" datetime="2026-03-13T06:30:50.363Z" title="更新于 2026-03-13 06:30:50">2026-03-13</time>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:12:39.182Z" title="更新于 2026-03-13 07:12:39">2026-03-13</time>
           </span>
           
           <span class="post-meta-categories">
@@ -96,13 +96,13 @@
   <main class="layout" id="content-inner">
     <div id="post">
       <article class="post-content" id="article-container">
-        <h1 id="异步编程的几种方式，你知道几种？"><a href="#异步编程的几种方式，你知道几种？" class="headerlink" title="异步编程的几种方式，你知道几种？"></a>异步编程的几种方式，你知道几种？</h1><p><img src="/%E5%BC%82%E6%AD%A5%E6%A6%82%E8%BF%B0/v2-1709138a247d0aca50211ce02f8c8511_1440w.jpg" alt="img"></p>
+        <h1 id="异步编程的几种方式，你知道几种？"><a href="#异步编程的几种方式，你知道几种？" class="headerlink" title="异步编程的几种方式，你知道几种？"></a>异步编程的几种方式，你知道几种？</h1><p><img src="/v2-1709138a247d0aca50211ce02f8c8511_1440w.jpg" alt="img"></p>
 <p>近期尝试在搬砖专用语言 Java 上实现异步，起因和过程就不再详述了，总而言之，心中一万头草泥马奔过。但这个过程也没有白白浪费，趁机回顾了一下各种异步编程的实现。</p>
 <p>这篇文章会涉及到回调、Promise、反应式、async&#x2F;await、用户态线程等异步编程的实现方案。如果你熟悉它们中的一两种，那应该也能很快理解其他几个。</p>
 <h2 id="1-为什么需要异步？"><a href="#1-为什么需要异步？" class="headerlink" title="1. 为什么需要异步？"></a>1. <strong>为什么需要异步？</strong></h2><p>操作系统可以看作是个虚拟机（VM），进程生活在操作系统创造的虚拟世界里。进程不用知道到底有多少 core 多少内存，只要进程不要索取的太过分，操作系统就假装有无限多的资源可用。</p>
 <p>基于这个思想，线程（Thread）的个数并不受硬件限制：你的程序可以只有一个线程、也可以有成百上千个。操作系统会默默做好调度，让诸多线程共享有限的 CPU 时间片。这个调度的过程对线程是<strong>完全透明</strong>的。</p>
 <p>那么，操作系统是怎样做到在线程无感知的情况下调度呢？答案是<strong>上下文切换（Context Switch）</strong>，简单来说，操作系统利用软中断机制，把程序从任意位置打断，然后保存当前所有寄存器——包括最重要的指令寄存器 PC 和栈顶指针 SP，还有一些线程控制信息（TCB），整个过程会产生数个微秒的 overhead。</p>
-<p><img src="/%E5%BC%82%E6%AD%A5%E6%A6%82%E8%BF%B0/v2-02dd1897543a9ed2e6691b6565873878_1440w.jpg" alt="img"></p>
+<p><img src="/v2-02dd1897543a9ed2e6691b6565873878_1440w.jpg" alt="img"></p>
 <p>然而作为一位合格的程序员，你一定也听说过，线程是昂贵的：</p>
 <ul>
 <li>线程的上下文切换有不少的代价，占用宝贵的 CPU 时间；</li>
@@ -112,7 +112,7 @@
 <h2 id="2-Continuation"><a href="#2-Continuation" class="headerlink" title="2. Continuation"></a>2. <strong>Continuation</strong></h2><p>回调函数知道的人很多，但了解 Continuation 的人不多。Continuation 有时被晦涩地翻译成“计算续体”，咱们还是直接用单词好了。</p>
 <p><strong>把一个计算过程在中间打断，剩下的部分用一个对象表示，这就是 Continuation</strong>。操作系统暂停一个线程时保存的那些现场数据，也可以看作一个 Continuation。有了它，我们就能在这个点接着刚刚的断点继续执行。</p>
 <p>打断一个计算过程听起来很厉害吧！实际上它每时每刻都在发生——假设函数 <code>f()</code> 中间调用了 <code>g()</code>，那 <code>g()</code> 运行完成时，要返回到 <code>f()</code> 刚刚调用 <code>g()</code> 的地方接着执行。这个过程再自然不过了，以至于所有编程语言（汇编除外）都把它掩藏起来，让你在编程中感觉不到调用栈的存在。</p>
-<p><img src="/%E5%BC%82%E6%AD%A5%E6%A6%82%E8%BF%B0/v2-94a2299576c64aca2ba67c193b4f7f30_1440w.jpg" alt="img"></p>
+<p><img src="/v2-94a2299576c64aca2ba67c193b4f7f30_1440w.jpg" alt="img"></p>
 <p>操作系统用昂贵的软中断机制实现了栈的保存和恢复。那有没有别的方式实现 Continuation 呢？最朴素的想法就是，把所有用得到的信息包成一个函数对象，在调用 <code>g()</code> 的时候一起传进去，并约定：一旦 <code>g()</code> 完成，就拿着结果去调用这个 Continuation。</p>
 <p>这种编程模式被称为 Continuation-passing style（CPS）：</p>
 <ol>
@@ -145,9 +145,9 @@
 <p><strong>Reactive 可以看作是对 Promise 的极大增强，相比 Promise，反应式引入了流（Flow）的概念</strong>。ReactiveX 中的事件流从一个 Observable 对象流出，这个对象可以是一个按钮，也可以是 Restful API，总之，它能被外界触发。与 Promise 不同的是，事件可能被触发多次，所以处理代码也会被多次调用。</p>
 <p>一旦允许调用多次，<strong>从数据流动的角度看，事实上模型已经是 Push 而非 Pull</strong>。那么问题来了，如果调用频率非常高，以至于我们处理速度跟不上了怎么办？所以 RX 框架又引入了 Backpressure 机制来进行流控，最简单的流控方式就是：一旦 buffer 满，就丢弃掉之后的事件。</p>
 <p>ReactiveX 框架的另一个优点是内置了很多好用的算子，比如：<code>merge</code>（Flow 合并），<code>debounce</code>（开关除颤）等等，方便了业务开发。下面是一个 RxJava 的例子：</p>
-<p><img src="/%E5%BC%82%E6%AD%A5%E6%A6%82%E8%BF%B0/v2-d6023421030995e784027336bcd58547_b.jpg" alt="img"></p>
+<p><img src="/v2-d6023421030995e784027336bcd58547_b.jpg" alt="img"></p>
 <h2 id="6-CPS-变换：Coroutine-与-async-await"><a href="#6-CPS-变换：Coroutine-与-async-await" class="headerlink" title="6. CPS 变换：Coroutine 与 async&#x2F;await"></a><strong>6. CPS 变换：Coroutine 与 async&#x2F;await</strong></h2><p>无论是反应式还是 Promise，说到底仍然没有摆脱手工构造 Continuation：开发者要把业务逻辑写成回调函数。对于线性的逻辑基本可以应付自如，但是如果逻辑复杂一点呢？（比如，考虑下包含循环的情况）</p>
-<p><img src="/%E5%BC%82%E6%AD%A5%E6%A6%82%E8%BF%B0/v2-53fef110feb1dca257537449f09b5a73_1440w.jpg" alt="img"></p>
+<p><img src="/v2-53fef110feb1dca257537449f09b5a73_1440w.jpg" alt="img"></p>
 <p>有些语言例如 C#，JavaScript 和 Python 提供了 <code>async/await</code> 关键字。与 Reactive 一样，这同样出自微软 C# 语言。在这些语言中，你会感到前所未有的爽感：异步编程终于摆脱了回调函数！唯一要做的只是在异步函数调用时加上 <code>await</code>，编译器就会自动把它转化为协程（Coroutine），而非昂贵的线程。</p>
 <p>魔法的背后是 CPS 变换，<strong>CPS 变换把普通函数转换成一个 CPS 的函数，即 Continuation 也能作为一个调用参数</strong>。函数不仅能从头运行，还能根据 Continuation 的指示继续某个点（比如调用 IO 的地方）运行。</p>
 <p>可以看到，<strong>函数已经不再是一个函数了，而是变成一个状态机</strong>。每次 call 它、或者它 call 其他异步函数时，状态机都会做一些计算和状态轮转。说好的 Continuation 在哪呢？就是对象自己（<code>this</code>）啊。</p>
@@ -158,7 +158,7 @@
 <h2 id="7-终极方案：用户态线程"><a href="#7-终极方案：用户态线程" class="headerlink" title="7. 终极方案：用户态线程"></a><strong>7. 终极方案：用户态线程</strong></h2><p>有了 <code>async/await</code>，代码已经简洁很多了，基本上和同步代码无异。是否有可能让异步代码和同步代码完全一样呢？听起来就像免费午餐，但是的确可以做到！</p>
 <p>用户态线程的代表是 Golang。JVM 上也有些实现，比如 <a href="https://link.zhihu.com/?target=http://docs.paralleluniverse.co/quasar/">Quasar</a>，不过因为 JDBC、Spring 这些周边生态（它们占据了大部分 IO 操作）的缺失基本没有什么用。</p>
 <p><strong>用户态线程是把操作系统提供的线程机制完全抛弃</strong>，换句话说，不去用这个 VM 的虚拟化机制。比如硬件有 8 个核心，那就创建 8 个系统线程，然后把 N 个用户线程调度到这 8 个系统线程上跑。N 个用户线程的调度在用户进程里实现，由于一切都在进程内部，切换代价要远远小于操作系统 Context Switch。</p>
-<p><img src="/%E5%BC%82%E6%AD%A5%E6%A6%82%E8%BF%B0/v2-59c0e1fcab91e62228a325a563c60714_1440w.jpg" alt="img"></p>
+<p><img src="/v2-59c0e1fcab91e62228a325a563c60714_1440w.jpg" alt="img"></p>
 <p>另一方面，所有可能阻塞系统级线程的事情，例如 <code>sleep()</code>、<code>recv()</code> 等，用户态线程一定不能碰，否则它一旦阻塞住也就带着那 8 个系统线程中的一个阻塞了。Go Runtime 接管了所有这样的系统调用，并用一个统一的 Event loop 来轮询和分发。</p>
 <p>另外，由于用户态线程很轻量，我们完全没必要再用线程池，如果需要开线程就直接创建。比如 Java 中的 WebServer 几乎一定有个线程池，而 Go 可以给每个请求开辟一个 goroutine 去处理。并发编程从未如此美好！</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h2><p>以上方案中，Promise、Reactive 本质上还是回调函数，只是框架的存在一定程度上降低了开发者的心智负担。而 <code>async/await</code> 和用户态线程的解决方案要优雅和彻底的多，前者通过编译期的 CPS 变换帮用户创造出 CPS 式的函数调用；后者则绕开操作系统、重新实现一套线程机制，一切调度工作由 Runtime 接管。</p>

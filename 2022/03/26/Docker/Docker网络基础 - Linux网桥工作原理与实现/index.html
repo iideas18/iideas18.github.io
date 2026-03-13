@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
 <meta property="article:published_time" content="2022-03-26T14:17:14.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:30:50.360Z">
+<meta property="article:modified_time" content="2026-03-13T07:12:39.179Z">
 <meta property="article:author" content="哎呦，好烦！">
 
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-03-13 06:30:50'
+  postUpdate: '2026-03-13 07:12:39'
 }</script>
 <noscript><style type="text/css">
   #nav { opacity: 1 }
@@ -78,7 +78,7 @@
             <span class="post-meta-separator">|</span>
             <i class="fas fa-history fa-fw post-meta-icon"></i>
             <span class="post-meta-label">更新于</span>
-            <time class="post-meta-date-updated" datetime="2026-03-13T06:30:50.360Z" title="更新于 2026-03-13 06:30:50">2026-03-13</time>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:12:39.179Z" title="更新于 2026-03-13 07:12:39">2026-03-13</time>
           </span>
           
           <span class="post-meta-categories">
@@ -97,9 +97,9 @@
     <div id="post">
       <article class="post-content" id="article-container">
         <p>Linux 的 <code>网桥</code> 是一种虚拟设备（使用软件实现），可以将 Linux 内部多个网络接口连接起来，如下图所示：</p>
-<p><img src="/Docker%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80%20-%20Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640.png" alt="Image"></p>
+<p><img src="/640.png" alt="Image"></p>
 <p>而将网络接口连接起来的结果就是，一个网络接口接收到网络数据包后，会复制到其他网络接口中，如下图所示：</p>
-<p><img src="/Docker%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80%20-%20Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648295954373.png" alt="Image"></p>
+<p><img src="/640-1648295954373.png" alt="Image"></p>
 <p>如上图所示，当网络接口A接收到数据包后，<code>网桥</code> 会将数据包复制并且发送给连接到 <code>网桥</code> 的其他网络接口（如上图中的网卡B和网卡C）。</p>
 <p>Docker 就是使用 <code>网桥</code> 来进行容器间通讯的，我们来看看 Docker 是怎么利用 <code>网桥</code> 来进行容器间通讯的，原理如下图：</p>
 <p><img src="https://mmbiz.qpic.cn/mmbiz_png/ciab8jTiab9J6KiagjMmSib16Zw5yULK6Ats4PDZBGFSm6pa8dAuia7YZGrxucxMFo9EBqL3SPOicsFZXl6XIam8icWZg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
@@ -136,7 +136,7 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">net_bridge_fdb_entry</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">net_bridge_fdb_entry</span> *next_hash;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">net_bridge_fdb_entry</span> **pprev_hash;</span><br><span class="line">    <span class="type">atomic_t</span>                    use_count;</span><br><span class="line">    mac_addr                    addr;  <span class="comment">// 网络接口设备MAC地址</span></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">net_bridge_port</span>      *dst;  <span class="comment">// 网桥端口</span></span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <p>这三个结构的对应关系如下图所示：</p>
-<p><img src="/Docker%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80%20-%20Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648304025858.png" alt="Image"></p>
+<p><img src="/640-1648304025858.png" alt="Image"></p>
 <p>可见，要将 <code>网络接口设备</code> 绑定到一个 <code>网桥</code> 上，需要使用 <code>net_bridge_port</code> 结构来关联的，下面我们来分析怎么将一个 <code>网络接口设备</code> 绑定到一个 <code>网桥</code> 中。</p>
 <blockquote>
 <p>网桥是工作在 TCP&#x2F;IP 协议栈的第二层，也就是说，网桥能够根据目标 MAC 地址对数据包进行广播或者单播。当目标 MAC 地址能够从网桥的 hash 表中找到对应的网桥端口，说明此数据包是单播的数据包，否则就是广播的数据包。</p>

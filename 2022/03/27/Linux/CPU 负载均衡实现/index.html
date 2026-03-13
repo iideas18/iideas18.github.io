@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
 <meta property="article:published_time" content="2022-03-27T03:39:14.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:30:50.363Z">
+<meta property="article:modified_time" content="2026-03-13T07:12:39.181Z">
 <meta property="article:author" content="哎呦，好烦！">
 
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-03-13 06:30:50'
+  postUpdate: '2026-03-13 07:12:39'
 }</script>
 <noscript><style type="text/css">
   #nav { opacity: 1 }
@@ -78,7 +78,7 @@
             <span class="post-meta-separator">|</span>
             <i class="fas fa-history fa-fw post-meta-icon"></i>
             <span class="post-meta-label">更新于</span>
-            <time class="post-meta-date-updated" datetime="2026-03-13T06:30:50.363Z" title="更新于 2026-03-13 06:30:50">2026-03-13</time>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:12:39.181Z" title="更新于 2026-03-13 07:12:39">2026-03-13</time>
           </span>
           
           <span class="post-meta-categories">
@@ -118,13 +118,13 @@
 <p>如上图所示，一个物理 CPU 中拥有 4 个核心，而每个核心又拥有 2 个超线程。在 Linux 内核中，会为每个超线程定义一个可运行进程队列，所以 Linux 内核会为上面的 CPU 定义 8 个可运行进程队列。</p>
 <p>现在问题来了，在上面的 CPU 架构中，不同的可运行队列之间的进程迁移代价是不一样的。因为同一个核心的不同超线程共用了所有的缓存，所以同一个核心不同超线程间的进程迁移代价是最小的。</p>
 <p>而同一个物理 CPU 不同核心间也会共用某些缓存，所以不同核心间的进程迁移的代价会比同一核心不同超线程间的进程迁移稍大。由于现在很多主板都支持安装多个物理 CPU，而不同物理 CPU 间基本不会共用缓存，所以不同物理 CPU 间的进程迁移代价最大。如下图所示（图中的 L1、L2 和 L3 分别指一级、二级和三级缓存）：</p>
-<p><img src="/CPU%20%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%AE%9E%E7%8E%B0/640.png" alt="Image"></p>
+<p><img src="/640.png" alt="Image"></p>
 <p>为了解决进程迁移成本的问题，新版本的 Linux 内核引入了 <code>调度域</code> 和 <code>调度组</code>。</p>
 <h2 id="2-调度域与调度组"><a href="#2-调度域与调度组" class="headerlink" title="2. 调度域与调度组"></a>2. 调度域与调度组</h2><p>从前面的分析可知，根据 CPU 的物理架构可以划分为：不同的物理 CPU、相同 CPU 不同的核心、相同核心不同的超线程等，如下图所示：</p>
 <p><img src="https://mmbiz.qpic.cn/mmbiz_png/ciab8jTiab9J51JZRhQj5rZgHicAO1DAn6ljUVcYUKpt4OHPLKyOIetLsonlVEtdmsVQygsa8jaWmf2844G9nRVOw/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="Image"></p>
 <p>在 Linux 内核中，把这个层级成为 <code>调度域</code>。从前面的分析可知，越下层的调度域共用的缓存就越多，所以在进程迁移时，优先从底层的调度域开始进行。</p>
 <p>由于内核为每个超线程定义一个可运行队列，所以图 3 中的 CPU 拥有 8 个可运行队列。而根据不同的调度域，可以把这 8 个可运行队列划分为不同的 <code>调度组</code>，如下图所示：</p>
-<p><img src="/CPU%20%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%AE%9E%E7%8E%B0/640.png" alt="Image"></p>
+<p><img src="/640.png" alt="Image"></p>
 <p>如上图所示，由于每个超线程都拥有一个可运行队列，所以图 3 的 CPU 拥有 8 个可运行队列，而这些可运行队列可以根据不同的核心来划分为 4 个调度组，而这 4 个调度组可以根据不同的物理 CPU 来划分成 1 个调度组。</p>
 <p>由于越底层的调度域共用的缓存越多，所以对 CPU 可运行队列进行负载均衡时，优先从底层调度域开始。比如把 Thread0 可运行队列的进程迁移到 Thread1 可运行队列的代价要比迁移到 Thread2 可运行队列的小，这是由于 Thread0 与 Thread1 属于同一个核心，同一个核心共用所有的 CPU 缓存。</p>
 <p>在 Linux 内核中，调度域使用 <code>sched_domain</code> 结构表示，而调度组使用 <code>sched_group</code> 结构表示。我们来看看 <code>sched_domain</code> 结构的定义：</p>

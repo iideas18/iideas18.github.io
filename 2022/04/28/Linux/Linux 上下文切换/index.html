@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
 <meta property="article:published_time" content="2022-04-28T13:48:42.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:30:50.363Z">
+<meta property="article:modified_time" content="2026-03-13T07:12:39.181Z">
 <meta property="article:author" content="哎呦，好烦！">
 
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-03-13 06:30:50'
+  postUpdate: '2026-03-13 07:12:39'
 }</script>
 <noscript><style type="text/css">
   #nav { opacity: 1 }
@@ -78,7 +78,7 @@
             <span class="post-meta-separator">|</span>
             <i class="fas fa-history fa-fw post-meta-icon"></i>
             <span class="post-meta-label">更新于</span>
-            <time class="post-meta-date-updated" datetime="2026-03-13T06:30:50.363Z" title="更新于 2026-03-13 06:30:50">2026-03-13</time>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:12:39.181Z" title="更新于 2026-03-13 07:12:39">2026-03-13</time>
           </span>
           
           <span class="post-meta-categories">
@@ -112,7 +112,7 @@
 <h2 id="2-进程上下文切换跟系统调用又有什么区别呢"><a href="#2-进程上下文切换跟系统调用又有什么区别呢" class="headerlink" title="2.进程上下文切换跟系统调用又有什么区别呢?"></a>2.进程上下文切换跟系统调用又有什么区别呢?</h2><p>进程是由内核来管理和调度的，**进程的切换只能发生在内核态 。**所以，进程的上下文不仅包括了虚拟内存、栈、全局变量等用户空间的资源，还包括了内核堆栈、寄存器等内核空间的状态。</p>
 <p>因此，进程的上下文切换就比系统调用时多了一步：在保存当前进程的内核状态和 CPU 寄存器之前，需要先把该进程的虚拟内存、栈等保存下来；而加载了下一进程的内核态后，还需要刷新进程的虚拟内存和用户栈。</p>
 <p>如下图所示，保存上下文和恢复上下文的过程并不是“免费”的，需要内核在 CPU 上运行才能完成</p>
-<p><img src="/Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-a56fb78ff6df50726afc35f7ab346a5b_1440w.jpg" alt="img"></p>
+<p><img src="/v2-a56fb78ff6df50726afc35f7ab346a5b_1440w.jpg" alt="img"></p>
 <p>每次上下文切换都需要几十纳秒到数微秒的 CPU 时间。这个时间还是相当可观的，特别是在进程上下文切换次数较多的情况下，很容易导致 CPU 将大量时间耗费在寄存器、内核栈以及虚拟内存等资源的保存和恢复上，进而大大缩短了真正运行进程的时间。这也正是上一节中我们所讲的，导致平均负载升高的一个重要因素。</p>
 <p>Linux 通过 TLB（Translation Lookaside Buffer）来管理虚拟内存到物理内存的映射关系。当虚拟内存更新后，TLB 也需要刷新，内存的访问也会随之变慢。特别是在多处理器系统上，缓存是被多个处理器共享的，刷新缓存不仅会影响当前处理器的进程，还会影响共享缓存的其他处理器的进程</p>
 <h2 id="3-什么时候会切换进程上下文"><a href="#3-什么时候会切换进程上下文" class="headerlink" title="3.什么时候会切换进程上下文"></a>3.什么时候会切换进程上下文</h2><p>进程切换时才需要切换上下文，换句话说，只有在进程调度的时候，才需要切换上下文。Linux 为每个 CPU 都维护了一个就绪队列，将活跃进程（即正在运行和正在等待CPU 的进程）按照优先级和等待 CPU 的时间排序，然后选择最需要 CPU 的进程，也就是优先级最高和等待 CPU 时间最长的进程来运行</p>
@@ -135,7 +135,7 @@
 <p>跟进程上下文不同，中断上下文切换并不涉及到进程的用户态。所以，即便中断过程打断了一个正处在用户态的进程，也不需要保存和恢复这个进程的虚拟内存、全局变量等用户态资源。</p>
 <p>中断上下文，其实只包括内核态中断服务程序执行所必需的状态，包括 CPU 寄存器、内核堆栈、硬件中断参数等。对同一个 CPU 来说，中断处理比进程拥有更高的优先级，所以中断上下文切换并不会与进程上下文切换同时发生。同样道理，由于中断会打断正常进程的调度和执行，所以大部分中断处理程序都短小精悍，以便尽可能快的执行结束。另外，跟进程上下文切换一样，中断上下文切换也需要消耗 CPU，切换次数过多也会耗费大量的 CPU，甚至严重降低系统的整体性能。所以，当你发现中断次数过多时，就需要注意去排查它是否会给你的系统带来严重的性能问题</p>
 <h2 id="7-怎么查看系统的上下文切换情况"><a href="#7-怎么查看系统的上下文切换情况" class="headerlink" title="7.怎么查看系统的上下文切换情况"></a>7.怎么查看系统的上下文切换情况</h2><p>使用 vmstat 这个工具，来查询系统的上下文切换情况 ,主要关注以下几项</p>
-<p><img src="/Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-7303d3f00da7544219543006fbc1cf14_1440w.jpg" alt="img"></p>
+<p><img src="/v2-7303d3f00da7544219543006fbc1cf14_1440w.jpg" alt="img"></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cs（context <span class="keyword">switch</span>）是每秒上下文切换的次数。</span><br><span class="line">in（interrupt）则是每秒中断的次数。</span><br><span class="line">r（Running or Runnable）是就绪队列的长度，也就是正在运行和等待 CPU 的进程数。</span><br><span class="line">b（Blocked）则是处于不可中断睡眠状态的进程数 </span><br></pre></td></tr></table></figure>
 
 <p>另外</p>
@@ -154,17 +154,17 @@
 <p>id 空闲 CPU时间，一般来说，id + us + sy &#x3D; 100,一般我认为id是空闲CPU使用率，us是用户CPU使用率，sy是系统CPU使用率。</p>
 <p>wa 等待IO CPU时间。</p>
 <p>查看每个进程的详细情况</p>
-<p><img src="/Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-6619141cad1d6deb3f3f0684f9120685_1440w.jpg" alt="img"></p>
+<p><img src="/v2-6619141cad1d6deb3f3f0684f9120685_1440w.jpg" alt="img"></p>
 <p>cswch ，表示每秒自愿上下文切换(voluntary context switches）的次数，nvcswch ，表示每秒非自愿上下文切换（non voluntary context switches）的次数所谓自愿上下文切换，是指进程无法获取所需资源，导致的上下文切换。比如说，I&#x2F;O、内存等系统资源不足时，就会发生自愿上下文切换。</p>
 <p>而非自愿上下文切换，则是指进程由于时间片已到等原因，被系统强制调度，进而发生的上下文切换。比如说，大量进程都在争抢 CPU 时，就容易发生非自愿上下文切换</p>
 <h2 id="8-案例分析"><a href="#8-案例分析" class="headerlink" title="8.案例分析"></a>8.案例分析</h2><p>1.查看正常情况下的上下文切换情况</p>
-<p><img src="/Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-f6281a0ea0fe784370ba5b4989caa041_1440w.jpg" alt="img"></p>
+<p><img src="/v2-f6281a0ea0fe784370ba5b4989caa041_1440w.jpg" alt="img"></p>
 <p>2.模拟多线程切换</p>
-<p><img src="/Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-3081d2facb9e11e9dca6bdba341b1403_1440w.jpg" alt="img"></p>
+<p><img src="/v2-3081d2facb9e11e9dca6bdba341b1403_1440w.jpg" alt="img"></p>
 <p>3.查看此时的上下文切换情况</p>
-<p><img src="/Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-d258efe8ee660e1c2a4d5a149d541309_1440w.jpg" alt="img"></p>
+<p><img src="/v2-d258efe8ee660e1c2a4d5a149d541309_1440w.jpg" alt="img"></p>
 <p>4.使用pidstat查看上下文切换的情况</p>
-<p><img src="/Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-e70669ec7e05361161d3191b4bdb3fd2_1440w.jpg" alt="img"></p>
+<p><img src="/v2-e70669ec7e05361161d3191b4bdb3fd2_1440w.jpg" alt="img"></p>
 <p>分析</p>
 <p><strong>1.发现cs列的上下文切换从66已经涨到了87万多</strong></p>
 <p>R列：就绪队列长度已经到了7，远远超过了cpu的个数2，所以会产生大量的cpu竞争</p>
@@ -174,7 +174,7 @@
 <p><strong>2.从 pidstat 的输出你可以发现</strong>，CPU 使用率的升高果然是 sysbench 导致的，它的 CPU使用率已经达到了 100%。但上下文切换则是来自其他进程，包括非自愿上下文切换频率最高的 pidstat ，以及自愿上下文切换频率最高的内核线程 kworker 和 sshd</p>
 <p><strong>3.使用-wt 参数表示输出线程的上下文切换指标</strong></p>
 <p>虽然 sysbench 进程（也就是主线程）的上下文切换次数看起来并不多，但它的子线程的上下文切换次数却有很多。看来，上下文切换罪魁祸首，还是过多的sysbench 线程</p>
-<p><img src="/Linux%20%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/v2-12fed198e168b83c63a52d1c3facfd2d_1440w.jpg" alt="img"></p>
+<p><img src="/v2-12fed198e168b83c63a52d1c3facfd2d_1440w.jpg" alt="img"></p>
 <p><strong>4.查看&#x2F;proc&#x2F;interrupts ，查看中断使用情况</strong></p>
 <p>&#x2F;proc 实际上是 Linux 的一个虚拟文件系统，用于内核空间与用户空间之间的通信。&#x2F;proc&#x2F;interrupts 就是这种通信机制的一部分，提供了一个只读的中断使用情</p>
 <p>watch -d cat &#x2F;proc&#x2F;interrupts</p>

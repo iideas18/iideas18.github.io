@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
 <meta property="article:published_time" content="2022-04-05T14:45:18.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:30:50.360Z">
+<meta property="article:modified_time" content="2026-03-13T07:12:39.179Z">
 <meta property="article:author" content="哎呦，好烦！">
 
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-03-13 06:30:50'
+  postUpdate: '2026-03-13 07:12:39'
 }</script>
 <noscript><style type="text/css">
   #nav { opacity: 1 }
@@ -78,7 +78,7 @@
             <span class="post-meta-separator">|</span>
             <i class="fas fa-history fa-fw post-meta-icon"></i>
             <span class="post-meta-label">更新于</span>
-            <time class="post-meta-date-updated" datetime="2026-03-13T06:30:50.360Z" title="更新于 2026-03-13 06:30:50">2026-03-13</time>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:12:39.179Z" title="更新于 2026-03-13 07:12:39">2026-03-13</time>
           </span>
           
           <span class="post-meta-categories">
@@ -230,7 +230,7 @@
 <li>Swarm manager自动为服务分配一个范围30000-32767端口的Published Port,也可以为该服务指定一个Published Port。</li>
 </ul>
 <p>ingress network是一个特殊的overlay网络，便于服务的节点直接负载均衡。当任何swarm节点在已发布的端口上接收到请求时，它将该请求转发给调用的IPVS模块，IPVS跟踪参与该服务的所有容器IP地址，选择其中一个，并通过ingress network将请求路由给它。</p>
-<p><img src="/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/1183448-20181110113403523-1321636797.png" alt="img"></p>
+<p><img src="/1183448-20181110113403523-1321636797.png" alt="img"></p>
 <hr>
 <h2 id="Docker-Swarm-负载均衡试验测试"><a href="#Docker-Swarm-负载均衡试验测试" class="headerlink" title="Docker Swarm 负载均衡试验测试"></a><strong>Docker Swarm 负载均衡试验测试</strong></h2><p>1、管理节点：创建一个测试容器my_web</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker service create --replicas 3 --network my-network --name my_web nginx</span><br></pre></td></tr></table></figure>
@@ -243,7 +243,7 @@
 
 <p>注：可用虚拟VIP或者服务名称去访问。</p>
 <p><strong>测试负载均衡：192.168.1.79:8080</strong></p>
-<p><img src="/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/1183448-20181110113721243-1056295709.png" alt="img"></p>
+<p><img src="/1183448-20181110113721243-1056295709.png" alt="img"></p>
 <p>注：在每个不同副本中访问。</p>
 <hr>
 <h3 id="Docker-Swarm-负载均衡模式选择"><a href="#Docker-Swarm-负载均衡模式选择" class="headerlink" title="Docker Swarm 负载均衡模式选择"></a><strong>Docker Swarm 负载均衡模式选择</strong></h3><p>负载均衡有两种模式：VIP、DNSRR</p>
@@ -272,7 +272,7 @@
 <hr>
 <p><strong>Docker Swarm 负载均衡模扩展知识</strong></p>
 <p>可在容器Swarm负载均衡之上在建立一层负载均衡。HAProxy可代理工作节点端暴露的端口进行再次代理，做到双层负载均衡的作用。保证高可用与大规模的应用。</p>
-<p><img src="/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/1183448-20181110115856654-400733416.png" alt="img"></p>
+<p><img src="/1183448-20181110115856654-400733416.png" alt="img"></p>
 
       </article>
       

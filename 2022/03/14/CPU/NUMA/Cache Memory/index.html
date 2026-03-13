@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
 <meta property="article:published_time" content="2022-03-14T04:39:08.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:30:50.359Z">
+<meta property="article:modified_time" content="2026-03-13T07:12:39.178Z">
 <meta property="article:author" content="哎呦，好烦！">
 
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-03-13 06:30:50'
+  postUpdate: '2026-03-13 07:12:39'
 }</script>
 <noscript><style type="text/css">
   #nav { opacity: 1 }
@@ -78,7 +78,7 @@
             <span class="post-meta-separator">|</span>
             <i class="fas fa-history fa-fw post-meta-icon"></i>
             <span class="post-meta-label">更新于</span>
-            <time class="post-meta-date-updated" datetime="2026-03-13T06:30:50.359Z" title="更新于 2026-03-13 06:30:50">2026-03-13</time>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:12:39.178Z" title="更新于 2026-03-13 07:12:39">2026-03-13</time>
           </span>
           
           <span class="post-meta-categories">
@@ -100,7 +100,7 @@
       <article class="post-content" id="article-container">
         <h1 id="【计算机体系结构】Cache-Memory"><a href="#【计算机体系结构】Cache-Memory" class="headerlink" title="【计算机体系结构】Cache Memory"></a>【计算机体系结构】Cache Memory</h1><h2 id="1-Background"><a href="#1-Background" class="headerlink" title="1. Background"></a>1. Background</h2><h3 id="1-Memory-Hierarchy"><a href="#1-Memory-Hierarchy" class="headerlink" title="1. Memory Hierarchy"></a>1. Memory Hierarchy</h3><p>众所周知，对于不同的存储设备，更高的性能意味着更高的成本和更小的容量。随着 CPU 越做越快，CPU 和主存之间的速度差距正在不断扩大。好在，<strong>软件的局部性原理</strong> 拯救了这一切，在现代计算机体系中通过 <code>Memory Hierarchy</code> 的设计，使得系统在性能、成本和制造工艺之间作出取舍，从而达到了一个平衡。</p>
 <p>下图是现在可以看到的常见的存储器层次机构：</p>
-<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-06_memory-hierarchy.png"><img src="/Cache%20Memory/2020-01-06_memory-hierarchy.png" alt="Memory Hierarchy"></a></p>
+<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-06_memory-hierarchy.png"><img src="/2020-01-06_memory-hierarchy.png" alt="Memory Hierarchy"></a></p>
 <h3 id="2-Principle-of-Locality"><a href="#2-Principle-of-Locality" class="headerlink" title="2. Principle of Locality"></a>2. Principle of Locality</h3><p><code>程序访问的局部性原理</code>指的是，<strong>内存中某个地址被访问后，短时间内还有可能继续访问这块地址。内存中的某个地址被访问后，它相邻的内存单元被访问的概率也很大。</strong></p>
 <p>程序访问的局部性包含两种：</p>
 <ul>
@@ -111,14 +111,14 @@
 <p>那既然在执行程序时，内存的某些单元很可能会经常的访问或写入，那可否在CPU和内存之间，加一个缓存，CPU在访问数据时，先看一下缓存中是否存在，如果有直接就读取缓存中的数据即可。如果缓存中不存在，再从内存中读取数据。</p>
 <p>事实证明利用这种方式，程序的运行效率会提高90%以上，这个缓存也叫做<strong>高速缓存Cache</strong>。</p>
 <h3 id="3-Big-Picture"><a href="#3-Big-Picture" class="headerlink" title="3. Big Picture"></a>3. Big Picture</h3><p>在深入了解 Cache 的技术细节之前，我们可以先看看关于 Cache 在现代计算机系统中的 big picture。如下图所示，ALU 不是直接和主存相连，所有的 load 和 store 通过 Cache 完成，Cache 是 CPU 芯片组成的一部分。</p>
-<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-system-structure.png"><img src="/Cache%20Memory/2020-01-07_cache-system-structure.png" alt="Cache System Structure"></a></p>
+<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-system-structure.png"><img src="/2020-01-07_cache-system-structure.png" alt="Cache System Structure"></a></p>
 <p>随着计算机系统的发展，Cache 不仅仅只有一层，可能被分为多层。于此同时，人们发现，将指令的 Cache 和 数据的 Cache 分开可以获得更大的系统增益。而且，CPU也从单核单处理器逐渐发展到多核多处理器，所以一个现代的计算机系统中，Cache 的组成方式可能如下图所示：</p>
-<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-06_intel-core-i7-cache-hierarchy.png"><img src="/Cache%20Memory/2020-01-06_intel-core-i7-cache-hierarchy.png" alt="Intel Core i7 Cache Hierarchy"></a></p>
+<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-06_intel-core-i7-cache-hierarchy.png"><img src="/2020-01-06_intel-core-i7-cache-hierarchy.png" alt="Intel Core i7 Cache Hierarchy"></a></p>
 <p>在这个图中，只显示了一个处理器(Processor)，处理器中有四个核(Core)，每个 Core 会有自己的L1数据缓存和L1指令缓存，也有自己统一的 L2 缓存。四个核之间会共享 L3 缓存，L3 缓存和主存直接沟通。</p>
 <h2 id="2-General-Cache-Organization"><a href="#2-General-Cache-Organization" class="headerlink" title="2. General Cache Organization"></a>2. General Cache Organization</h2><h3 id="1-Cache-Line"><a href="#1-Cache-Line" class="headerlink" title="1. Cache Line"></a>1. Cache Line</h3><p>Cache 是以 <code>缓存行(Cache Line)</code> 为基本组织单位的，下图是一个通用的缓存组织结构。</p>
 <p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-organization.png"><img src="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-organization.png" alt="General Cache Organization (Cache%20Memory&#x2F;2020-01-07_cache-organization.png)"></a></p>
 <p>假设内容容量是 M，内存物理地址为 <code>m</code> 个bit。CPU 在访问缓存时，物理地址会被解析成如下的格式</p>
-<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-line-address.png"><img src="/Cache%20Memory/2020-01-07_cache-line-address.png" alt="Cache Line 地址解析"></a></p>
+<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-line-address.png"><img src="/2020-01-07_cache-line-address.png" alt="Cache Line 地址解析"></a></p>
 <p>这里，有如下的关系</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S=2sB=2bm=t+s+b(1)(2)(3)(1)S=2s(2)B=2b(3)m=t+s+b</span><br></pre></td></tr></table></figure>
 
@@ -127,7 +127,7 @@
 <h3 id="2-Cache-Hit-和-Cache-Miss"><a href="#2-Cache-Hit-和-Cache-Miss" class="headerlink" title="2. Cache Hit 和 Cache Miss"></a>2. Cache Hit 和 Cache Miss</h3><p>当 tag 和 valid 校验成功时，我们称为 <code>Cache Hit</code>，这时就可以将cache中的单元取出，放入到 CPU 中的寄存器。</p>
 <p>当 tag 或 valid 校验失败时，说明要访问的内存单元并不在cache中，需要去内存中或者下一级的 Cache 中取出，这就是 <code>Cache Miss</code>。当不命中的情况发生时，系统就会从内存中或者下一级缓存中取得该单元，将其装入cache中，与此同时也放入CPU寄存器中，等待下一步处理。</p>
 <p>下图是一个典型的 Cache Read 的流程</p>
-<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-read.png"><img src="/Cache%20Memory/2020-01-07_cache-read.png" alt="Cache Read"></a></p>
+<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-read.png"><img src="/2020-01-07_cache-read.png" alt="Cache Read"></a></p>
 <h2 id="3-Cache-Implement-Details"><a href="#3-Cache-Implement-Details" class="headerlink" title="3. Cache Implement Details"></a>3. Cache Implement Details</h2><p>根据上面参数 E 的不同选择，可以把 Cache 到 Memory 的映射分为以下几种类型</p>
 <ul>
 <li>全相联(Fully Associative)<ul>
@@ -147,18 +147,18 @@
 <p>在访问数据时，直接根据内存地址中的 <code>tag</code>，去遍历对比每一个缓存行，直到找到 <code>tag</code>一致的缓存行，然后访问其中的数据。</p>
 <p>如果遍历完所有的缓存行之后，没有找到一致的<code>tag</code>, 那么就会从内存中获取数据，然后找到空闲的缓存行，直接写入<code>tag</code>和 数据即可。</p>
 <p>全相联意味着主存中的数据块可以出现在任意一个缓存行中。这种方式下替换算法(Replacement Policy)有最大的灵活度，也意味着可以有最低的 <code>Cache Miss Rate</code>。但是因为没有索引可以使用，检查一个缓存行是否命中需要在整个 Cache 范围内搜索，这带来了查找电路的大量延时。因此只有在缓存极小的情况下才有可能使用这种映射方式。</p>
-<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-fully-associative.png"><img src="/Cache%20Memory/2020-01-07_cache-fully-associative.png" alt="Fully Associative"></a></p>
+<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-fully-associative.png"><img src="/2020-01-07_cache-fully-associative.png" alt="Fully Associative"></a></p>
 <h3 id="2-Direct-Mapped-Cache"><a href="#2-Direct-Mapped-Cache" class="headerlink" title="2. Direct Mapped Cache"></a>2. Direct Mapped Cache</h3><p>直接映射是一种<code>多对一</code>的映射关系。在这种映射下，主存中的每一个数据块只能有一个缓存行与之对应。可能有多个主存中的数据块被映射到统一个缓存行，但是每一个数据块只能被映射到确定的缓存行。</p>
 <p>在 1990 年代初期，直接映射是当时最流行的机制。但是随着 CPU 主频的提高，直接映射机制正在逐渐退出舞台。</p>
 <p>直接映射最大的问题在于，每个数据块在哪个缓存行是确定的，没有替换策略(Replacement Policy)。如果两个数据块被映射到同一个缓存行时，它们会不停的把对方替换出去。由于严重的冲突，频繁刷新 Cache 会造成大量的延时，而且未能有效利用程序运行期所具有的时间局部性。这样导致了缓存命中率(cache miss rate)明显提高。</p>
 <p>下图是一个Memory 为 16Kbytes， Cache Line 为 4bytes 的直接映射缓存例子。</p>
-<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-direct-mapped.png"><img src="/Cache%20Memory/2020-01-07_cache-direct-mapped.png" alt="Direct Mapped"></a></p>
+<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-direct-mapped.png"><img src="/2020-01-07_cache-direct-mapped.png" alt="Direct Mapped"></a></p>
 <h3 id="3-Set-Associative-Cache"><a href="#3-Set-Associative-Cache" class="headerlink" title="3. Set Associative Cache"></a>3. Set Associative Cache</h3><p>组相联映射结合了以上两种映射方式的优点。具体的方法就是</p>
 <ul>
 <li>首先通过 set index 来确认数据块应该放在哪一个 set 中</li>
 <li>确认到 set 之后，通过 cache 替换策略(Replacement Policy)来确定到底放在组中的那个缓存行</li>
 </ul>
-<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-set-associative.png"><img src="/Cache%20Memory/2020-01-07_cache-set-associative.png" alt="Set Associative"></a></p>
+<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_cache-set-associative.png"><img src="/2020-01-07_cache-set-associative.png" alt="Set Associative"></a></p>
 <h2 id="4-Cache-Replacement-Policy"><a href="#4-Cache-Replacement-Policy" class="headerlink" title="4. Cache Replacement Policy"></a>4. Cache Replacement Policy</h2><p>Cache容量比内存小，所以内存数据映射到Cache时，必然会导致Cache满的情况，那之后的内存映射要替Cache中的哪些行呢？这就需要制定一种策略。</p>
 <p>常见的替换算法有如下几种：</p>
 <ul>
@@ -181,7 +181,7 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cat</span> /sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size</span></span><br><span class="line">64</span><br></pre></td></tr></table></figure>
 
 <p>这里是 Intel Core i7 L1数据缓存的实际例子</p>
-<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_intel-i7-l1-data-cache.png"><img src="/Cache%20Memory/2020-01-07_intel-i7-l1-data-cache.png" alt="Intel Core i7 L1 Data Cache"></a></p>
+<p><a target="_blank" rel="noopener" href="https://cosmos-1251905798.cos.ap-beijing.myqcloud.com/blog/2020-01-07_intel-i7-l1-data-cache.png"><img src="/2020-01-07_intel-i7-l1-data-cache.png" alt="Intel Core i7 L1 Data Cache"></a></p>
 <h2 id="6-Cache-Write"><a href="#6-Cache-Write" class="headerlink" title="6. Cache Write"></a>6. Cache Write</h2><p>试想，如果CPU想要修改某个内存的数据，这块内存的数据刚好在Cache中存在，那么是不是要同时更新Cache中的数据？对于写入的数据，如何保证Cache和内存数据的一致性？</p>
 <h3 id="Cache-Write-Hit"><a href="#Cache-Write-Hit" class="headerlink" title="Cache Write Hit"></a>Cache Write Hit</h3><ul>
 <li>Write through<ul>

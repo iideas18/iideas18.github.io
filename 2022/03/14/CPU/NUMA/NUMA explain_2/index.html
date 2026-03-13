@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
 <meta property="article:published_time" content="2022-03-14T05:31:52.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:30:50.360Z">
+<meta property="article:modified_time" content="2026-03-13T07:12:39.178Z">
 <meta property="article:author" content="哎呦，好烦！">
 
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-03-13 06:30:50'
+  postUpdate: '2026-03-13 07:12:39'
 }</script>
 <noscript><style type="text/css">
   #nav { opacity: 1 }
@@ -78,7 +78,7 @@
             <span class="post-meta-separator">|</span>
             <i class="fas fa-history fa-fw post-meta-icon"></i>
             <span class="post-meta-label">更新于</span>
-            <time class="post-meta-date-updated" datetime="2026-03-13T06:30:50.360Z" title="更新于 2026-03-13 06:30:50">2026-03-13</time>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:12:39.178Z" title="更新于 2026-03-13 07:12:39">2026-03-13</time>
           </span>
           
           <span class="post-meta-categories">
@@ -107,7 +107,7 @@
 <h2 id="1-NUMA简介"><a href="#1-NUMA简介" class="headerlink" title="1. NUMA简介"></a>1. NUMA简介</h2><p>这部分将简要介绍下NUMA架构的成因和具体原理，已经了解的读者可以直接跳到第二节。</p>
 <h4 id="为什么要有NUMA"><a href="#为什么要有NUMA" class="headerlink" title="为什么要有NUMA"></a>为什么要有NUMA</h4><p>在NUMA架构出现前，CPU欢快的朝着频率越来越高的方向发展。受到物理极限的挑战，又转为核数越来越多的方向发展。如果每个core的工作性质都是share-nothing（类似于map-reduce的node节点的作业属性），那么也许就不会有NUMA。由于所有CPU Core都是通过共享一个北桥来读取内存，随着核数如何的发展，北桥在响应时间上的性能瓶颈越来越明显。于是，聪明的硬件设计师们，先到了把内存控制器（原本北桥中读取内存的部分）也做个拆分，平分到了每个die上。于是NUMA就出现了！</p>
 <h4 id="NUMA是什么"><a href="#NUMA是什么" class="headerlink" title="NUMA是什么"></a>NUMA是什么</h4><p>NUMA中，虽然内存直接attach在CPU上，但是由于内存被平均分配在了各个die上。只有当CPU访问自身直接attach内存对应的物理地址时，才会有较短的响应时间（后称<code>Local Access</code>）。而如果需要访问其他CPU attach的内存的数据时，就需要通过inter-connect通道访问，响应时间就相比之前变慢了（后称<code>Remote Access</code>）。所以NUMA（Non-Uniform Memory Access）就此得名。</p>
-<p><img src="/NUMA%20explain_2/numa.png" alt="numa"></p>
+<p><img src="/numa.png" alt="numa"></p>
 <h4 id="我们需要为NUMA做什么"><a href="#我们需要为NUMA做什么" class="headerlink" title="我们需要为NUMA做什么"></a>我们需要为NUMA做什么</h4><p>假设你是Linux教父Linus，对于NUMA架构你会做哪些优化？下面这点是显而易见的：</p>
 <blockquote>
 <p>既然CPU只有在Local-Access时响应时间才能有保障，那么我们就尽量把该CPU所要的数据集中在他local的内存中就OK啦~</p>
@@ -137,7 +137,7 @@
 <li>又因为<code>Reclaim</code>默认策略优先淘汰&#x2F;Swap本Chip上的内存，使得大量有用内存被换出</li>
 <li>当被换出页被访问时问题就以数据库响应时间飙高甚至阻塞的形式出现了</li>
 </ul>
-<p><img src="/NUMA%20explain_2/imbalance.png" alt="imbalance"></p>
+<p><img src="/imbalance.png" alt="imbalance"></p>
 <h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>Jeremy Cole大神推荐的三个方案如下，如果想详细了解可以阅读 <a target="_blank" rel="noopener" href="http://blog.jcole.us/2012/04/16/a-brief-update-on-numa-and-mysql/">原文</a></p>
 <ul>
 <li><code>numactl --interleave=all</code></li>
@@ -153,7 +153,7 @@
 <li>对MySQL使用Huge Page（黑魔法，巧用了Huge Page不会被swap的特性）</li>
 </ul>
 <h2 id="重新审视问题"><a href="#重新审视问题" class="headerlink" title="重新审视问题"></a>重新审视问题</h2><p>如果本文写到这里就这么结束了，那和搜索引擎结果中大量的Step-by-Step科普帖没什么差别。虽然我们用了各种参数调整减少了问题发生概率，那么真的就彻底解决了这个问题么？问题根源究竟是什么？让我们回过头来重新审视下这个问题：</p>
-<h4 id="NUMA-Interleave真的好么？"><a href="#NUMA-Interleave真的好么？" class="headerlink" title="NUMA Interleave真的好么？"></a>NUMA Interleave真的好么？</h4><p><strong>为什么<code>Interleave</code>的策略就解决了问题？</strong> 借用两张 <a target="_blank" rel="noopener" href="https://www.cs.sfu.ca/~fedorova/papers/asplos284-dashti.pdf">Carrefour性能测试</a> 的结果图，可以看到几乎所有情况下<code>Interleave</code>模式下的程序性能都要比默认的亲和模式要高，有时甚至能高达30%。究其根本原因是Linux服务器的大多数workload分布都是随机的：即每个线程在处理各个外部请求对应的逻辑时，所需要访问的内存是在物理上随机分布的。而<code>Interleave</code>模式就恰恰是针对这种特性将内存page随机打散到各个CPU Core上，使得每个CPU的负载和<code>Remote Access</code>的出现频率都均匀分布。相较NUMA默认的内存分配模式，死板的把内存都优先分配在线程所在Core上的做法，显然普遍适用性要强很多。 <img src="/NUMA%20explain_2/perf1.png" alt="perf1"> <img src="/NUMA%20explain_2/perf2.png" alt="perf2"></p>
+<h4 id="NUMA-Interleave真的好么？"><a href="#NUMA-Interleave真的好么？" class="headerlink" title="NUMA Interleave真的好么？"></a>NUMA Interleave真的好么？</h4><p><strong>为什么<code>Interleave</code>的策略就解决了问题？</strong> 借用两张 <a target="_blank" rel="noopener" href="https://www.cs.sfu.ca/~fedorova/papers/asplos284-dashti.pdf">Carrefour性能测试</a> 的结果图，可以看到几乎所有情况下<code>Interleave</code>模式下的程序性能都要比默认的亲和模式要高，有时甚至能高达30%。究其根本原因是Linux服务器的大多数workload分布都是随机的：即每个线程在处理各个外部请求对应的逻辑时，所需要访问的内存是在物理上随机分布的。而<code>Interleave</code>模式就恰恰是针对这种特性将内存page随机打散到各个CPU Core上，使得每个CPU的负载和<code>Remote Access</code>的出现频率都均匀分布。相较NUMA默认的内存分配模式，死板的把内存都优先分配在线程所在Core上的做法，显然普遍适用性要强很多。 <img src="/perf1.png" alt="perf1"> <img src="/perf2.png" alt="perf2"></p>
 <p>也就是说，像MySQL这种外部请求随机性强，各个线程访问内存在地址上平均分布的这种应用，<code>Interleave</code>的内存分配模式相较默认模式可以带来一定程度的性能提升。 此外 <a target="_blank" rel="noopener" href="https://www.cs.sfu.ca/~fedorova/papers/asplos284-dashti.pdf">各种</a> <a target="_blank" rel="noopener" href="http://www.lst.inf.ethz.ch/people/alumni/zmajo/publications/11-systor.pdf">论文</a> 中也都通过实验证实，真正造成程序在NUMA系统上性能瓶颈的并不是<code>Remote Acess</code>带来的响应时间损耗，而是内存的不合理分布导致<code>Remote Access</code>将inter-connect这个小水管塞满所造成的结果。而<code>Interleave</code>恰好，把这种不合理分布情况下的Remote Access请求平均分布在了各个小水管中。所以这也是<code>Interleave</code>效果奇佳的一个原因。</p>
 <p>那是不是简简单单的配置个<code>Interleave</code>就已经把NUMA的特性和性能发挥到了极致呢？ 答案是否定的，目前Linux的内存分配机制在NUMA架构的CPU上还有一定的改进空间。例如：Dynamic Memory Loaction, Page Replication。</p>
 <p><strong>Dynamic Memory Relocation</strong> 我们来想一下这个情况：MySQL的线程分为两种，用户线程（SQL执行线程）和内部线程（内部功能，如：flush，io，master等）。对于用户线程来说随机性相当的强，但对于内部线程来说他们的行为以及所要访问的内存区域其实是相对固定且可以预测的。如果能对于这把这部分内存集中到这些内存线程所在的core上的时候，就能减少大量<code>Remote Access</code>，潜在的提升例如Page Flush，Purge等功能的吞吐量，甚至可以提高MySQL Crash后Recovery的速度（由于recovery是单线程）。 那是否能在<code>Interleave</code>模式下，把那些明显应该聚集在一个CPU上的内存集中在一起呢？ 很可惜，Dynamic Memory Relocation这种技术目前只停留在理论和实验阶段。我们来看下难点：要做到按照线程的行为动态的调整page在memory的分布，就势必需要做线程和内存的实时监控（profile）。对于Memory Access这种非常异常频繁的底层操作来说增加profile入口的性能损耗是极大的。在 <a target="_blank" rel="noopener" href="http://cenalulu.github.io/linux/all-about-cpu-cache/">关于CPU Cache程序应该知道的那些事</a>的评论中我也提到过，这个道理和为什么Linux没有全局监控CPU L1&#x2F;L2 Cache命中率工具的原因是一样的。当然优化不会就此停步。上文提到的<a target="_blank" rel="noopener" href="https://www.cs.sfu.ca/~fedorova/papers/asplos284-dashti.pdf">Carrefour算法</a>和Linux社区的<code>Auto NUMA patch</code>都是积极的尝试。什么时候内存profile出现硬件级别，类似于CPU中 <a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/VTune">PMU</a> 的功能时，动态内存规划就会展现很大的价值，甚至会作为Linux Kernel的一个内部功能来实现。到那时我们再回过头来审视这个方案的实际价值。</p>

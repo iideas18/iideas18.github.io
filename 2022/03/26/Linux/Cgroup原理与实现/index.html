@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
 <meta property="article:published_time" content="2022-03-26T07:09:28.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:30:50.363Z">
+<meta property="article:modified_time" content="2026-03-13T07:12:39.181Z">
 <meta property="article:author" content="哎呦，好烦！">
 
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-03-13 06:30:50'
+  postUpdate: '2026-03-13 07:12:39'
 }</script>
 <noscript><style type="text/css">
   #nav { opacity: 1 }
@@ -78,7 +78,7 @@
             <span class="post-meta-separator">|</span>
             <i class="fas fa-history fa-fw post-meta-icon"></i>
             <span class="post-meta-label">更新于</span>
-            <time class="post-meta-date-updated" datetime="2026-03-13T06:30:50.363Z" title="更新于 2026-03-13 06:30:50">2026-03-13</time>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:12:39.181Z" title="更新于 2026-03-13 07:12:39">2026-03-13</time>
           </span>
           
           <span class="post-meta-categories">
@@ -125,26 +125,26 @@
 <li><code>子系统（subsystem）</code>。一个子系统就是一个资源控制器，比如 <code>CPU子系统</code> 就是控制 CPU 时间分配的一个控制器。子系统必须附加（attach）到一个层级上才能起作用，一个子系统附加到某个层级以后，这个层级上的所有控制组都受到这个子系统的控制。</li>
 </ul>
 <p>他们之间的关系如下图：</p>
-<p><img src="/Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648278265986.jpg" alt="Image"></p>
+<p><img src="/640-1648278265986.jpg" alt="Image"></p>
 <p>我们可以把 <code>层级</code> 中的一个目录当成是一个 <code>CGroup</code>，那么目录里面的文件就是这个 <code>CGroup</code> 用于控制进程组使用各种资源的信息（比如 <code>tasks</code> 文件用于保存这个 <code>CGroup</code> 控制的进程组所有的进程PID，而 <code>memory.limit_in_bytes</code> 文件用于描述这个 <code>CGroup</code> 能够使用的内存字节数）。</p>
 <p>而附加在 <code>层级</code> 上的 <code>子系统</code> 表示这个 <code>层级</code> 中的 <code>CGroup</code> 可以控制哪些资源，每当向 <code>层级</code> 附加 <code>子系统</code> 时，<code>层级</code> 中的所有 <code>CGroup</code> 都会产生很多与 <code>子系统</code> 资源控制相关的文件。</p>
 <h3 id="CGroup-操作规则"><a href="#CGroup-操作规则" class="headerlink" title="CGroup 操作规则"></a>CGroup 操作规则</h3><p>使用 <code>CGroup</code> 时，必须按照 <code>CGroup</code> 一些操作规则来进行操作，否则会出错。下面介绍一下关于 <code>CGroup</code> 的一些操作规则：</p>
 <ol>
 <li>一个 <code>层级</code> 可以附加多个 <code>子系统</code>，如下图：</li>
 </ol>
-<p><img src="/Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648278278150.jpg" alt="Image"></p>
+<p><img src="/640-1648278278150.jpg" alt="Image"></p>
 <ol>
 <li>一个已经被挂载的 <code>子系统</code> 只能被再次挂载在一个空的 <code>层级</code> 上，不能挂载到已经挂载了其他 <code>子系统</code> 的 <code>层级</code>，如下图：</li>
 </ol>
-<p><img src="/Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648278258818.jpg" alt="Image"></p>
+<p><img src="/640-1648278258818.jpg" alt="Image"></p>
 <ol>
 <li>每个 <code>任务</code> 只能在同一个 <code>层级</code> 的唯一一个 <code>CGroup</code> 里，并且可以在多个不同层级的 <code>CGroup</code> 中，如下图：</li>
 </ol>
-<p><img src="/Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648278270015.jpg" alt="Image"></p>
+<p><img src="/640-1648278270015.jpg" alt="Image"></p>
 <ol>
 <li>子进程在被 <code>fork</code> 出时自动继承父进程所在 <code>CGroup</code>，但是 <code>fork</code> 之后就可以按需调整到其他 <code>CGroup</code>，如下图：</li>
 </ol>
-<p><img src="/Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648278265233.jpg" alt="Image"></p>
+<p><img src="/640-1648278265233.jpg" alt="Image"></p>
 <p>关于 <code>CGroup</code> 的介绍和使用就到这里，接下来我们来分析一下内核是怎么实现 <code>CGroup</code> 的。前面我们介绍了 <code>CGroup</code> 的使用与基本概念，接下来将通过分析源码（本文使用的 Linux2.6.25 版本）来介绍 <code>CGroup</code> 的实现原理。在分析源码前，我们先介绍几个重要的数据结构，因为 <code>CGroup</code> 就是通过这几个数据结构来控制进程组对各种资源的使用。</p>
 <h2 id="cgroup-结构体"><a href="#cgroup-结构体" class="headerlink" title="cgroup 结构体"></a><code>cgroup</code> 结构体</h2><p>前面介绍过，<code>cgroup</code> 是用来控制进程组对各种资源的使用，而在内核中，<code>cgroup</code> 是通过 <code>cgroup</code> 结构体来描述的，我们来看看其定义：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">struct cgroup &#123;</span><br><span class="line">    unsigned long flags;        /* &quot;unsigned long&quot; so bitops work */</span><br><span class="line">    atomic_t count;</span><br><span class="line">    struct list_head sibling;   /* my parent&#x27;s children */</span><br><span class="line">    struct list_head children;  /* my children */</span><br><span class="line">    struct cgroup *parent;      /* my parent */</span><br><span class="line">    struct dentry *dentry;      /* cgroup fs entry */</span><br><span class="line">    struct cgroup_subsys_state *subsys[CGROUP_SUBSYS_COUNT];</span><br><span class="line">    struct cgroupfs_root *root;</span><br><span class="line">    struct cgroup *top_cgroup;</span><br><span class="line">    struct list_head css_sets;</span><br><span class="line">    struct list_head release_list;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
@@ -160,7 +160,7 @@
 <li><code>top_cgroup</code>: <code>层级</code> 的根节点（根cgroup）。</li>
 </ol>
 <p>我们通过下面图片来描述 <code>层级</code> 中各个 <code>cgroup</code> 组成的树状关系：</p>
-<p><img src="/Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/image-20220326142821827.png" alt="image-20220326142821827"></p>
+<p><img src="/image-20220326142821827.png" alt="image-20220326142821827"></p>
 <h2 id="cgroup-subsys-state-结构体"><a href="#cgroup-subsys-state-结构体" class="headerlink" title="cgroup_subsys_state 结构体"></a><code>cgroup_subsys_state</code> 结构体</h2><p>每个 <code>子系统</code> 都有属于自己的资源控制统计信息结构，而且每个 <code>cgroup</code> 都绑定一个这样的结构，这种资源控制统计信息结构就是通过 <code>cgroup_subsys_state</code> 结构体实现的，其定义如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct cgroup_subsys_state &#123;</span><br><span class="line">    struct cgroup *cgroup;</span><br><span class="line">    atomic_t refcnt;</span><br><span class="line">    unsigned long flags;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
@@ -174,11 +174,11 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct mem_cgroup &#123;</span><br><span class="line">    struct cgroup_subsys_state css; // 注意这里</span><br><span class="line">    struct res_counter res;</span><br><span class="line">    struct mem_cgroup_lru_info info;</span><br><span class="line">    int prev_priority;</span><br><span class="line">    struct mem_cgroup_stat stat;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <p>从 <code>mem_cgroup</code> 结构的定义可以发现，<code>mem_cgroup</code> 结构的第一个字段就是一个 <code>cgroup_subsys_state</code> 结构。下面的图片展示了他们之间的关系：</p>
-<p><img src="/Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648275969919.jpg" alt="Image">cgroup-state-memory</p>
+<p><img src="/640-1648275969919.jpg" alt="Image">cgroup-state-memory</p>
 <p>从上图可以看出，<code>mem_cgroup</code> 结构包含了 <code>cgroup_subsys_state</code> 结构，<code>内存子系统</code> 对外暴露出 <code>mem_cgroup</code> 结构的 <code>cgroup_subsys_state</code> 部分（即返回 <code>cgroup_subsys_state</code> 结构的指针），而其余部分由 <code>内存子系统</code> 自己维护和使用。</p>
 <p>由于 <code>cgroup_subsys_state</code> 部分在 <code>mem_cgroup</code> 结构的首部，所以要将 <code>cgroup_subsys_state</code> 结构转换成 <code>mem_cgroup</code> 结构，只需要通过指针类型转换即可。</p>
 <p><code>cgroup</code> 结构与 <code>cgroup_subsys_state</code> 结构之间的关系如下图：</p>
-<p><img src="/Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648275970247.jpg" alt="Image">cgroup-subsys-state</p>
+<p><img src="/640-1648275970247.jpg" alt="Image">cgroup-subsys-state</p>
 <h2 id="css-set-结构体"><a href="#css-set-结构体" class="headerlink" title="css_set 结构体"></a><code>css_set</code> 结构体</h2><p>由于一个进程可以同时添加到不同的 <code>cgroup</code> 中（前提是这些 <code>cgroup</code> 属于不同的 <code>层级</code>）进行资源控制，而这些 <code>cgroup</code> 附加了不同的资源控制 <code>子系统</code>。所以需要使用一个结构把这些 <code>子系统</code> 的资源控制统计信息收集起来，方便进程通过 <code>子系统ID</code> 快速查找到对应的 <code>子系统</code> 资源控制统计信息，而 <code>css_set</code> 结构体就是用来做这件事情。<code>css_set</code> 结构体定义如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct css_set &#123;</span><br><span class="line">    struct kref ref;</span><br><span class="line">    struct list_head list;</span><br><span class="line">    struct list_head tasks;</span><br><span class="line">    struct list_head cg_links;</span><br><span class="line">    struct cgroup_subsys_state *subsys[CGROUP_SUBSYS_COUNT];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
@@ -194,7 +194,7 @@
 
 <p>可以看出，<code>task_struct</code> 结构的 <code>cgroups</code> 字段就是指向 <code>css_set</code> 结构的指针，而 <code>cg_list</code> 字段用于连接所有使用此 <code>css_set</code> 结构的进程列表。</p>
 <p><code>task_struct</code> 结构与 <code>css_set</code> 结构的关系如下图：</p>
-<p><img src="/Cgroup%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/640-1648275970249.jpg" alt="Image"></p>
+<p><img src="/640-1648275970249.jpg" alt="Image"></p>
 <p>cgroup-task-cssset</p>
 <h2 id="cgroup-subsys-结构"><a href="#cgroup-subsys-结构" class="headerlink" title="cgroup_subsys 结构"></a><code>cgroup_subsys</code> 结构</h2><p><code>CGroup</code> 通过 <code>cgroup_subsys</code> 结构操作各个 <code>子系统</code>，每个 <code>子系统</code> 都要实现一个这样的结构，其定义如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">struct cgroup_subsys &#123;</span><br><span class="line">    struct cgroup_subsys_state *(*create)(struct cgroup_subsys *ss,</span><br><span class="line">                          struct cgroup *cgrp);</span><br><span class="line">    void (*pre_destroy)(struct cgroup_subsys *ss, struct cgroup *cgrp);</span><br><span class="line">    void (*destroy)(struct cgroup_subsys *ss, struct cgroup *cgrp);</span><br><span class="line">    int (*can_attach)(struct cgroup_subsys *ss,</span><br><span class="line">              struct cgroup *cgrp, struct task_struct *tsk);</span><br><span class="line">    void (*attach)(struct cgroup_subsys *ss, struct cgroup *cgrp,</span><br><span class="line">            struct cgroup *old_cgrp, struct task_struct *tsk);</span><br><span class="line">    void (*fork)(struct cgroup_subsys *ss, struct task_struct *task);</span><br><span class="line">    void (*exit)(struct cgroup_subsys *ss, struct task_struct *task);</span><br><span class="line">    int (*populate)(struct cgroup_subsys *ss,</span><br><span class="line">            struct cgroup *cgrp);</span><br><span class="line">    void (*post_clone)(struct cgroup_subsys *ss, struct cgroup *cgrp);</span><br><span class="line">    void (*bind)(struct cgroup_subsys *ss, struct cgroup *root);</span><br><span class="line"></span><br><span class="line">    int subsys_id;</span><br><span class="line">    int active;</span><br><span class="line">    int disabled;</span><br><span class="line">    int early_init;</span><br><span class="line">    const char *name;</span><br><span class="line">    struct cgroupfs_root *root;</span><br><span class="line">    struct list_head sibling;</span><br><span class="line">    void *private;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>

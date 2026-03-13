@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
 <meta property="article:published_time" content="2022-03-26T07:06:56.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:30:50.365Z">
+<meta property="article:modified_time" content="2026-03-13T07:12:39.183Z">
 <meta property="article:author" content="哎呦，好烦！">
 
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-03-13 06:30:50'
+  postUpdate: '2026-03-13 07:12:39'
 }</script>
 <noscript><style type="text/css">
   #nav { opacity: 1 }
@@ -78,7 +78,7 @@
             <span class="post-meta-separator">|</span>
             <i class="fas fa-history fa-fw post-meta-icon"></i>
             <span class="post-meta-label">更新于</span>
-            <time class="post-meta-date-updated" datetime="2026-03-13T06:30:50.365Z" title="更新于 2026-03-13 06:30:50">2026-03-13</time>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:12:39.183Z" title="更新于 2026-03-13 07:12:39">2026-03-13</time>
           </span>
           
           <span class="post-meta-categories">
@@ -98,7 +98,7 @@
       <article class="post-content" id="article-container">
         <p>很多公司面试的时候都喜欢问为什么 Redis 那么快？这就得益于 Redis的 <code>事件驱动模块 </code>，什么是 <code>事件驱动</code> 呢？通俗来说，<code>事件驱动</code> 指的是当某一事件发生触发某一处理过程。举个例子，当发生火灾时，就会触发消防队救火，在这个例子中，事件是发生火灾，而处理过程是消防队救火。而在 Redis 中的事件指的是客户端连接就绪（可接收或者可发送数据），所以当客户端连接就绪时，就会触发 Redis 的处理过程（调用某一个处理函数）去处理客户端连接。</p>
 <p>一般来说，客户端连接（socket）需要添加到多路复用IO句柄中进行监听，多路复用IO可以监听到客户端连接的状态变化，当客户端连接状态发生变化时（变为可读或可写），多路复用IO就会把状态发生变化的客户端连接列表返回给调用方。如下图：</p>
-<p><img src="/Redis%20%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8%E5%88%86%E6%9E%90/640.jpg" alt="Image"></p>
+<p><img src="/640.jpg" alt="Image"></p>
 <p>不同的操作系统有不同的多路复用IO接口，比如 Linux 系统中使用的是 epoll，而 FreeBSD 系统中使用的 kqueue。由于Redis支持多操作系统平台，所以 Redis 为了跨平台对多路复用IO进行封装。</p>
 <p>下面主要讨论 Redis 在 Linux 操作系统下对事件驱动库的封装。</p>
 <h2 id="Redis-事件驱动库的使用"><a href="#Redis-事件驱动库的使用" class="headerlink" title="Redis 事件驱动库的使用"></a>Redis 事件驱动库的使用</h2><h4 id="1-创建事件驱动对象"><a href="#1-创建事件驱动对象" class="headerlink" title="1. 创建事件驱动对象"></a>1. 创建事件驱动对象</h4><p>要使用Redis的事件驱动库，首先需要调用 <code>aeCreateEventLoop()</code> 函数创建一个事件驱动对象，其原型如下：</p>

@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
 <meta property="article:published_time" content="2022-04-11T07:48:48.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:30:50.362Z">
+<meta property="article:modified_time" content="2026-03-13T07:12:39.180Z">
 <meta property="article:author" content="哎呦，好烦！">
 
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-03-13 06:30:50'
+  postUpdate: '2026-03-13 07:12:39'
 }</script>
 <noscript><style type="text/css">
   #nav { opacity: 1 }
@@ -78,7 +78,7 @@
             <span class="post-meta-separator">|</span>
             <i class="fas fa-history fa-fw post-meta-icon"></i>
             <span class="post-meta-label">更新于</span>
-            <time class="post-meta-date-updated" datetime="2026-03-13T06:30:50.362Z" title="更新于 2026-03-13 06:30:50">2026-03-13</time>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:12:39.180Z" title="更新于 2026-03-13 07:12:39">2026-03-13</time>
           </span>
           
           <span class="post-meta-categories">
@@ -97,7 +97,7 @@
     <div id="post">
       <article class="post-content" id="article-container">
         <h1 id="进程与线程"><a href="#进程与线程" class="headerlink" title="进程与线程"></a>进程与线程</h1><h2 id="1-进程概述"><a href="#1-进程概述" class="headerlink" title="1. 进程概述"></a>1. 进程概述</h2><p>一般来说，一个进程由<strong>程序段</strong>、<strong>数据段</strong>和<strong>进程控制块</strong>三部分组成。进程的大致结构如图所示：</p>
-<p><img src="/%E8%BF%9B%E7%A8%8B%E6%A6%82%E8%BF%B0/image-20220411153156364.png" alt="image-20220411153156364"></p>
+<p><img src="/image-20220411153156364.png" alt="image-20220411153156364"></p>
 <ul>
 <li>进程的大致结构程序段一般也被称为代码段。代码段是进程的程序指令在内存中的位置，包含需要执行的指令集合；</li>
 <li>数据段是进程的操作数据在内存中的位置，包含需要操作的数据集合；</li>
@@ -115,7 +115,7 @@
 <h2 id="2-线程概述"><a href="#2-线程概述" class="headerlink" title="2. 线程概述"></a>2. 线程概述</h2><p><strong>线程是指“进程代码段”的一次顺序执行流程</strong>。</p>
 <p>线程是CPU调度的最小单位。一个进程可以有一个或多个线程，各个线程之间共享进程的内存空间、系统资源，进程仍然是操作系统资源分配的最小单位。</p>
 <p>Java程序的进程执行过程就是标准的多线程的执行过程。每当使用Java命令执行一个class类时，实际上就是启动了一个JVM进程。理论上，在该进程的内部至少会启动两个线程，一个是main线程，另一个是GC（垃圾回收）线程。实际上，执行一个Java程序后，通过Process Explorer来观察，线程数量远远不止两个，达到了18个之多。一个标准的线程主要由三部分组成，即线程描述信息、程序计数器（Program Counter，PC）和栈内存，如图所示。</p>
-<p><img src="/%E8%BF%9B%E7%A8%8B%E6%A6%82%E8%BF%B0/image-20220411153956113.png" alt="image-20220411153956113"></p>
+<p><img src="/image-20220411153956113.png" alt="image-20220411153956113"></p>
 <p>在线程的结构中，线程描述信息即线程的基本信息，主要包括：</p>
 <ol>
 <li>线程ID（Thread ID，线程标识符）。线程的唯一标识，同一个进程内不同线程的ID不会重叠。</li>
@@ -128,7 +128,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.crazymakercircle.mutithread.basic.create;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.crazymakercircle.util.Print;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StackAreaDemo</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String args[])</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">        Print.cfo(<span class="string">&quot;当前线程名称：&quot;</span> + Thread.currentThread().getName());</span><br><span class="line">        Print.cfo(<span class="string">&quot;当前线程ID：&quot;</span> + Thread.currentThread().getId());</span><br><span class="line">        Print.cfo(<span class="string">&quot;当前线程状态：&quot;</span> + Thread.currentThread().getState());</span><br><span class="line">        Print.cfo(<span class="string">&quot;当前线程优先级：&quot;</span> + Thread.currentThread().getPriority());</span><br><span class="line">        <span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>, b = <span class="number">1</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">c</span> <span class="operator">=</span> a / b;</span><br><span class="line">        anotherFun();</span><br><span class="line">        Thread.sleep(<span class="number">10000000</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">anotherFun</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>, b = <span class="number">1</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">c</span> <span class="operator">=</span> a / b;</span><br><span class="line">        anotherFun2();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">anotherFun2</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>, b = <span class="number">1</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">c</span> <span class="operator">=</span> a / b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>在Java中，执行程序流程的重要单位是“方法”，而栈内存的分配单位是“栈帧”（或者叫“方法帧”）。方法的每一次执行都需要为其分配一个栈帧（方法帧），栈帧主要保存该方法中的局部变量、方法的返回地址以及其他方法的相关信息。当线程的执行流程进入方法时，JVM就会为方法分配一个对应的栈帧压入栈内存；当线程的执行流程跳出方法时，JVM就从栈内存弹出该方法的栈帧，此时方法帧的局部变量的内存空间就会被回收。</p>
-<p><img src="/%E8%BF%9B%E7%A8%8B%E6%A6%82%E8%BF%B0/image-20220411154602995.png" alt="image-20220411154602995"></p>
+<p><img src="/image-20220411154602995.png" alt="image-20220411154602995"></p>
 <h2 id="3-区别"><a href="#3-区别" class="headerlink" title="3. 区别"></a>3. 区别</h2><ol>
 <li>线程是“进程代码段”的一次顺序执行流程。一个进程由一个或多个线程组成，一个进程至少有一个线程。</li>
 <li>线程是CPU调度的最小单位，进程是操作系统分配资源的最小单位。线程的划分尺度小于进程，使得多线程程序的并发性高。</li>

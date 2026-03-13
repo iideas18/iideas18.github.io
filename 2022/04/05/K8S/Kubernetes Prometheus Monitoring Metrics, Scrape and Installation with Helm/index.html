@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
 <meta property="article:published_time" content="2022-04-05T14:31:12.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:30:50.363Z">
+<meta property="article:modified_time" content="2026-03-13T07:12:39.181Z">
 <meta property="article:author" content="哎呦，好烦！">
 
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-03-13 06:30:50'
+  postUpdate: '2026-03-13 07:12:39'
 }</script>
 <noscript><style type="text/css">
   #nav { opacity: 1 }
@@ -78,7 +78,7 @@
             <span class="post-meta-separator">|</span>
             <i class="fas fa-history fa-fw post-meta-icon"></i>
             <span class="post-meta-label">更新于</span>
-            <time class="post-meta-date-updated" datetime="2026-03-13T06:30:50.363Z" title="更新于 2026-03-13 06:30:50">2026-03-13</time>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:12:39.181Z" title="更新于 2026-03-13 07:12:39">2026-03-13</time>
           </span>
           
           <span class="post-meta-categories">
@@ -177,7 +177,7 @@
 <h3 id="Step-1-Add-repositories"><a href="#Step-1-Add-repositories" class="headerlink" title="Step 1: Add repositories"></a><strong>Step 1: Add repositories</strong></h3><p>Add the following helm repositories by the commands below.</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm repo add prometheus-community https://prometheus-community.github.io/helm-charts</span><br></pre></td></tr></table></figure>
 
-<p><img src="/Kubernetes%20Prometheus%20Monitoring%20Metrics,%20Scrape%20and%20Installation%20with%20Helm/Peek-2021-05-31-15-01.gif" alt="Prometheus helm repo"></p>
+<p><img src="/Peek-2021-05-31-15-01.gif" alt="Prometheus helm repo"></p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm repo add stable https://charts.helm.sh/stable</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://k21academy.com/wp-content/uploads/2021/06/ezgif.com-gif-maker-1.gif" alt="prometheus stable repo"></p>
@@ -193,11 +193,11 @@
 <p><img src="https://k21academy.com/wp-content/uploads/2021/06/ezgif.com-gif-maker-5.gif" alt="grafana port forward"></p>
 <h3 id="Step-5-Log-in-to-Grafana"><a href="#Step-5-Log-in-to-Grafana" class="headerlink" title="Step 5: Log in to Grafana"></a><strong>Step 5: Log in to Grafana</strong></h3><p>Open your favourite browser and open <a target="_blank" rel="noopener" href="https://localhost:3000/">localhost:3000</a>. Since you are logging in for the first time, you will have to use a default username and password. However, you can create new users and update passwords later. Use the default credentials for now:</p>
 <p><strong>username</strong>: admin<br><strong>password</strong>: prom-operator</p>
-<p><img src="/Kubernetes%20Prometheus%20Monitoring%20Metrics,%20Scrape%20and%20Installation%20with%20Helm/ezgif.com-gif-maker-11.gif" alt="kubernetes prometheus grafana login"></p>
+<p><img src="/ezgif.com-gif-maker-11.gif" alt="kubernetes prometheus grafana login"></p>
 <p>Once you are inside the Grafana web UI, there are a lot of things you can do. You can set the duration of scraping metrics. You can also configure your dashboard. Also, you can look into networking. However, there are a lot more things to explore in this. I am adding some of the scouting done by me below.</p>
 <p><strong>Networking in a pod:</strong></p>
 <p><strong><img src="https://k21academy.com/wp-content/uploads/2021/06/ezgif.com-gif-maker-6.gif" alt="Kubernetes networking grafana prometheus">Cluster Status:</strong></p>
-<p><strong><img src="/Kubernetes%20Prometheus%20Monitoring%20Metrics,%20Scrape%20and%20Installation%20with%20Helm/download.png" alt="cluster monitoring"></strong></p>
+<p><strong><img src="/download.png" alt="cluster monitoring"></strong></p>
 <h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a><strong>Conclusion</strong></h2><p>Monitoring is crucial whether you are experimenting or using the production-based cluster. Prometheus Kubernetes monitoring with Grafana is a boon for us indeed. It makes our lives a lot easier with a customisable interface, configurable exporters. Also, it is open-source. However, K8s has its official dashboard, and the Prometheus + Grafana is no match.</p>
 <p>We have used Helm to deploy the Prometheus operator, including all the necessary tools for Prometheus and Grafana to monitor the cluster. So, you would have figured out why Prometheus and Grafana for Kubernetes are a superpower. If no yet, I suggest you install the Prometheus and Grafana on Kubernetes and have a look at the various features it has to offer for us!</p>
 <h2 id="Related-Post"><a href="#Related-Post" class="headerlink" title="Related Post"></a><strong>Related Post</strong></h2><ul>

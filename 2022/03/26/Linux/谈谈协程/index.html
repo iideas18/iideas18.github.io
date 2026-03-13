@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
 <meta property="article:published_time" content="2022-03-26T06:48:38.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:30:50.363Z">
+<meta property="article:modified_time" content="2026-03-13T07:12:39.182Z">
 <meta property="article:author" content="哎呦，好烦！">
 
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-03-13 06:30:50'
+  postUpdate: '2026-03-13 07:12:39'
 }</script>
 <noscript><style type="text/css">
   #nav { opacity: 1 }
@@ -78,7 +78,7 @@
             <span class="post-meta-separator">|</span>
             <i class="fas fa-history fa-fw post-meta-icon"></i>
             <span class="post-meta-label">更新于</span>
-            <time class="post-meta-date-updated" datetime="2026-03-13T06:30:50.363Z" title="更新于 2026-03-13 06:30:50">2026-03-13</time>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:12:39.182Z" title="更新于 2026-03-13 07:12:39">2026-03-13</time>
           </span>
           
           <span class="post-meta-categories">
@@ -100,14 +100,14 @@
 <h2 id="2-基本概念"><a href="#2-基本概念" class="headerlink" title="2. 基本概念"></a>2. 基本概念</h2><p>要理解协程，首先要知道程序是怎么运行的。所以下面我们先来聊聊程序是怎么跑起来的。</p>
 <p>我们知道CPU的使命就是执行程序中的指令，而且CPU内部有很多用于存放数据的<strong>寄存器</strong>，其中比较重要的一个寄存器叫<strong>EIP寄存器</strong>，它用于存储下一条要执行的指令。除了EIP寄存器之外，还有一个比较重要的寄存器叫<strong>ESP寄存器</strong>，它用于保存程序的栈顶位置。除此之外，CPU还有很多其他用途的寄存器，如：通用寄存器EAX、EDX和段寄存器CS、DS等等。</p>
 <p>当一个程序被执行（称为进程）的时候，这些寄存器的值通常会被修改。所以当要切换进程执行的时候，只需要把这些寄存器的值保存下来，然后把新进程寄存器的值赋值到CPU中，那么就完成进程切换了，通常我们把这个过程称为上下文切换，协程的切换也类似。</p>
-<p><img src="/%E8%B0%88%E8%B0%88%E5%8D%8F%E7%A8%8B/640.jpg" alt="Image"></p>
+<p><img src="/640.jpg" alt="Image"></p>
 <p>上面讨论过，只需要切换上下文就可以切换协程。而上下文就是CPU寄存器的值，所以要创建一个协程，首先要创建一个保存CPU寄存器值的对象。在Libtask中，使用mcontext结构体来保存寄存器的值。mcontext结构体定义如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">mcontext</span> &#123;</span><br><span class="line"></span><br><span class="line">  <span class="type">int</span> mc_gs;</span><br><span class="line">  <span class="type">int</span> mc_fs;</span><br><span class="line">  <span class="type">int</span> mc_es;</span><br><span class="line">  <span class="type">int</span> mc_ds;</span><br><span class="line">  <span class="type">int</span> mc_edi;</span><br><span class="line">  <span class="type">int</span> mc_esi;</span><br><span class="line">  <span class="type">int</span> mc_ebp;</span><br><span class="line">  <span class="type">int</span> mc_isp;</span><br><span class="line">  <span class="type">int</span> mc_ebx;</span><br><span class="line">  <span class="type">int</span> mc_edx;</span><br><span class="line">  <span class="type">int</span> mc_ecx;</span><br><span class="line">  <span class="type">int</span> mc_eax;</span><br><span class="line">  <span class="type">int</span> mc_trapno;</span><br><span class="line">  <span class="type">int</span> mc_err;</span><br><span class="line">  <span class="type">int</span> mc_eip;</span><br><span class="line">  <span class="type">int</span> mc_cs;</span><br><span class="line">  <span class="type">int</span> mc_eflags;</span><br><span class="line">  <span class="type">int</span> mc_esp;</span><br><span class="line">  <span class="type">int</span> mc_ss;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <p>mcontext结构体用来保存寄存器的值，从mcontext的成员可以看到要保存的寄存器很多，包括CS、DS、EIP、EAX、EBX等等。</p>
 <h2 id="C函数调用原理"><a href="#C函数调用原理" class="headerlink" title="C函数调用原理"></a>C函数调用原理</h2><p>因为协程切换一般是通过调用一个swapcontext()的C函数来进行，这个函数的作用就是保存旧的协程上下文和替换新的协程上下文来进行协程切换，而新旧协程上下文就是通过C函数的参数来传递的，所以我们先来了解下C函数调用过程的原理。</p>
 <p>C函数是通过栈空间来传递参数的，通过下图有个感性的认识：</p>
-<p><img src="/%E8%B0%88%E8%B0%88%E5%8D%8F%E7%A8%8B/640-1648276894262.jpg" alt="Image"></p>
+<p><img src="/640-1648276894262.jpg" alt="Image"></p>
 <p>在上图中，浅绿色部分是调用函数时把参数入栈的。入栈时，C语言是从右到左开始入栈的。例如我们调用swapcontext(old, new)这个函数时，会先把new参数入栈，然后再把old参数入栈。</p>
 <p>另外，在调用一个函数时，CPU会自动把当前指令的下一条指令入栈。所以，在上图可以看到在参数后面还有返回地址。在返回地址下面保存的是函数的局部变量。</p>
 <blockquote>

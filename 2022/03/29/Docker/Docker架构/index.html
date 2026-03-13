@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
 <meta property="article:published_time" content="2022-03-29T07:02:20.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:30:50.360Z">
+<meta property="article:modified_time" content="2026-03-13T07:12:39.179Z">
 <meta property="article:author" content="哎呦，好烦！">
 
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-03-13 06:30:50'
+  postUpdate: '2026-03-13 07:12:39'
 }</script>
 <noscript><style type="text/css">
   #nav { opacity: 1 }
@@ -78,7 +78,7 @@
             <span class="post-meta-separator">|</span>
             <i class="fas fa-history fa-fw post-meta-icon"></i>
             <span class="post-meta-label">更新于</span>
-            <time class="post-meta-date-updated" datetime="2026-03-13T06:30:50.360Z" title="更新于 2026-03-13 06:30:50">2026-03-13</time>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:12:39.179Z" title="更新于 2026-03-13 07:12:39">2026-03-13</time>
           </span>
           
           <span class="post-meta-categories">
@@ -97,7 +97,7 @@
     <div id="post">
       <article class="post-content" id="article-container">
         <h1 id="Docker架构概览"><a href="#Docker架构概览" class="headerlink" title="Docker架构概览"></a>Docker架构概览</h1><p>Docker使用了传统的client-server架构模式，总架构图如图所示。用户通过Docker client与Docker daemon建立通信，并将请求发送给后者。而Docker的后端是松耦合结构，不同模块各司其职，有机组合，完成用户的请求。</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220328165700005.png" alt="image-20220328165700005"></p>
+<p><img src="/image-20220328165700005.png" alt="image-20220328165700005"></p>
 <p>Docker通过driver模块来实现对Docker容器执行环境的创建和管理。</p>
 <ul>
 <li><strong>容器</strong>：当需要创建Docker容器时，可通过镜像管理（image management）部分的distribution和registry模块从Docker registry中下载镜像，并通过镜像管理的image、reference和layer存储镜像的元数据，通过镜像存储驱动graphdriver将镜像文件存储于具体的文件系统中；</li>
@@ -204,7 +204,7 @@
 <ol>
 <li>创建容器配置文件目录。这些配置文件里包含了这个容器的所有元数据。 Docker daemon在创建Docker容器之后，需要将容器内的配置文件放到这个目录下统一管理。目录默认位置为：&#x2F;var&#x2F;lib&#x2F;docker&#x2F;containers，它下面会为每个具体容器保存如下几个配置文件，其中xxx为容器ID：</li>
 </ol>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220328210455558.png" alt="image-20220328210455558"></p>
+<p><img src="/image-20220328210455558.png" alt="image-20220328210455558"></p>
 <ol start="2">
 <li><p>配置graphdriver目录。它用于完成Docker容器镜像管理所需的底层存储驱动层。所以，在这一步的配置工作就是加载并配置镜像存储驱动graphdriver，创建存储驱动管理镜像层文件系统所需的目录和环境，初始化镜像层元数据存储。</p>
 <p>创建graphdriver时，首先会从环境变量DOCKER_DRIVER中读用户指定的驱动，若为空，则开始遍历优先级数组选择一个graphdriver。在Linux环境下，优先级从高到低依次为aufs、btrfs、zfs、devicemapper、overlay和vfs。在不同操作系统下，优先级列表的内容和顺序都会不同，而且随着内核的发展以及驱动的完善，会继续发生变化。</p>
@@ -227,7 +227,7 @@
 </li>
 </ol>
 <p>综上，这里Docker daemon需要在Docker根目录（&#x2F;var&#x2F;lib&#x2F;docker）下创建并初始化一系列跟容器文件系统密切相关的目录和文件。这些文件和目录的具体作用我们会在讲解镜像和volume的时候做详细解释，这里先给读者进行一个简单的总结。</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329103906653.png" alt="image-20220329103906653"></p>
+<p><img src="/image-20220329103906653.png" alt="image-20220329103906653"></p>
 <h3 id="5-创建Docker-daemon网络创建"><a href="#5-创建Docker-daemon网络创建" class="headerlink" title="5. 创建Docker daemon网络创建"></a>5. 创建Docker daemon网络创建</h3><p>Docker daemon运行环境的时候，创建网络环境是极为重要的一个部分。这不仅关系着容器对外的通信，同样也关系着容器间的通信。网络部分早已被抽离出来作为一个单独的模块，称为libnetwork。libnetwork通过插件的形式为Docker提供网络功能，使得用户可以根据自己的需求实现自己的driver来提供不同的网络功能。截止到Docker 1.10版本，libnetwork实现了host、null、bridge和overlay的驱动。其中，bridge driver为默认驱动，和之前版本中的Docker网络功能是基本等价的，这一部分的解析在本书3.8节中会详述。需要注意的是，同之前的Docker网络一样，bridgedriver并不提供跨主机通信的能力，overlay driver则适用于多主机环境。</p>
 <h3 id="6-初始化execdriver"><a href="#6-初始化execdriver" class="headerlink" title="6. 初始化execdriver"></a>6. 初始化execdriver</h3><p>execdriver是Docker中用来管理Docker容器的驱动。Docker会调用execdrivers中的NewDriver()函数来创建新的execdriver。在创建execdriver的时候，需要注意以下5部分信息。</p>
 <ul>
@@ -276,19 +276,19 @@
 <h3 id="1-发起请求"><a href="#1-发起请求" class="headerlink" title="1.	发起请求"></a>1.	发起请求</h3><p>(1) docker run命令开始运行，用户端的Docker进入client模式，开始了讲述的client工作过程；</p>
 <p>(2) 经过初始化，新建出了一个client；</p>
 <p>(3) 上述client通过反射机制找到了CmdRun方法。CmdRun在解析过用户提供的容器参数等一系列操作后，最终发出了这样两个请求：</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329104045987.png" alt="image-20220329104045987"></p>
+<p><img src="/image-20220329104045987.png" alt="image-20220329104045987"></p>
 <p>至此，client的主要任务结束。</p>
 <p>前面说过，daemon在启动后维护了一个API Server来响应上述请求，同样遵循“约定大于配置”的原则，daemon端负责响应第一个create请求的方法是：api&#x2F;server&#x2F;server.go#postCon-tainersCreate。</p>
 <p>在1.6版本及以前，Docker daemon会将一个创建容器的Job交给所谓的Docker Engine来接管接下来的任务。不过这个过程已经被完全废弃并且再也不会回来了。所以接下来我们会按照1.10版本的方式讲解daemon创建和启动容器的过程，解析过程读者完全不需要翻阅代码。</p>
 <h3 id="2-创建容器"><a href="#2-创建容器" class="headerlink" title="2.	创建容器"></a>2.	创建容器</h3><p>估计读者已经猜到，在这一步Docker daemon并不需要真正创建一个Linux容器，它只需要解析用户通过client提交的POST表单，然后使用这些参数在daemon中新建一个container对象出来即可。这个container实体就是container&#x2F;container_unix.go，其中的CommonContainer字段定义在container&#x2F;container.go中，为Linux平台和Windows平台上容器共有的属性，本书主要以Linux平台为主，这里将Linux平台上容器最重要的定义片段一并列举如下。容器共有的属性，本书主要以Linux平台为主，这里将Linux平台上容器最重要的定义片段一并列举如下。</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329104117325.png" alt="image-20220329104117325"></p>
+<p><img src="/image-20220329104117325.png" alt="image-20220329104117325"></p>
 <p>这里需要额外注意的是daemon属性，即container是能够知道管理它的daemon进程信息的，很快会看到这个关系的作用。上述过程完成后，container的信息会作为Response返回给client, client会紧接着发送start请求。</p>
 <h3 id="3-启动容器"><a href="#3-启动容器" class="headerlink" title="3.  启动容器"></a>3.  启动容器</h3><p>这时候daemon这边的重点来了。API Server接收到start请求后会告诉Docker daemon进行container启动容器操作，这个过程是daemon&#x2F;start.go。</p>
 <blockquote>
 <p>注意 1.7版本以后的Docker不仅把所有的client端的请求都使用了一个对应的api&#x2F;client&#x2F;{请求名称}.go文件来定义，在daemon端，所有请求的处理过程也放在daemon&#x2F;{请求名称}.go文件中来定义。读者可以根据自己想了解的内容寻找对应的文件。</p>
 </blockquote>
 <p>此时，由于container所需的各项参数，比如NetworkSettings、ImageID等，都已经在创建容器过程中赋好了值，Docker daemon会在start.go中直接执行daemon.ContainerStart，就能够在宿主机上创建对应的容器了。等一下，创建容器的过程不是要创建namespace，配置cgroup，挂载rootfs吗？谁负责做这些事情呢？答案当然还是Docker daemon。containerMonitor将daemon设置为自己的supervisor。所以经过一系列调用后，daemon.ContainerStart实际上执行操作的是：</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329110422733.png" alt="image-20220329110422733"></p>
+<p><img src="/image-20220329110422733.png" alt="image-20220329110422733"></p>
 <p>即告诉daemon进程：请使用本container相关信息作参数，执行对应execdriver的Run方法。</p>
 <blockquote>
 <p>提示 具体来说，daemon&#x2F;container.go#ContainerStart其实是经过了waitForStart以及daemon&#x2F;monitor.go#start的连续调用最终变成daemon.Run的，读者可以自行跟踪上述几个方法。</p>
@@ -320,15 +320,15 @@
 <p>如果读者直接阅读Docker execdriver的代码，可能会觉得这部分对libcontainer的使用比较晦涩难懂。其实，execdriver首先要完成的工作是在拿到了Docker daemon提交command信息之后，生成一份专门的容器配置。</p>
 <p>这个容器配置的生成过程虽然复杂，但是原理很简单。</p>
 <p>例如，在Docker daemon提交过来的command中，包含namespace、cgroups以及未来容器中将要运行的进程的重要信息。其中Network、Ipc、Pid等字段描述了隔离容器所需的namespace。</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329135359687.png" alt="image-20220329135359687"></p>
+<p><img src="/image-20220329135359687.png" alt="image-20220329135359687"></p>
 <p>CommonCommand字段中包含了Linux平台和Windows平台通用的配置信息。</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329135413453.png" alt="image-20220329135413453"></p>
+<p><img src="/image-20220329135413453.png" alt="image-20220329135413453"></p>
 <p>Resources字段包含了该容器cgroups的配置信息，定义如下：</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329135430793.png" alt="image-20220329135430793"></p>
+<p><img src="/image-20220329135430793.png" alt="image-20220329135430793"></p>
 <p>ProcessConfig字段描述容器中未来要运行的进程信息，定义如下：</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329135556158.png" alt="image-20220329135556158"></p>
+<p><img src="/image-20220329135556158.png" alt="image-20220329135556158"></p>
 <p>这时，execdriver会加载一个预定义的容器配置模板container，然后在模板中添加来自command的相关信息：</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329135608356.png" alt="image-20220329135608356"></p>
+<p><img src="/image-20220329135608356.png" alt="image-20220329135608356"></p>
 <p>等到上述容器配置模板container中的所有项都按照command提供的内容填好之后，一份该容器专属的容器配置container就生成好了。注意，小写的container其实是一个存储配置信息的对象，后面我们很快会提到大写的Container，它才是libcontainer里的容器对象。container可以理解为libcontainer与Docker daemon之间进行信息交换的标准格式。之后，libcontainer就能根据这份配置知道它需要在宿主机上创建MOUNT、UTS、IPC、PID、NET这5个namespace以及相应的cgroups配置，从而创建出Docker容器。在接下来的两节里，我们将从源代码层次分析上述整个过程。</p>
 <blockquote>
 <p>提示 上述容器配置模板位于daemon&#x2F;execdriver&#x2F;native&#x2F;template&#x2F;default_template_linux.go。其中大多数启动容器所需的基础配置，比如namespace、系统目录的挂载等属性都已经定义好了。CommonCommand的定义在daemon&#x2F;execdriver&#x2F;driver.go#CommonCommand中，读者可以做对比。上述实现的全过程是daemon&#x2F;execdriver&#x2F;native&#x2F;driver.go#Run按照先后顺序调用下述几个方法。</p>
@@ -350,7 +350,7 @@
 <p>可以看到，libcontainer对Docker容器做了一层更高级的抽象，它定义了Process和Container来对应Linux中“进程”与“容器”的关系。一旦“物理”的容器创建成功，其他调用者就可以通过容器ID获取这个逻辑容器Container，接着使用Container.Stats得到容器的资源使用信息，或者执行Container.Destory来销毁这个容器。</p>
 <p>综上，libcontainer中最主要的内容是Process、Container以及Factory这3个逻辑实体的实现原理，而execdriver或者其他调用者只要依次执行“使用Factory创建逻辑容器Container”、“启动逻辑容器Container”和“用逻辑容器创建物理容器”，即可完成Docker容器的创建。</p>
 <h3 id="2-libcontainer实现原理"><a href="#2-libcontainer实现原理" class="headerlink" title="2. libcontainer实现原理"></a>2. libcontainer实现原理</h3><p>这一节，我们先把前面Docker daemon借助execdriver创建和启动容器的过程归纳为如下一段伪代码，使读者对这个过程有个初步的认识，也方便读者能在接下来介绍Process、Factory和Container的过程中进行参照和对比。</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329144114611.png" alt="image-20220329144114611"></p>
+<p><img src="/image-20220329144114611.png" alt="image-20220329144114611"></p>
 <p>好了，接下来进入正题，我们先从Factory创建逻辑容器Container开始。</p>
 <h4 id="1．用Factory创建逻辑容器Container"><a href="#1．用Factory创建逻辑容器Container" class="headerlink" title="1．用Factory创建逻辑容器Container"></a>1．用Factory创建逻辑容器Container</h4><p>libcontainer中Factory存在的意义就是能够创建一个逻辑上的“容器对象”Container，这个逻辑上的“容器对象”并不是一个运行着的Docker容器，而是包含了容器要运行的指令及其参数、namespace和cgroups配置参数等。对于Docker daemon来说，容器的定义只需要一种就够了，不同的容器只是实例的内容（属性和参数）不一样而已。对于libcontainer来说，由于它需要与底层系统打交道，不同的平台就需要创建出完全异构的“逻辑容器对象”（比如Linux容器和Windows容器），这也就解释了为什么这里会使用“工厂模式”：今后libcontainer可以支持更多平台上各种类型的容器的实现，而execdriver调用libcontainer创建容器的方法却不会受到影响。下面解释一下Factory的Create操作具体做的事情。</p>
 <ul>
@@ -402,7 +402,7 @@
 </ul>
 <p>上述Args指定的命令是什么呢？读者不妨回顾一下3.4.2节一开始总结的那段伪码。可以发现，Args[0]正是用户指定的Entrypoint, Args[1,2,3..]则是该指令后面跟的运行参数。所以当容器创建成功后，它里面运行起来的进程已经从dockerinit变成了用户指定的命令Entrypoint（如果不指定，Docker默认的是Entrypoint为&#x2F;bin&#x2F;sh -c）。execv调用就是为了保证这个“替换”发生后的Entrypoint指令继续使用原先dockerinit的PID等信息。</p>
 <p>如果用户执行的是docker run -i -t ubuntu <cmd>呢？那么，所有用户指定的<cmd>都会作为Entrypoint的参数保存在前面说过的Args[0..]里。</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329144445630.png" alt="image-20220329144445630"></p>
+<p><img src="/image-20220329144445630.png" alt="image-20220329144445630"></p>
 <p>我们可以清晰地看到，Docker daemon如何将容器创建所需的配置和用户需要启动的命令交给libcontainer，后者又如何根据这些信息创建逻辑容器和父进程（步骤①），接下来父进程执行Cmd.start，才真正创建（clone）出了容器的namespace环境，并且通过dockerinit以及管道来完成整个容器的初始化过程。在整个过程中，容器进程则经历了3个阶段的变化。</p>
 <ol>
 <li><p>Docker daemon进程进行“用Facotry创建逻辑容器Container”“启动逻辑容器Container”等准备工作，构建ParentProcess对象，然后利用它创建容器内的第一个进程dockerinit。</p>
@@ -426,15 +426,15 @@
 </ul>
 <p>对于signal而言，本身包含的信息有限，需要额外记录，namespace带来的上下文变化使其操作更为复杂，并不是最佳选择。显然通过轮询内存的方式来沟通是一个非常低效的做法。另外，因为Docker会加入network namespace，实际上初始时网络栈也是完全隔离的，所以socket方式并不可行。</p>
 <p>Docker最终选择的方式就是管道——文件和文件描述符方式。在Linux中，通过pipe(int fd[2])系统调用就可以创建管道，参数是一个包含两个整型的数组。调用完成后，在fd[1]端写入的数据，就可以从fd[0]端读取，如下所示：</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329144528819.png" alt="image-20220329144528819"></p>
+<p><img src="/image-20220329144528819.png" alt="image-20220329144528819"></p>
 <p>调用pipe函数后，创建的子进程会内嵌这个打开的文件描述符，对fd[1]写入数据后可以在fd[0]端读取。通过管道，父子进程之间就可以通信。这个通信完成的标志就在于EOF信号的传递。众所周知，当打开的文件描述符都关闭时，才能读到EOF信号。因此libcontainer中父进程在通过pipe向子进程发送完毕初始化所需信息后，先关闭自己这一端的管道，然后等待子进程关闭另一端的管道文件描述符，传来EOF表示子进程已经完成了这些初始化工作。综上，在libcontainer中，ParentProcess进程与容器进程（cmd，也就是dockerinit进程）的通信方式如图3-10所示。</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329144552193.png" alt="image-20220329144552193"></p>
+<p><img src="/image-20220329144552193.png" alt="image-20220329144552193"></p>
 <h3 id="3-使用runC与libcontainer进行交互"><a href="#3-使用runC与libcontainer进行交互" class="headerlink" title="3.使用runC与libcontainer进行交互"></a>3.使用runC与libcontainer进行交互</h3><p>Linux基金会于2015年6月成立OCI（Open Container Initiative）组织，旨在围绕容器格式和运行时制定一个开放的工业化标准。制定容器格式标准（Open Container Format, OCF）的宗旨概括来说就是不受上层结构的限定，如特定的客户端、编排栈等，同时也不受特定的供应商或项目的限定，即不限于某种特定操作系统、硬件、CPU架构、公有云等。runC直接对libcontainer包进行调用，去除了Docker包含的诸如镜像、volume等高级特性，以最朴素简洁的方式达到符合OCF标准的容器管理实现。</p>
 <p>在本节的最后，我们必须要介绍一下runc的使用方法。nsinit是一个为了方便不通过Docker就可以直接使用libcontainer而开发的命令行工具。它可以用于启动一个容器或者在已有的容器中执行命令。使用nsinit需要有rootfs及相应的配置文件。</p>
 <h4 id="1-runC的构建"><a href="#1-runC的构建" class="headerlink" title="1. runC的构建"></a>1. runC的构建</h4><p>使用runC需要相关容器配置文件以及rootfs，相关配置文件可以使用runc spec命令来进行生成。其中的config.json为容器的基础配置文件，runtime.json为容器的运行时文件。其中rootfs最简单、最常用的是使用Docker busybox，可以使用如下命令生成。</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329144650676.png" alt="image-20220329144650676"></p>
+<p><img src="/image-20220329144650676.png" alt="image-20220329144650676"></p>
 <p>官方的README文档中已经给出具体的构建步骤，此处不再赘述。在准备好相关配置文件以及rootfs之后，只需执行如下命令，即可进行创建并运行一个名为runc-test的容器（需要root权限）。</p>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329144707483.png" alt="image-20220329144707483"></p>
+<p><img src="/image-20220329144707483.png" alt="image-20220329144707483"></p>
 <p>执行完成后会在&#x2F;run&#x2F;runc之下生成一个以容器ID命名的文件夹，该文件夹下会生成一个state.json文件，表示容器的状态，其中的内容与配置参数中的内容类似，展示容器的状态。</p>
 <h4 id="2-runC的使用"><a href="#2-runC的使用" class="headerlink" title="2. runC的使用"></a>2. runC的使用</h4><p>目前runC定义了多个指令，使用runc -h就可以看到，对于每个单独的指令使用——help就能获得更详细的使用参数，如runc start ——help。</p>
 <p>runC这个命令行工具是借助开源项目github.com&#x2F;codegangsta&#x2F;cli实现的，main.go中定义了各个子命令，而每个子命令又使用单独的．go文件进行实现，这使得runC本身的代码非常简洁明了。具体的命令功能如下。</p>
@@ -454,7 +454,7 @@
 <li>checkpoint：保存容器的检查点快照并结束容器进程，需要填——image-path参数，后面是检查点保存的快照文件路径，完整的命令示例如下。</li>
 <li>restore：从容器检查点快照恢复容器进程的运行，参数同上。</li>
 </ul>
-<p><img src="/Docker%E6%9E%B6%E6%9E%84/image-20220329144747354.png" alt="image-20220329144747354"></p>
+<p><img src="/image-20220329144747354.png" alt="image-20220329144747354"></p>
 <p>综上，runC与Docker execdriver进行的工作基本相同，在Docker的源码中并不会涉及runC包的调用，但runC为libcontainer自身的调试和使用带来了极大的便利。</p>
 <p>本节主要介绍了用于Docker容器管理的libcontainer，从libcontainer的使用入手解读源码实现方式。我们深入到容器进程内部，感受到了libcontainer周到全面的设计。总体而言，libcontainer本身主要分为三大块工作内容，一是容器的创建及初始化，二是容器生命周期管理，三是进程管理，调用方为Docker的execdriver。容器的监控主要通过cgroups的状态统计信息，未来会加入进程追踪等更丰富的功能。另一方面，libcontainer在安全支持方面也为用户尽可能多地提供了支持和选择。</p>
 

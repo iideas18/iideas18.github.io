@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
 <meta property="article:published_time" content="2022-03-26T07:03:04.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:30:50.363Z">
+<meta property="article:modified_time" content="2026-03-13T07:12:39.181Z">
 <meta property="article:author" content="哎呦，好烦！">
 
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-03-13 06:30:50'
+  postUpdate: '2026-03-13 07:12:39'
 }</script>
 <noscript><style type="text/css">
   #nav { opacity: 1 }
@@ -78,7 +78,7 @@
             <span class="post-meta-separator">|</span>
             <i class="fas fa-history fa-fw post-meta-icon"></i>
             <span class="post-meta-label">更新于</span>
-            <time class="post-meta-date-updated" datetime="2026-03-13T06:30:50.363Z" title="更新于 2026-03-13 06:30:50">2026-03-13</time>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:12:39.181Z" title="更新于 2026-03-13 07:12:39">2026-03-13</time>
           </span>
           
           <span class="post-meta-categories">
@@ -97,7 +97,7 @@
     <div id="post">
       <article class="post-content" id="article-container">
         <h1 id="Socket接口的分层"><a href="#Socket接口的分层" class="headerlink" title="Socket接口的分层"></a>Socket接口的分层</h1><p>Socket的英文原本意思是 <code>孔</code> 或 <code>插座</code>。但在计算机科学中通常被称作为 <code>套接字</code>，主要用于相同机器的不同进程间或者不同机器间的通信。Socket的使用很多网络编程的书籍都有介绍，所以本文不打算介绍Socket的使用，只讨论Socket的具体实现，所以如果对Socket不太了解的同学可以先查阅Socket相关的资料或者书籍。</p>
-<p>在Linux内核中，Socket的实现分为三层，第一层是 <code>GLIBC接口层</code>，第二层是 <code>BSD接口层</code>，第三层是 <code>具体的协议层</code>（如Unix sokcet或者INET socket）。如下图所示： <img src="/Socket%E6%8E%A5%E5%8F%A3/640.png" alt="Image"></p>
+<p>在Linux内核中，Socket的实现分为三层，第一层是 <code>GLIBC接口层</code>，第二层是 <code>BSD接口层</code>，第三层是 <code>具体的协议层</code>（如Unix sokcet或者INET socket）。如下图所示： <img src="/640.png" alt="Image"></p>
 <p>GLIBC层在用户态实现，提供一系列的socket族系统调用让用户使用。BSD层在内核态实现，主要是为了让不同的协议能够使用同一套接口来访问而创造的，如上图所示， <code>Unix socket</code> 和 <code>Inet socket</code> 都可以通过接入 <code>BSD接口层</code> 来向用户提供相同的接口。 <code>具体的协议层</code> 是为了实现不同的协议或者功能而存在的，如 <code>Unix socket</code> 主要是用于进程间通信，<code>Inet socket</code> 主要用于网络数据传输等。</p>
 <h2 id="GLIBC接口层"><a href="#GLIBC接口层" class="headerlink" title="GLIBC接口层"></a>GLIBC接口层</h2><p><code>GLIBC接口层</code> 提供了一系列的接口函数供用户使用（可以成为 <code>Socket族系统调用</code>），如下：</p>
 <ul>
@@ -140,7 +140,7 @@
 
 <p>从上面的定义可以看出，在 GLIBC 中的定义跟 Linux 内核中的定义是一一对应的。</p>
 <p>所以从中得到，当在用户态调用 <code>socket()</code> 函数时实际调用的是 <code>sys_socket()</code> 内核函数，其他的 <code>Socket族系统调用</code> 道理与 <code>socket()</code> 系统调用一致。</p>
-<p>通过下面一幅图来展示 <code>Socket族系统调用</code> 的原理： <img src="/Socket%E6%8E%A5%E5%8F%A3/640-1648278162793.png" alt="Image"></p>
+<p>通过下面一幅图来展示 <code>Socket族系统调用</code> 的原理： <img src="/640-1648278162793.png" alt="Image"></p>
 <h3 id="sys-socket-函数"><a href="#sys-socket-函数" class="headerlink" title="sys_socket()函数"></a>sys_socket()函数</h3><p><code>sys_socket()</code> 函数用于创建一个 socket 对象，并且返回一个文件描述符。其实现如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">asmlinkage long sys_socket(int family, int type, int protocol)</span><br><span class="line">&#123;</span><br><span class="line">    int retval;</span><br><span class="line">    struct socket *sock;</span><br><span class="line"></span><br><span class="line">    retval = sock_create(family, type, protocol, &amp;sock);</span><br><span class="line">    if (retval &lt; 0)</span><br><span class="line">        goto out;</span><br><span class="line"></span><br><span class="line">    retval = sock_map_fd(sock);</span><br><span class="line">    if (retval &lt; 0)</span><br><span class="line">        goto out_release;</span><br><span class="line"></span><br><span class="line">out:</span><br><span class="line">    return retval;</span><br><span class="line"></span><br><span class="line">out_release:</span><br><span class="line">    sock_release(sock);</span><br><span class="line">    return retval;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 

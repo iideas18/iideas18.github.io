@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
 <meta property="article:published_time" content="2022-04-27T07:55:34.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:30:50.363Z">
+<meta property="article:modified_time" content="2026-03-13T07:12:39.181Z">
 <meta property="article:author" content="哎呦，好烦！">
 
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-03-13 06:30:50'
+  postUpdate: '2026-03-13 07:12:39'
 }</script>
 <noscript><style type="text/css">
   #nav { opacity: 1 }
@@ -78,7 +78,7 @@
             <span class="post-meta-separator">|</span>
             <i class="fas fa-history fa-fw post-meta-icon"></i>
             <span class="post-meta-label">更新于</span>
-            <time class="post-meta-date-updated" datetime="2026-03-13T06:30:50.363Z" title="更新于 2026-03-13 06:30:50">2026-03-13</time>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:12:39.181Z" title="更新于 2026-03-13 07:12:39">2026-03-13</time>
           </span>
           
           <span class="post-meta-categories">
@@ -98,7 +98,7 @@
       <article class="post-content" id="article-container">
         <h2 id="1-什么是多路复用IO"><a href="#1-什么是多路复用IO" class="headerlink" title="1. 什么是多路复用IO"></a>1. 什么是多路复用IO</h2><p>多路复用IO (IO multiplexing)<code>是指内核一旦发现进程指定的一个或者多个IO条件准备读取，它就通知该进程。在Linux系统中，常用的</code>多路复用IO<code>手段有</code>select<code>、</code>poll<code>和</code>epoll。</p>
 <p>多路复用IO<code>主要用于处理网络请求，例如可以把多个请求句柄添加到</code>select<code>中进行监听，当有请求可进行IO的时候就会告知进程，并且把就绪的请求句柄保存下来，进程只需要对这些就绪的请求进行IO操作即可。下面通过一幅图来展示</code>select 的使用方式（图片来源于网络）：</p>
-<p><img src="/IO%20%E5%A4%9A%E8%B7%AF/640.jpg" alt="Image"></p>
+<p><img src="/640.jpg" alt="Image"></p>
 <h2 id="2-多路复用IO实现原理"><a href="#2-多路复用IO实现原理" class="headerlink" title="2. 多路复用IO实现原理"></a>2. 多路复用IO实现原理</h2><p>为了更简明的解释 <code>多路复用IO</code> 的原理，这里使用 <code>select</code> 系统调用作为分析对象。因为 <code>select</code> 的实现比较简单，而现在流行的 <code>epoll</code> 由于处于性能考虑，实现则比较复杂，不便于理解 <code>多路复用IO</code> 的原理，当然当理解了 <code>select</code> 的实现原理后，对 <code>epoll</code> 的实现就能应刃而解了。</p>
 <h3 id="2-1-select系统调用的使用"><a href="#2-1-select系统调用的使用" class="headerlink" title="2.1 select系统调用的使用"></a>2.1 select系统调用的使用</h3><p>要使用 <code>select</code> 来监听socket是否可以进行IO，首先需要把其添加到一个类型为 <code>fd_set</code> 的结构中，然后通过调用 <code>select()</code> 系统调用来进行监听，下面代码介绍了怎么使用 <code>select</code> 来对socket进行监听的：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">socket_can_read</span><span class="params">(<span class="type">int</span> fd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> retval;</span><br><span class="line">    fd_set set;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">timeval</span> tv;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">FD_ZERO</span>(&amp;set);</span><br><span class="line">    <span class="built_in">FD_SET</span>(fd, &amp;set);</span><br><span class="line"></span><br><span class="line">    tv.tv_sec = tv.tv_usec = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    retval = <span class="built_in">select</span>(fd<span class="number">+1</span>, &amp;set, <span class="literal">NULL</span>, <span class="literal">NULL</span>, &amp;tv);</span><br><span class="line">    <span class="keyword">if</span> (retval &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">FD_ISSET</span>(fd, &amp;set) ? <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
