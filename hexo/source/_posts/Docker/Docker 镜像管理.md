@@ -1,6 +1,7 @@
 ---
 title: "Docker镜像管理"
 date: 2022-03-29 16:24:50
+cover: "/2022/03/29/Docker/Docker 镜像管理/image-20220329154630846.png"
 slug: "Docker 镜像管理"
 categories:
   - "Docker"

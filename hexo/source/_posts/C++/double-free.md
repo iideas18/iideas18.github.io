@@ -1,6 +1,7 @@
 ---
 title: "C++: free(): double free detected问题分析和处理"
 date: 2022-10-09 15:46:04
+cover: "/2022/10/09/C++/double-free/image-20221009151156142.png"
 slug: "double-free"
 categories:
   - "C++"

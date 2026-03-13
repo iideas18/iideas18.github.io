@@ -1,6 +1,7 @@
 ---
 title: "namespace原理与实现"
 date: 2022-03-26 14:37:40
+cover: "/2022/03/26/Linux/namespace原理与实现/640.png"
 categories:
   - "Linux"
 ---

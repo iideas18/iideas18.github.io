@@ -1,6 +1,7 @@
 ---
 title: "Spark dataset api 列表 & 练习"
 date: 2019-10-31 18:27:38
+cover: "https://img-blog.csdn.net/20180521215120379"
 slug: "Spark dataset api "
 categories:
   - "Spark note"

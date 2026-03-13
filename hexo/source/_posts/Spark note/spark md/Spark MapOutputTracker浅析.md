@@ -1,6 +1,7 @@
 ---
 title: "Spark MapOutputTracker浅析"
 date: 2020-06-05 17:07:50
+cover: "https:////upload-images.jianshu.io/upload_images/3083300-5c354211b99feb5f.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp"
 categories:
   - "Spark note"
   - "spark md"

@@ -1,6 +1,7 @@
 ---
 title: "epoll"
 date: 2022-03-27 12:41:14
+cover: "/2022/03/27/Linux/epoll/640.jpg"
 categories:
   - "Linux"
 ---

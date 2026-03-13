@@ -1,6 +1,7 @@
 ---
 title: "Redis 事件驱动分析"
 date: 2022-03-26 15:06:56
+cover: "/2022/03/26/Redis/Redis 事件驱动分析/640.jpg"
 categories:
   - "Redis"
 ---

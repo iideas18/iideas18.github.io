@@ -1,6 +1,7 @@
 ---
 title: "template"
 date: 2022-10-08 20:21:38
+cover: "/2022/10/08/C++/template/image-20221007013055866.png"
 categories:
   - "C++"
 ---

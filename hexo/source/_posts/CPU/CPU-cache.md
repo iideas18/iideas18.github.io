@@ -1,6 +1,7 @@
 ---
 title: "CPU缓存(Cache)背后的运行逻辑1-缓存必知"
 date: 2022-05-27 20:01:02
+cover: "/2022/05/27/CPU/CPU-cache/v2-4613e0ab9ddffd9224bff2e3e0791b21_1440w.jpg"
 slug: "CPU-cache"
 categories:
   - "CPU"

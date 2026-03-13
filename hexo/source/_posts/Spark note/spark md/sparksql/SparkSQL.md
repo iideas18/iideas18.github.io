@@ -1,6 +1,7 @@
 ---
 title: "SparkSQL简介及入门"
 date: 2019-09-30 17:46:52
+cover: "https://static.oschina.net/uploads/space/2018/0513/095518_2XJF_3754001.png"
 slug: "SparkSQL"
 categories:
   - "Spark note"

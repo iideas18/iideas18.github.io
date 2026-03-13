@@ -1,6 +1,7 @@
 ---
 title: "Map 函数"
 date: 2020-06-04 23:58:24
+cover: "https://images2015.cnblogs.com/blog/776259/201604/776259-20160410013320031-1234218566.png"
 slug: "Spark map"
 categories:
   - "Spark note"

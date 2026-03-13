@@ -1,6 +1,7 @@
 ---
 title: "Memcached源码分析 - 源码分析之总结篇"
 date: 2022-03-09 15:58:14
+cover: "/2022/03/09/memecached/Memcache_8/image-20220309155404419.png"
 slug: "Memcache_8"
 categories:
   - "memecached"

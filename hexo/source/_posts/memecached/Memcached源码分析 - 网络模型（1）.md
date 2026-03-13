@@ -1,6 +1,7 @@
 ---
 title: "Memcached源码分析 - 网络模型（1）"
 date: 2022-03-08 15:14:54
+cover: "https://upload-images.jianshu.io/upload_images/6302559-7b933753b04ac9bb.png?imageMogr2/auto-orient/strip|imageView2/2/w/856/format/webp"
 categories:
   - "memecached"
 ---

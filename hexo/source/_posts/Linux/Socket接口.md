@@ -1,6 +1,7 @@
 ---
 title: "Socket接口的分层"
 date: 2022-03-26 15:03:04
+cover: "/2022/03/26/Linux/Socket接口/640.png"
 slug: "Socket接口"
 categories:
   - "Linux"

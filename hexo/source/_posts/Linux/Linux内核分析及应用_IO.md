@@ -1,6 +1,7 @@
 ---
 title: "第5章 输入输出"
 date: 2022-04-27 15:32:04
+cover: "/2022/04/27/Linux/Linux内核分析及应用_IO/image-20220427152410287.png"
 slug: "Linux内核分析及应用_IO"
 categories:
   - "Linux"

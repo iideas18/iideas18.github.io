@@ -1,6 +1,7 @@
 ---
 title: "[Spark 核心篇-SparkContext](https://www.cnblogs.com/xia520pi/p/8609602.html)"
 date: 2020-06-07 17:53:20
+cover: "https://images2018.cnblogs.com/blog/202708/201803/202708-20180322195124565-568137418.png"
 slug: "Spark 核心篇-SparkContext"
 categories:
   - "Spark note"

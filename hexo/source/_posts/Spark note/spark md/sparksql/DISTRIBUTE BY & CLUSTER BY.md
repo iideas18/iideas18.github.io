@@ -1,6 +1,7 @@
 ---
 title: "64- 大数据-hive 查询数据八：distribute by 分发"
 date: 2019-11-13 19:06:14
+cover: "https://cdn-sv1.deepsense.ai/wp-content/uploads/2016/05/diagram-01-247x300.png"
 slug: "DISTRIBUTE BY & CLUSTER BY"
 categories:
   - "Spark note"

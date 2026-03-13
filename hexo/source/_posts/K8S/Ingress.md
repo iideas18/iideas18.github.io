@@ -1,6 +1,7 @@
 ---
 title: "Ingress的概念和原理"
 date: 2022-04-07 16:46:32
+cover: "/2022/04/07/K8S/Ingress/image-20220407162051131.png"
 slug: "Ingress"
 categories:
   - "K8S"

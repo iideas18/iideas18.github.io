@@ -1,6 +1,7 @@
 ---
 title: "scala之Array的方法"
 date: 2019-11-22 19:33:22
+cover: "https://img-blog.csdn.net/20151201103711927"
 slug: "Array"
 categories:
   - "Spark note"

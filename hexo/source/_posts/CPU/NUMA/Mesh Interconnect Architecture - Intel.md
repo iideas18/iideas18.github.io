@@ -1,6 +1,7 @@
 ---
 title: "**Mesh Interconnect Architecture - Intel**"
 date: 2022-11-05 10:46:16
+cover: "https://en.wikichip.org/w/images/thumb/1/1b/intel_mesh_overview.svg/600px-intel_mesh_overview.svg.png"
 slug: "Mesh Interconnect Architecture - Intel"
 categories:
   - "CPU"

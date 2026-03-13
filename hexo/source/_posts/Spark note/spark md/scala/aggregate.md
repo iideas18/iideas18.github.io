@@ -1,6 +1,7 @@
 ---
 title: "spark aggregate函数详解"
 date: 2019-11-01 04:10:04
+cover: "https://img-blog.csdn.net/20180114163912311?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMTcyNDQwMg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast"
 slug: "aggregate"
 categories:
   - "Spark note"

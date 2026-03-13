@@ -1,6 +1,7 @@
 ---
 title: "什么是RPC？"
 date: 2020-06-06 17:42:00
+cover: "https://upload.jianshu.io/users/upload_avatars/7632302/86cc7be7-09bc-46d5-9e98-2491956f4f76.jpg?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96/format/webp"
 categories:
   - "Spark note"
   - "spark md"

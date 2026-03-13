@@ -1,6 +1,7 @@
 ---
 title: "Kubernetes Prometheus Monitoring: Metrics, Scrape and Installation with Helm"
 date: 2022-04-05 22:31:12
+cover: "https://k21academy.com/wp-content/uploads/2021/06/API_MatricsServer-1-1.png"
 slug: "Kubernetes Prometheus Monitoring Metrics, Scrape and Installation with Helm"
 categories:
   - "K8S"

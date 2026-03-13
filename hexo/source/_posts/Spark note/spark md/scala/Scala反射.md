@@ -1,6 +1,7 @@
 ---
 title: "初识Scala反射"
 date: 2019-11-01 05:18:48
+cover: "https://yqfile.alicdn.com/img_6e8fea92a4e8c66c507a6bfbfd0f16c8.jpeg"
 slug: "Scala反射"
 categories:
   - "Spark note"

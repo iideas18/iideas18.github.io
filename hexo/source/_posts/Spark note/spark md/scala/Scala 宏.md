@@ -1,6 +1,7 @@
 ---
 title: "[了解Scala 宏](https://www.cnblogs.com/barrywxx/p/10747025.html)"
 date: 2019-11-01 05:35:00
+cover: "https://yqfile.alicdn.com/img_bd8e14bdd3b04573bfeeaaa0460d19d7.jpeg"
 slug: "Scala 宏"
 categories:
   - "Spark note"

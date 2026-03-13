@@ -1,6 +1,7 @@
 ---
 title: "深入解析Spark中的RPC"
 date: 2020-06-07 17:58:10
+cover: "https://pic1.zhimg.com/21a0c70a8_xs.jpg"
 categories:
   - "Spark note"
   - "spark md"

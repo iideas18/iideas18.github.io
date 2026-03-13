@@ -1,6 +1,7 @@
 ---
 title: "Netfileter & iptables 实现"
 date: 2022-03-27 12:39:08
+cover: "/2022/03/27/Linux/Netfileter & iptables 实现/640-1648355509107.png"
 categories:
   - "Linux"
 ---

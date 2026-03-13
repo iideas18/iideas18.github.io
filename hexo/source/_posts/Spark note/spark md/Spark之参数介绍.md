@@ -1,6 +1,7 @@
 ---
 title: "Spark之参数介绍"
 date: 2019-09-26 22:14:00
+cover: "https://endymecy.gitbooks.io/spark-config-and-tuning/content/imgs/1.1.png"
 categories:
   - "Spark note"
   - "spark md"

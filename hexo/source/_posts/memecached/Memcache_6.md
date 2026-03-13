@@ -1,6 +1,7 @@
 ---
 title: "Memcached源码分析 - LRU算法（6）"
 date: 2022-03-09 15:44:32
+cover: "/2022/03/09/memecached/Memcache_6/image-20220309153756064.png"
 slug: "Memcache_6"
 categories:
   - "memecached"

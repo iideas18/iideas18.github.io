@@ -1,6 +1,7 @@
 ---
 title: "Docker网络管理"
 date: 2022-03-30 17:40:22
+cover: "/2022/03/30/Docker/Docker 网络管理/image-20220330143641711.png"
 slug: "Docker 网络管理"
 categories:
   - "Docker"

@@ -1,6 +1,7 @@
 ---
 title: "Linux 进程、线程以及中断上下文切换"
 date: 2022-04-28 21:48:42
+cover: "/2022/04/28/Linux/Linux 上下文切换/v2-a56fb78ff6df50726afc35f7ab346a5b_1440w.jpg"
 slug: "Linux 上下文切换"
 categories:
   - "Linux"

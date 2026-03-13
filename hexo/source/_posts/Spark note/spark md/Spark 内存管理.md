@@ -1,6 +1,7 @@
 ---
 title: "Spark 内存管理"
 date: 2019-09-26 17:22:28
+cover: "https://images2018.cnblogs.com/blog/1228818/201804/1228818-20180426212726300-1935303266.png"
 categories:
   - "Spark note"
   - "spark md"

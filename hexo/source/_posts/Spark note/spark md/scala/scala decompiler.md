@@ -1,6 +1,7 @@
 ---
 title: "scala 编译完生成两个class文件有何不同"
 date: 2019-10-24 17:53:48
+cover: "https://img-blog.csdn.net/2018061323315693?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NtaWxlX2Zyb21fMjAxNQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"
 slug: "scala decompiler"
 categories:
   - "Spark note"

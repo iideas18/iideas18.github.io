@@ -1,6 +1,7 @@
 ---
 title: "虚拟网络设备对（veth）原理"
 date: 2022-03-27 11:53:20
+cover: "/2022/03/27/Linux/虚拟网络设备对（veth）原理/640-1648353036257.png"
 categories:
   - "Linux"
 ---

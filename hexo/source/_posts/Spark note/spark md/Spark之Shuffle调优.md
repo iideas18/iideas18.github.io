@@ -1,6 +1,7 @@
 ---
 title: "[Spark（九）Spark之Shuffle调优](https://www.cnblogs.com/frankdeng/p/9301699.html)"
 date: 2019-10-17 06:04:54
+cover: "https://images2018.cnblogs.com/blog/1228818/201804/1228818-20180426185748765-1326220564.png"
 slug: "Spark之Shuffle调优"
 categories:
   - "Spark note"

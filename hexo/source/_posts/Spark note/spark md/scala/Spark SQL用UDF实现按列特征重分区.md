@@ -1,6 +1,7 @@
 ---
 title: "Spark SQL用UDF实现按列特征重分区"
 date: 2019-11-13 00:27:38
+cover: "https://ask.qcloudimg.com/http-save/yehe-1088682/1m7lnqtpag.jpeg?imageView2/2/w/1620"
 categories:
   - "Spark note"
   - "spark md"

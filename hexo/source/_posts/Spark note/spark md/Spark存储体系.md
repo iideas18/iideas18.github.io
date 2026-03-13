@@ -1,6 +1,7 @@
 ---
 title: "[Spark存储体系](https://www.cnblogs.com/cenglinjinran/p/8476199.html)"
 date: 2019-10-24 05:52:00
+cover: "/2019/10/24/Spark note/spark md/Spark存储体系/file:///C:/Users/zhangxinSI1784/Desktop/spark-store.png"
 slug: "Spark存储体系"
 categories:
   - "Spark note"

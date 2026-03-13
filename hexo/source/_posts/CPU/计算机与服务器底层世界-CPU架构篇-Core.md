@@ -1,6 +1,7 @@
 ---
 title: "计算机与服务器底层世界-CPU架构篇-Core"
 date: 2022-05-27 15:31:22
+cover: "https://pic3.zhimg.com/80/v2-9bedeb0ac0e7f663009cd7fb414e677e_1440w.png"
 categories:
   - "CPU"
 ---

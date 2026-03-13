@@ -1,6 +1,7 @@
 ---
 title: "CPU affinity"
 date: 2022-03-26 22:23:02
+cover: "https://mmbiz.qpic.cn/mmbiz_png/ciab8jTiab9J5oEMviby6FIfsXqKI3qOrjk0WVSicr7GI4DcQUmic656sKpDiaR8Ey7LbxW5V1x67teR8uCd0WYQvh5g/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1"
 categories:
   - "Linux"
 ---

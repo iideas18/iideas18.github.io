@@ -1,6 +1,7 @@
 ---
 title: "Cache"
 date: 2020-06-02 16:09:32
+cover: "https:////upload-images.jianshu.io/upload_images/14070163-ddb75fb3459a9f48.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp"
 categories:
   - "Spark note"
   - "spark md"

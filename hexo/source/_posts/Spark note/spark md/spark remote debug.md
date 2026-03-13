@@ -1,6 +1,7 @@
 ---
 title: "idea远程调试 spark"
 date: 2019-09-30 17:25:38
+cover: "https://img-blog.csdn.net/20171225221929030?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMjM3MzgxNQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast"
 slug: "spark remote debug"
 categories:
   - "Spark note"

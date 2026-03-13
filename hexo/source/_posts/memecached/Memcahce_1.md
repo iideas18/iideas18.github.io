@@ -1,6 +1,7 @@
 ---
 title: "Memcached分析"
 date: 2022-03-09 14:53:04
+cover: "/2022/03/09/memecached/Memcahce_1/image-20220309140410938.png"
 slug: "Memcahce_1"
 categories:
   - "memecached"

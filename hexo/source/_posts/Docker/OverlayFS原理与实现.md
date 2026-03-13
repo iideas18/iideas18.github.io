@@ -1,6 +1,7 @@
 ---
 title: "OverlayFS原理与实现"
 date: 2022-03-26 14:32:54
+cover: "/2022/03/26/Docker/OverlayFS原理与实现/640.png"
 categories:
   - "Docker"
 ---

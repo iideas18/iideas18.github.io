@@ -1,6 +1,7 @@
 ---
 title: "线程池中的锁"
 date: 2022-04-11 15:24:44
+cover: "/2022/04/11/Java/threadpool/20211028205926.png"
 slug: "threadpool"
 categories:
   - "Java"

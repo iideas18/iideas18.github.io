@@ -1,6 +1,7 @@
 ---
 title: "图解Spark Shuffle的发展历程"
 date: 2019-10-17 03:38:14
+cover: "https://img-blog.csdn.net/20180912150108866?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RteTExMTUxNDMwNjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"
 slug: "Spark Shuffle的发展历程"
 categories:
   - "Spark note"

@@ -1,6 +1,7 @@
 ---
 title: "Spark详解04Shuffle 过程"
 date: 2020-06-17 13:21:22
+cover: "https://upload.jianshu.io/users/upload_avatars/1552893/8bd1f15a-ea45-49f3-bc0f-c36caf4c6b36.jpg?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96/format/webp"
 categories:
   - "Spark note"
   - "spark md"

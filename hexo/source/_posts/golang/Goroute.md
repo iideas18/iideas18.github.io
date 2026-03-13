@@ -1,6 +1,7 @@
 ---
 title: "Go-协程机制"
 date: 2022-04-12 16:49:22
+cover: "/2022/04/12/golang/Goroute/image-20220412164209625.png"
 slug: "Goroute"
 categories:
   - "golang"

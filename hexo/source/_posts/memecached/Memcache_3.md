@@ -1,6 +1,7 @@
 ---
 title: "Memcached源码分析 - 消息回应实现"
 date: 2022-03-09 15:16:18
+cover: "/2022/03/09/memecached/Memcache_3/image-20220309151221966.png"
 slug: "Memcache_3"
 categories:
   - "memecached"

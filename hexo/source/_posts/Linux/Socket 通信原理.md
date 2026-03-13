@@ -1,6 +1,7 @@
 ---
 title: "Socket 通信原理"
 date: 2022-04-28 14:58:02
+cover: "https://images.cnblogs.com/cnblogs_com/goodcandle/socket1.jpg"
 categories:
   - "Linux"
 ---

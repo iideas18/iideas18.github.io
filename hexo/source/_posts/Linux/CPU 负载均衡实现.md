@@ -1,6 +1,7 @@
 ---
 title: "CPU负载均衡实现"
 date: 2022-03-27 11:39:14
+cover: "https://mmbiz.qpic.cn/mmbiz_png/ciab8jTiab9J51JZRhQj5rZgHicAO1DAn6lDGcyHqHPA8VC9W53ut3uIY1v1y08BMNqCps7fQej2YP2Cja0ULQEBA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1"
 slug: "CPU 负载均衡实现"
 categories:
   - "Linux"

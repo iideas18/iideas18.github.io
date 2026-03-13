@@ -1,6 +1,7 @@
 ---
 title: "Const"
 date: 2022-10-08 14:44:20
+cover: "/2022/10/08/C++/Const/82f80adb5e9a47aea77322cf5e2202b7.png"
 categories:
   - "C++"
 ---

@@ -1,6 +1,7 @@
 ---
 title: "浅析 Spark Shuffle 内存使用"
 date: 2020-06-09 23:00:08
+cover: "https://tech.youzan.com/spark_memory_1/"
 categories:
   - "Spark note"
   - "spark md"

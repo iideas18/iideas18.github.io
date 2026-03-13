@@ -1,6 +1,7 @@
 ---
 title: "Linux 网卡数据收发过程分析"
 date: 2022-03-26 20:14:28
+cover: "/2022/03/26/Linux/Linux 网卡数据收发过程分析/640-1648296779946.png"
 categories:
   - "Linux"
 ---

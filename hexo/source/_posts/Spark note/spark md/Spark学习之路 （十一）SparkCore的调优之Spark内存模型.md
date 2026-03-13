@@ -1,6 +1,7 @@
 ---
 title: "[Spark学习之路 （十一）SparkCore的调优之Spark内存模型](https://www.cnblogs.com/qingyunzong/p/8955141.html)"
 date: 2020-05-31 02:13:18
+cover: "https://images2018.cnblogs.com/blog/1228818/201804/1228818-20180426211648357-1088243541.png"
 slug: "Spark学习之路 （十一）SparkCore的调优之Spark内存模型"
 categories:
   - "Spark note"

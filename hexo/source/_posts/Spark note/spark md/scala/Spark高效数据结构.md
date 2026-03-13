@@ -1,6 +1,7 @@
 ---
 title: "Spark高效数据结构"
 date: 2019-11-22 22:31:44
+cover: "https://upload-images.jianshu.io/upload_images/1381055-d4312b1f7967af0b.png?imageMogr2/auto-orient/strip|imageView2/2/w/792/format/webp"
 categories:
   - "Spark note"
   - "spark md"

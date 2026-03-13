@@ -1,6 +1,7 @@
 ---
 title: "[技术|Inceptor任务的图形化分析（一）](https://ask.hellobi.com/blog/transwarp/5748)"
 date: 2019-10-18 23:25:46
+cover: "https://ask.hellobi.com/uploads/article/20161221/945471998ade1467cb50c14bcead2c5b.png"
 slug: "Inceptor任务的图形化"
 categories:
   - "Spark note"

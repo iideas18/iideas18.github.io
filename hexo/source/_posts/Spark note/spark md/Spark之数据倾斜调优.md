@@ -1,6 +1,7 @@
 ---
 title: "[Spark（十）Spark之数据倾斜调优](https://www.cnblogs.com/frankdeng/p/9301695.html)"
 date: 2019-10-17 04:04:54
+cover: "https://images2018.cnblogs.com/blog/1228818/201804/1228818-20180425190936210-1283450149.png"
 slug: "Spark之数据倾斜调优"
 categories:
   - "Spark note"

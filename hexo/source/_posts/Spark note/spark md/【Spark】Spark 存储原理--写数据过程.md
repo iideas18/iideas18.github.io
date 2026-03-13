@@ -1,6 +1,7 @@
 ---
 title: "【Spark】Spark 存储原理--写数据过程"
 date: 2020-06-05 17:09:02
+cover: "https://upload-images.jianshu.io/upload_images/7017386-a7c96952c6a33118.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/825/format/webp"
 categories:
   - "Spark note"
   - "spark md"

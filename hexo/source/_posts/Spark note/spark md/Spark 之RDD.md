@@ -1,6 +1,7 @@
 ---
 title: "Spark 之RDD"
 date: 2020-06-04 15:25:44
+cover: "https://upload.jianshu.io/users/upload_avatars/2015574/a6dc1ae89c3c?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96/format/webp"
 categories:
   - "Spark note"
   - "spark md"

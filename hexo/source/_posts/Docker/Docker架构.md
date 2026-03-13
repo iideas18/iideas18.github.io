@@ -1,6 +1,7 @@
 ---
 title: "Docker架构概览"
 date: 2022-03-29 15:02:20
+cover: "/2022/03/29/Docker/Docker架构/image-20220328165700005.png"
 slug: "Docker架构"
 categories:
   - "Docker"

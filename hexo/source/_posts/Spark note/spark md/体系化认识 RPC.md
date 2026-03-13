@@ -1,6 +1,7 @@
 ---
 title: "体系化认识 RPC"
 date: 2020-06-07 17:53:12
+cover: "https://static001.infoq.cn/resource/image/59/60/59eebc21768e6d654ef4337642de5360.jpg"
 categories:
   - "Spark note"
   - "spark md"

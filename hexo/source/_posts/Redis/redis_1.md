@@ -1,6 +1,7 @@
 ---
 title: "Redis 命令执行过程(上)"
 date: 2022-03-10 11:05:00
+cover: "/2022/03/10/Redis/redis_1/v2-e82b0c5f0cef463865fad3faba45cc47_1440w.jpg"
 slug: "redis_1"
 categories:
   - "Redis"

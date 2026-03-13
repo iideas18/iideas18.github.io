@@ -1,6 +1,7 @@
 ---
 title: "[SparkSQL的3种Join实现](https://www.cnblogs.com/0xcafedaddy/p/7614299.html)"
 date: 2019-11-14 00:33:16
+cover: "http://mmbiz.qpic.cn/mmbiz_png/v1TDugurKBRwjY9vc0CxpmicOUeX25fCxcYz0Fg7MYMebwPwwA82MjhUibCB39cTM36JeL2nic4N2X5BoaLmeHGwQ/0?wx_fmt=png"
 slug: "SparkSQL的3种Join实现"
 categories:
   - "Spark note"

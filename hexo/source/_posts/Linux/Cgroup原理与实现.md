@@ -1,6 +1,7 @@
 ---
 title: "Cgroup原理与实现"
 date: 2022-03-26 15:09:28
+cover: "/2022/03/26/Linux/Cgroup原理与实现/640-1648278265986.jpg"
 categories:
   - "Linux"
 ---

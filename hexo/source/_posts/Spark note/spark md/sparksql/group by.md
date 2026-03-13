@@ -1,6 +1,7 @@
 ---
 title: "group by两个或多个字段的举例用法"
 date: 2019-10-31 21:29:04
+cover: "https://blog.csdn.net/xu_ok/article/details/77839362"
 slug: "group by"
 categories:
   - "Spark note"

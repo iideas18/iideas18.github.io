@@ -1,6 +1,7 @@
 ---
 title: "Spark tunning"
 date: 2019-10-28 19:14:12
+cover: "/2019/10/28/Spark note/spark md/Spark tunning//home/gpu-sim/Pictures/Screenshot"
 categories:
   - "Spark note"
   - "spark md"

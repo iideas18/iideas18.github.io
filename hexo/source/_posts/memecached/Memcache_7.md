@@ -1,6 +1,7 @@
 ---
 title: "Memcached源码分析 - 存储机制Slabs"
 date: 2022-03-09 15:52:14
+cover: "/2022/03/09/memecached/Memcache_7/image-20220309154836944.png"
 slug: "Memcache_7"
 categories:
   - "memecached"

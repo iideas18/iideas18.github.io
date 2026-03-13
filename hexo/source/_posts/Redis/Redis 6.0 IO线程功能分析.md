@@ -1,6 +1,7 @@
 ---
 title: "Redis 6.0 IO线程功能分析"
 date: 2022-03-26 19:54:26
+cover: "/2022/03/26/Redis/Redis 6.0 IO线程功能分析/640.jpg"
 categories:
   - "Redis"
 ---

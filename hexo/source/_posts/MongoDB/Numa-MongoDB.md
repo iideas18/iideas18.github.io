@@ -1,6 +1,7 @@
 ---
 title: "使用numactl 启动mongoDB"
 date: 2022-03-12 23:43:50
+cover: "/2022/03/12/MongoDB/Numa-MongoDB/Untitled/12979420-aac44e196bd3b915.webp"
 slug: "Numa-MongoDB"
 categories:
   - "MongoDB"

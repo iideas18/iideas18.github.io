@@ -1,6 +1,7 @@
 ---
 title: "Spark RPC 到底是个什么鬼？"
 date: 2020-06-07 18:00:04
+cover: "https://upload.jianshu.io/users/upload_avatars/4473093/5f28ad8b-ec24-45ba-ad32-d26730cda440.jpg?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96/format/webp"
 categories:
   - "Spark note"
   - "spark md"

@@ -1,6 +1,7 @@
 ---
 title: "Spark分区方式详解"
 date: 2019-10-17 03:35:50
+cover: "https://img-blog.csdn.net/20180911095712186?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RteTExMTUxNDMwNjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"
 categories:
   - "Spark note"
   - "spark md"

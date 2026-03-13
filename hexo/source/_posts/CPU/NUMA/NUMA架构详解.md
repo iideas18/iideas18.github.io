@@ -1,6 +1,7 @@
 ---
 title: "【计算机体系结构】NUMA架构详解"
 date: 2022-03-14 14:01:58
+cover: "/2022/03/14/CPU/NUMA/NUMA架构详解/Untitled/numa-fsb-3.png"
 slug: "NUMA架构详解"
 categories:
   - "CPU"

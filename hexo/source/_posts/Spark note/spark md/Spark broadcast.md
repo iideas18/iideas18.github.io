@@ -1,6 +1,7 @@
 ---
 title: "Spark broadcast"
 date: 2019-09-29 18:48:22
+cover: "https://images2018.cnblogs.com/blog/1228818/201804/1228818-20180421162057226-1988253385.png"
 categories:
   - "Spark note"
   - "spark md"

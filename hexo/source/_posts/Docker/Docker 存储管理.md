@@ -1,6 +1,7 @@
 ---
 title: "Docker存储管理"
 date: 2022-03-30 14:30:08
+cover: "/2022/03/30/Docker/Docker 存储管理/image-20220330132847550.png"
 slug: "Docker 存储管理"
 categories:
   - "Docker"

@@ -1,6 +1,7 @@
 ---
 title: "Redis与Reactor模式"
 date: 2022-03-10 10:59:04
+cover: "/2022/03/10/Redis/Redis/image-20220310103541266.png"
 slug: "Redis"
 categories:
   - "Redis"

@@ -1,6 +1,7 @@
 ---
 title: "【计算机体系结构】Cache Memory"
 date: 2022-03-14 12:39:08
+cover: "/2022/03/14/CPU/NUMA/Cache Memory/2020-01-06_memory-hierarchy.png"
 slug: "Cache Memory"
 categories:
   - "CPU"

@@ -1,6 +1,7 @@
 ---
 title: "Spark 内存管理的前世今生（上）"
 date: 2020-06-04 15:37:06
+cover: "https://upload-images.jianshu.io/upload_images/204749-f76e9cad68ab24c5.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/735/format/webp"
 categories:
   - "Spark note"
   - "spark md"

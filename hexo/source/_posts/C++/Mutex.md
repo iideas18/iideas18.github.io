@@ -1,6 +1,7 @@
 ---
 title: "浅谈Mutex (Lock)"
 date: 2022-04-28 23:29:38
+cover: "/2022/04/28/C++/Mutex/mutex_benchmark.png"
 slug: "Mutex"
 categories:
   - "C++"

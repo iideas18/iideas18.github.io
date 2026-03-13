@@ -52,6 +52,20 @@ def strip_existing_frontmatter(content: str) -> str:
     return after
 
 
+def first_image_url(body: str, year: str, month: str, day: str,
+                    categories: list, slug: str) -> str | None:
+    """Return the URL of the first image found in the post body, or None."""
+    m = re.search(r'!\[[^\]]*\]\(([^)\s]+)', body)
+    if not m:
+        return None
+    src = m.group(1)
+    if src.startswith(('http://', 'https://')):
+        return src
+    # Local relative image → build root-relative URL matching the Hexo permalink
+    path_parts = [year, month, day] + categories + [slug, src]
+    return '/' + '/'.join(path_parts)
+
+
 def rewrite_image_paths(content: str, stem: str) -> str:
     """
     Replace image references of the form  ![alt](stem/img.ext)  (plain or URL-encoded stem)
@@ -95,10 +109,20 @@ def process_note(md_file: Path) -> Path:
     rel_parts = md_file.relative_to(NOTES_DIR).parts  # e.g. ('C++', 'Const.md')
     categories = list(rel_parts[:-1])                  # e.g. ['C++']
 
+    # The slug used in the permalink (:title) — Hexo uses slug if set, else title
+    permalink_slug = stem  # always use stem for consistency
+
+    # --- rewrite image paths ---
+    new_body = rewrite_image_paths(body, stem)
+
+    # --- detect cover image ---
+    cover_url = first_image_url(new_body, year, month, day, categories, permalink_slug)
+
     # --- build front matter ---
     fm_lines = ['---', f'title: {yaml_str(title)}', f'date: {date_str}']
+    if cover_url:
+        fm_lines.append(f'cover: {yaml_str(cover_url)}')
     if stem != title:
-        # keep slug = filename stem so image folder path is predictable
         fm_lines.append(f'slug: {yaml_str(stem)}')
     if categories:
         fm_lines.append('categories:')
@@ -106,12 +130,6 @@ def process_note(md_file: Path) -> Path:
             fm_lines.append(f'  - {yaml_str(cat)}')
     fm_lines += ['---', '']
     front_matter = '\n'.join(fm_lines) + '\n'
-
-    # The slug used in the permalink (:title) — Hexo uses slug if set, else title
-    permalink_slug = stem  # always use stem for consistency
-
-    # --- rewrite image paths ---
-    new_body = rewrite_image_paths(body, stem)
 
     # --- write post ---
     rel_path = md_file.relative_to(NOTES_DIR)   # e.g. C++/Const.md

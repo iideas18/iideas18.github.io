@@ -1,6 +1,7 @@
 ---
 title: "[spark RPC详解](https://www.cnblogs.com/superhedantou/p/7570692.html)"
 date: 2020-06-07 18:03:06
+cover: "https://images2017.cnblogs.com/blog/942797/201709/942797-20170921194542493-687838081.png"
 slug: "spark RPC详解"
 categories:
   - "Spark note"

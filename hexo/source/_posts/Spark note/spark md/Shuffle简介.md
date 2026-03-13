@@ -1,6 +1,7 @@
 ---
 title: "Shuffle简介"
 date: 2020-06-04 13:05:32
+cover: "http://www.2cto.com/uploadfile/Collfiles/20171206/20171206093240327.png"
 categories:
   - "Spark note"
   - "spark md"

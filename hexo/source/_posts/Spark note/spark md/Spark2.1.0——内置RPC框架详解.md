@@ -1,6 +1,7 @@
 ---
 title: "Spark2.1.0——内置RPC框架详解"
 date: 2020-06-07 18:02:44
+cover: "https://img2018.cnblogs.com/blog/816981/201810/816981-20181016145505263-870721231.jpg"
 categories:
   - "Spark note"
   - "spark md"

@@ -1,6 +1,7 @@
 ---
 title: "Scala集合的mutable和immutable"
 date: 2019-11-22 02:22:08
+cover: "https://img-blog.csdn.net/20181007125325469?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pob25ncWkyNTEz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"
 categories:
   - "Spark note"
   - "spark md"

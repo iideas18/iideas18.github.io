@@ -1,6 +1,7 @@
 ---
 title: "Spark DataSet介绍"
 date: 2019-11-07 18:00:10
+cover: "https://img-blog.csdnimg.cn/20190425121305761.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2dka3l4eTIwMTM=,size_16,color_FFFFFF,t_70"
 categories:
   - "Spark note"
   - "spark md"

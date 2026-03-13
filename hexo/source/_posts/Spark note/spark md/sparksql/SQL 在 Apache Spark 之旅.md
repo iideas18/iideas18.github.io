@@ -1,6 +1,7 @@
 ---
 title: "[一条 SQL 在 Apache Spark 之旅（上）](https://www.iteblog.com/archives/2561.html)"
 date: 2019-10-18 03:22:08
+cover: "https://s.iteblog.com/pic/spark/spark_architecture-iteblog.png"
 slug: "SQL 在 Apache Spark 之旅"
 categories:
   - "Spark note"

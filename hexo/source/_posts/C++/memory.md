@@ -1,6 +1,7 @@
 ---
 title: "memory"
 date: 2022-10-09 14:06:32
+cover: "/2022/10/09/C++/memory/2698113422-75542ea4f7639c34_fix732.png"
 categories:
   - "C++"
 ---

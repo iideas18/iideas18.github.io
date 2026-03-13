@@ -1,6 +1,7 @@
 ---
 title: "Spark开发性能调优"
 date: 2019-10-21 22:40:58
+cover: "http://static.zybuluo.com/vin123456/l5q1o7hcjjpkltvjgdw8sqf0/image_1bh8t33kl1k5r1veui9u1cjr1bbd9.png"
 categories:
   - "Spark note"
   - "spark md"

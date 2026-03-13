@@ -1,6 +1,7 @@
 ---
 title: "Spark FSI tunning"
 date: 2020-03-25 14:12:24
+cover: "/2020/03/25/Spark note/FSI/Spark FSI tunning/C:\\Users\\zhouy1\\AppData\\Roaming\\Typora\\typora-user-images\\image-20200323150543727.png"
 categories:
   - "Spark note"
   - "FSI"

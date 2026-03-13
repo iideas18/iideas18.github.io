@@ -1,6 +1,7 @@
 ---
 title: "SQL之nvl()函数"
 date: 2019-11-14 23:40:50
+cover: "https://img-blog.csdn.net/20171127103446534?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjExMDE1ODc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast"
 slug: "Untitled 3"
 categories:
   - "Spark note"

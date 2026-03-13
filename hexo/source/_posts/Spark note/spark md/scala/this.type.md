@@ -1,6 +1,7 @@
 ---
 title: "scala this.type"
 date: 2019-11-22 18:06:12
+cover: "http://static.oschina.net/uploads/space/2012/0101/001428_lkeG_103999.png"
 slug: "this.type"
 categories:
   - "Spark note"

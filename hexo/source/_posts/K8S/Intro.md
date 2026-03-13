@@ -1,6 +1,7 @@
 ---
 title: "Kubernetes"
 date: 2022-04-03 21:26:30
+cover: "/2022/04/03/K8S/Intro/image-20220403212617804.png"
 slug: "Intro"
 categories:
   - "K8S"

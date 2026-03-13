@@ -1,6 +1,7 @@
 ---
 title: "Memcached源码分析 - TCP命令解析实现（2）"
 date: 2022-03-09 15:08:50
+cover: "/2022/03/09/memecached/Memcache_2/image-20220309143019776.png"
 slug: "Memcache_2"
 categories:
   - "memecached"

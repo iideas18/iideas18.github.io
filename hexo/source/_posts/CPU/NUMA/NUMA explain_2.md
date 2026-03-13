@@ -1,6 +1,7 @@
 ---
 title: "1. NUMA架构的CPU -- 你真的用好了么？"
 date: 2022-03-14 13:31:52
+cover: "/2022/03/14/CPU/NUMA/NUMA explain_2/numa.png"
 slug: "NUMA explain_2"
 categories:
   - "CPU"

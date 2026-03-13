@@ -1,6 +1,7 @@
 ---
 title: "进程与线程"
 date: 2022-04-15 23:53:44
+cover: "/2022/04/15/Linux/Linux内核分析及应用_进程和线程/image-20220414230607715.png"
 slug: "Linux内核分析及应用_进程和线程"
 categories:
   - "Linux"

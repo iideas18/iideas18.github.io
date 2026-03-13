@@ -1,6 +1,7 @@
 ---
 title: "2. Linux I/O 多路复用实现"
 date: 2022-04-27 15:55:34
+cover: "/2022/04/27/Linux/IO 多路/640.jpg"
 slug: "IO 多路"
 categories:
   - "Linux"

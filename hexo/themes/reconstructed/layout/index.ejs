@@ -2,7 +2,6 @@
   var siteTitle  = config.title || "iideas's Blog";
   var siteUrl    = config.url || 'https://iideas18.github.io';
   var siteAuthor = config.author || '哎呦，好烦！';
-  var defaultImg = 'https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg';
   var posts = page.posts ? page.posts.toArray() : [];
   // Latest post update date for GLOBAL_CONFIG_SITE
   var latestUpdate = posts.length > 0
@@ -89,11 +88,21 @@
         var excerpt = post.excerpt || '';
         // Strip HTML tags for plain text excerpt
         excerpt = excerpt.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().slice(0, 200);
+        // Determine cover image: front matter > first image in content > picsum seed
+        var cover = post.cover || '';
+        if (!cover && post.content) {
+          var imgMatch = post.content.match(/<img[^>]+src=['"]([^'"]+)['"]/);
+          if (imgMatch) cover = imgMatch[1];
+        }
+        if (!cover) {
+          var seed = encodeURIComponent((post.title || post.path || '').slice(0, 40));
+          cover = 'https://picsum.photos/seed/' + seed + '/560/250';
+        }
       %>
       <div class="recent-post-item">
         <div class="post_cover left_radius">
           <a href="<%= postUrl %>" title="<%- post.title %>">
-            <img class="post_bg" src="<%= defaultImg %>" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="<%- post.title %>">
+            <img class="post_bg" src="<%= cover %>" onerror="this.onerror=null;this.src='https://picsum.photos/seed/fallback/560/250'" alt="<%- post.title %>">
           </a>
         </div>
         <div class="recent-post-info">

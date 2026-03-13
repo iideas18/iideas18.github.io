@@ -1,6 +1,7 @@
 ---
 title: "Spark中cache和persist的使用及存储级别"
 date: 2019-10-24 04:10:50
+cover: "http://itxw.net/data/attachment/upload/image/201905/1558579552168212.png"
 slug: "Spark 存储级别"
 categories:
   - "Spark note"

@@ -1,6 +1,7 @@
 ---
 title: "malloc内存分配"
 date: 2022-03-26 22:19:56
+cover: "/2022/03/26/Linux/malloc内存分配/640.png"
 categories:
   - "Linux"
 ---

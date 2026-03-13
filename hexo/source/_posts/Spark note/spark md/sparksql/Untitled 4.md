@@ -1,6 +1,7 @@
 ---
 title: "spark sql 之join等函数用法"
 date: 2019-11-18 18:54:38
+cover: "https://img-blog.csdn.net/20170615161609255?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhvdXNpc2h1bw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast"
 slug: "Untitled 4"
 categories:
   - "Spark note"

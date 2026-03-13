@@ -1,6 +1,7 @@
 ---
 title: "spark网络通信-RPC的实现"
 date: 2020-06-07 18:00:38
+cover: "https://cdn2.jianshu.io/assets/default_avatar/3-9a2bcc21a5d89e21dafc73b39dc5f582.jpg"
 categories:
   - "Spark note"
   - "spark md"

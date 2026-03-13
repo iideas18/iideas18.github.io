@@ -1,6 +1,7 @@
 ---
 title: "Spark RPC 通信机制"
 date: 2020-06-07 18:01:14
+cover: "https://upload.jianshu.io/users/upload_avatars/6112189/781f4fd2-269d-4722-ab2a-499f90f2e812?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96/format/webp"
 categories:
   - "Spark note"
   - "spark md"

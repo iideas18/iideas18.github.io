@@ -1,6 +1,7 @@
 ---
 title: "Redis 事件机制详解"
 date: 2022-03-10 15:34:50
+cover: "http://remcarpediem.net/images/19_85/image1.png"
 slug: "Redis_event"
 categories:
   - "Redis"

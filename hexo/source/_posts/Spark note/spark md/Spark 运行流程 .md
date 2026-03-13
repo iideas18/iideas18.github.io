@@ -1,6 +1,7 @@
 ---
 title: "Spark 运行流程 "
 date: 2019-09-29 18:58:48
+cover: "https://images2018.cnblogs.com/blog/1228818/201804/1228818-20180425154512801-941033013.png"
 categories:
   - "Spark note"
   - "spark md"

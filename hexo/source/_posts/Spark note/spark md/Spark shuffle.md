@@ -1,6 +1,7 @@
 ---
 title: "Spark shuffle"
 date: 2020-06-04 15:20:12
+cover: "https://images2018.cnblogs.com/blog/685554/201802/685554-20180226215325806-1535212527.png"
 categories:
   - "Spark note"
   - "spark md"

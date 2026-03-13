@@ -1,6 +1,7 @@
 ---
 title: "[spark sql工作原理、性能优化和spark on hive----转载](https://www.cnblogs.com/parent-absent-son/p/11804682.html)"
 date: 2020-03-07 21:15:12
+cover: "https://img2018.cnblogs.com/i-beta/1502173/201911/1502173-20191106134027083-1089352894.png"
 slug: "spark sql工作原理"
 categories:
   - "Spark note"

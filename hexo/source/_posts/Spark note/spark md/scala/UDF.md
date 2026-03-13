@@ -1,6 +1,7 @@
 ---
 title: "[Spark笔记之使用UDF（User Define Function）](https://www.cnblogs.com/cc11001100/p/9463909.html)"
 date: 2019-11-01 00:40:18
+cover: "https://images2018.cnblogs.com/blog/784924/201808/784924-20180812183618495-371886646.png"
 slug: "UDF"
 categories:
   - "Spark note"

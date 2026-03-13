@@ -1,6 +1,7 @@
 ---
 title: "深入理解Spark RDD抽象模型和编写RDD函数"
 date: 2020-06-04 14:07:28
+cover: "/2020/06/04/Spark note/spark md/深入理解Spark RDD抽象模型和编写RDD函数/C:\\Users\\zhouy1\\AppData\\Roaming\\Typora\\typora-user-images\\image-20200604135045369.png"
 categories:
   - "Spark note"
   - "spark md"

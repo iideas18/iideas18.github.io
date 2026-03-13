@@ -1,6 +1,7 @@
 ---
 title: "Infinity Fabric"
 date: 2022-05-28 21:36:06
+cover: "/2022/05/28/CPU/Inifinity-Fabric/image-20220527200854965.png"
 slug: "Inifinity-Fabric"
 categories:
   - "CPU"

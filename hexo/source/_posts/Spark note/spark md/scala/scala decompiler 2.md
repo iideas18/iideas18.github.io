@@ -1,6 +1,7 @@
 ---
 title: "[Scala 令人着迷的类设计](https://www.cnblogs.com/nowgood/p/ScalaClass.html)"
 date: 2019-11-14 21:30:40
+cover: "https://images2017.cnblogs.com/blog/1182370/201708/1182370-20170808221252355-1567696823.png"
 slug: "scala decompiler 2"
 categories:
   - "Spark note"
