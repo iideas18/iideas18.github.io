@@ -131,6 +131,8 @@
 
     empty.style.display = 'none';
 
+    var forkSort = function (a, b) { return (a.fork ? 1 : 0) - (b.fork ? 1 : 0); };
+
     if (!activeCategory) {
       const groups = {};
       repos.forEach(repo => {
@@ -145,12 +147,12 @@
 
       grid.innerHTML = sortedCategories.map(category => (
         '<div class="pj-section-header">' + escapeHtml(category) + ' <span class="pj-section-count">(' + groups[category].length + ')</span></div>' +
-        '<div class="pj-grid">' + groups[category].map(repoCard).join('') + '</div>'
+        '<div class="pj-grid">' + groups[category].sort(forkSort).map(repoCard).join('') + '</div>'
       )).join('');
       return;
     }
 
-    grid.innerHTML = '<div class="pj-grid">' + repos.map(repoCard).join('') + '</div>';
+    grid.innerHTML = '<div class="pj-grid">' + repos.slice().sort(forkSort).map(repoCard).join('') + '</div>';
   }
 
   function filterRepos() {
