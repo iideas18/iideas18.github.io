@@ -4,7 +4,8 @@ Fetch GitHub "trending" repos via GitHub Search API and write JSON snapshots
 into trending/data/.  Run from the repository root.
 
 Uses GITHUB_TOKEN if set (5000 req/hr); falls back to anonymous (60 req/hr).
-Uses 'pushed:>DATE' window sorted by stars as a trending approximation.
+Queries repos *created* within each window, sorted by stars descending.
+This surfaces newly-popular repositories rather than all-time heavyweights.
 """
 import json
 import os
@@ -13,10 +14,11 @@ from datetime import datetime, timezone, timedelta
 
 import requests
 
+# (period_name, days_back, min_stars)
 PERIODS = [
-    ("daily",   3,  "Active past 3 days"),
-    ("weekly",  14, "Active past 14 days"),
-    ("monthly", 60, "Active past 60 days"),
+    ("daily",    2,   5),
+    ("weekly",   7,  50),
+    ("monthly", 30, 200),
 ]
 DATA_DIR   = os.path.join(os.path.dirname(__file__), "..", "trending", "data")
 INDEX_FILE = os.path.join(DATA_DIR, "index.json")
@@ -28,12 +30,12 @@ if TOKEN:
     HEADERS["Authorization"] = f"Bearer {TOKEN}"
 
 
-def fetch_period(period: str, days: int) -> list[dict]:
+def fetch_period(period: str, days: int, min_stars: int) -> list[dict]:
     since = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
     resp = requests.get(
         "https://api.github.com/search/repositories",
         headers=HEADERS,
-        params={"q": f"pushed:>{since} stars:>50",
+        params={"q": f"created:>{since} stars:>{min_stars}",
                 "sort": "stars", "order": "desc", "per_page": 25},
         timeout=20,
     )
@@ -66,10 +68,10 @@ def save_json(path: str, data) -> None:
 
 def main():
     index = load_index()
-    for period, days, _ in PERIODS:
-        print(f"Fetching {period} ({days}-day window)…", flush=True)
+    for period, days, min_stars in PERIODS:
+        print(f"Fetching {period} (created past {days}d, stars>{min_stars})…", flush=True)
         try:
-            repos = fetch_period(period, days)
+            repos = fetch_period(period, days, min_stars)
         except Exception as exc:
             print(f"  ERROR: {exc}")
             continue
