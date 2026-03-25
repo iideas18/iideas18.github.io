@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Linux 网卡数据收发过程分析 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 网卡数据收发过程分析">
+<meta property="og:url" content="https://iideas18.github.io/2022/03/26/Linux/Linux 网卡数据收发过程分析/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-03-26T12:14:28.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.220Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/03/26/Linux/Linux 网卡数据收发过程分析/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux 网卡数据收发过程分析',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div><div class="menus_item"><a class="site-page" href="/wiki_repo/"><i class="fa-fw fas fa-book"></i><span> Wiki</span></a></div><div class="menus_item"><a class="site-page" href="/LLM_RoadMap/"><i class="fa-fw fas fa-road"></i><span> LLM RoadMap</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">Linux 网卡数据收发过程分析</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-03-26T12:14:28.000Z" title="发表于 2022-03-26 20:14:28">2022-03-26</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.220Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Linux/">Linux</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <p>一般来说，网卡主要有两个重要的功能：<strong>接收数据</strong> 和 <strong>发送数据</strong>。</p>
+<p>所以，当网卡接收到数据包后，要通知 Linux 内核有数据需要处理。另外，网卡驱动应该提供让 Linux 内核把数据把发送出去的接口。</p>
+<p><code>net_device</code> 结构是 Linux 为了适配不同类型的网卡设备而抽象出来的对象，不同的网卡驱动只需要按 Linux 的规范来填充 <code>net_device</code> 结构的各个成员变量，Linux 内核就能够识别出网卡，并工作起来。</p>
+<p>下面我们将分析网卡设备接收和发送数据包的实现原理。</p>
+<h2 id="net-device-结构"><a href="#net-device-结构" class="headerlink" title="net_device 结构"></a>net_device 结构</h2><p><code>net_device</code> 结构是 Linux 内核对网卡设备的抽象，但由于历史原因，<code>net_device</code> 结构的定义十分复杂。</p>
+<p>不过本文主要分析网卡设备收发数据的实现，所以不会分析 <code>net_device</code> 结构的所有成员。下面主要列出收发数据相关的成员，如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">net_device</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">char</span>                name[IFNAMSIZ];  <span class="comment">// 设备名字</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">int</span>        irq;             <span class="comment">// 中断号</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="built_in">int</span> (*init)(<span class="keyword">struct</span> net_device *dev); <span class="comment">// 设备初始化设备的接口</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="built_in">int</span> (*open)(<span class="keyword">struct</span> net_device *dev); <span class="comment">// 打开设备时调用的接口</span></span><br><span class="line">    <span class="built_in">int</span> (*stop)(<span class="keyword">struct</span> net_device *dev); <span class="comment">// 关闭设备时调用的接口</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发送数据接口</span></span><br><span class="line">    <span class="built_in">int</span> (*hard_start_xmit)(<span class="keyword">struct</span> sk_buff *skb,<span class="keyword">struct</span> net_device *dev);</span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>下面介绍一下各个成员的作用：</p>
+<ul>
+<li><code>name</code>：设备的名字。用于在终端显示设备的名字或者通过设备名字来搜索设备。</li>
+<li><code>irq</code>：中断号。当网卡从网络接收到数据包后，需要产生一个中断来通知 Linux 内核有数据包需要处理，而 <code>irq</code> 就是网卡驱动注册到内核中断服务的中断号。</li>
+<li><code>init</code>、<code>open</code>、<code>stop</code>：分别为设备的初始化接口，打开接口和关闭接口。</li>
+<li><code>hard_start_xmit</code>：当需要通过网卡设备发送数据时，可以调用这个接口来发送数据。</li>
+</ul>
+<p>所以，一个网卡驱动必须完成以下两个工作：</p>
+<ul>
+<li>通过实现 <code>net_device</code> 结构的 <code>hard_start_xmit</code> 方法来提供发送数据的功能。</li>
+<li>通过向内核注册硬件中断服务，来通知内核处理网卡设备接收到的数据包。</li>
+</ul>
+<p>也就是说，发送数据的功能是由 <code>net_device</code> 结构的 <code>hard_start_xmit</code> 方法提供，而通知内核处理接收到的数据包的功能是由网卡的硬件中断提供的。</p>
+<p><strong>图1</strong> 展示了网卡接收和发送数据的过程：</p>
+<p><img src="/640-1648296779946.png" alt="Image"></p>
+<p><strong>图1</strong> 网卡接收和发送数据过程</p>
+<p>上图展示的是 <code>NS8390网卡</code> 接收和发送数据的过程（红色括号为接收过程，蓝色括号为发送过程），从上图可以发现，<code>NS8390网卡驱动</code> 完成了两件事情：</p>
+<ul>
+<li>将 <code>net_device</code> 结构的 <code>hard_start_xmit</code> 方法设置为 <code>ei_start_xmit</code>。</li>
+<li>向 Linux 内核注册了 <code>ei_interrupt</code> 硬件中断服务。</li>
+</ul>
+<p>所以，当网卡接收到数据包时，会触发 <code>ei_interrupt</code> 中断服务来通知内核有数据包需要处理。而当需要通过网卡发送数据时，将会调用 <code>ei_start_xmit</code> 方法把数据发送出去。</p>
+<h2 id="接收数据过程"><a href="#接收数据过程" class="headerlink" title="接收数据过程"></a>接收数据过程</h2><p>当网卡从网络中接收到数据包后，会触发 <code>ei_interrupt</code> 中断服务，我们来看看 <code>ei_interrupt</code> 中断服务的实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">ei_interrupt</span><span class="params">(<span class="type">int</span> irq, <span class="type">void</span> *dev_id, <span class="keyword">struct</span> pt_regs *regs)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">net_device</span> *dev = dev_id;</span><br><span class="line">    <span class="type">long</span> e8390_base;</span><br><span class="line">    <span class="type">int</span> interrupts, nr_serviced = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">ei_device</span> *ei_local;</span><br><span class="line"></span><br><span class="line">    e8390_base = dev-&gt;base_addr;</span><br><span class="line">    ei_local = (<span class="keyword">struct</span> ei_device *)dev-&gt;priv;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">spin_lock</span>(&amp;ei_local-&gt;page_lock);</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// (1) 通过读取网卡的中断类型来进行相应的操作</span></span><br><span class="line">    <span class="keyword">while</span> ((interrupts = <span class="built_in">inb_p</span>(e8390_base + EN0_ISR)) != <span class="number">0</span> </span><br><span class="line">            &amp;&amp; ++nr_serviced &lt; MAX_SERVICE)</span><br><span class="line">    &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="comment">// (2) 如果中断类型为接收到数据包</span></span><br><span class="line">        <span class="keyword">if</span> (interrupts &amp; (ENISR_RX + ENISR_RX_ERR)) &#123;</span><br><span class="line">            <span class="built_in">ei_receive</span>(dev); <span class="comment">// (3) 则从网卡读取数据</span></span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    <span class="built_in">spin_unlock</span>(&amp;ei_local-&gt;page_lock);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码删除了很多硬件相关的操作，因为本文并不是分析网卡驱动的实现。</p>
+<p><code>ei_interrupt</code> 中断服务首先读取中断的类型，保存到 <code>interrupts</code> 变量中。然后判断中断类型是否为接收到数据包，如果是就调用 <code>ei_receive</code> 函数从网卡处读取数据。</p>
+<p>我们继续分析 <code>ei_receive</code> 函数的实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">ei_receive</span><span class="params">(<span class="keyword">struct</span> net_device *dev)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">while</span> (++rx_pkt_count &lt; <span class="number">10</span>) </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> pkt_len;  <span class="comment">// 数据包的长度</span></span><br><span class="line">        <span class="type">int</span> pkt_stat; <span class="comment">// 数据包的状态</span></span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">if</span> ((pkt_stat &amp; <span class="number">0x0F</span>) == ENRSR_RXOK) &#123; <span class="comment">// 如果数据包状态是合法的</span></span><br><span class="line">            <span class="keyword">struct</span> <span class="title class_">sk_buff</span> *skb;</span><br><span class="line"></span><br><span class="line">            skb = <span class="built_in">dev_alloc_skb</span>(pkt_len + <span class="number">2</span>); <span class="comment">// 申请一个数据包对象</span></span><br><span class="line">            <span class="keyword">if</span> (skb) &#123;</span><br><span class="line">                <span class="built_in">skb_reserve</span>(skb, <span class="number">2</span>);</span><br><span class="line">                skb-&gt;dev = dev;         <span class="comment">// 设置接收数据包的设备</span></span><br><span class="line">                <span class="built_in">skb_put</span>(skb, pkt_len);  <span class="comment">// 增加数据的长度</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">// 从网卡中读取数据(由网卡驱动实现), 并将数据保存到skb中</span></span><br><span class="line">                <span class="built_in">ei_block_input</span>(dev, pkt_len, skb, current_offset+<span class="built_in">sizeof</span>(rx_frame));</span><br><span class="line"></span><br><span class="line">                skb-&gt;protocol = <span class="built_in">eth_type_trans</span>(skb, dev); <span class="comment">// 从以太网头部中获取网络层协议类型</span></span><br><span class="line"></span><br><span class="line">                <span class="built_in">netif_rx</span>(skb); <span class="comment">// 将数据包上送给内核网络协议栈</span></span><br><span class="line">                ...</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>ei_receive</code> 函数主要完成以下几个工作：</p>
+<ul>
+<li>申请一个 <code>sk_buff</code> 数据包对象，并且设置其 <code>dev</code> 字段为接收数据包的设备。</li>
+<li>通过调用 <code>ei_block_input</code> 函数从网卡中读取接收到的数据，并保存到刚申请的 <code>sk_buff</code> 数据包对象中。<code>ei_block_input</code> 函数是由网卡驱动实现的，所以这里不作详细分析。</li>
+<li>通过调用 <code>eth_type_trans</code> 函数从数据包的以太网头部中获取网络层协议类型。</li>
+<li>调用 <code>netif_rx</code> 函数将数据包上送给内核网络协议栈。</li>
+</ul>
+<p>当把数据包上送给内核网络协议栈后，数据包的处理就由内核接管。一般来说，内核网络协议栈会通过网络层的 <code>IP协议</code> 和传输层的 <code>TCP协议</code> 或者 <code>UDP协议</code> 来对数据包进行处理，处理完后就会把数据提交给应用层的进程进行处理。</p>
+<h2 id="发送数据过程"><a href="#发送数据过程" class="headerlink" title="发送数据过程"></a>发送数据过程</h2><p>当网络协议栈需要通过网卡设备发送数据时，会调用 <code>net_device</code> 结构的 <code>hard_start_xmit</code> 方法，而对于 <code>NS8390网卡</code> 来说，<code>hard_start_xmit</code> 方法会被设置为 <code>ei_start_xmit</code> 函数。</p>
+<p>也就是说，使用 <code>NS8390网卡</code> 发送数据时，最终会调用 <code>ei_start_xmit</code> 函数将数据发送出去。我们来看看 <code>ei_start_xmit</code> 函数的实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">int</span> <span class="title">ei_start_xmit</span><span class="params">(<span class="keyword">struct</span> sk_buff *skb, <span class="keyword">struct</span> net_device *dev)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    length = skb-&gt;len; <span class="comment">// 数据包的长度</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="built_in">disable_irq_nosync</span>(dev-&gt;irq);      <span class="comment">// 关闭硬件中断</span></span><br><span class="line">    <span class="built_in">spin_lock</span>(&amp;ei_local-&gt;page_lock);   <span class="comment">// 对设备进行上锁, 避免多核CPU对设备的使用</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// 使用网卡驱动的发送接口把数据发送出去，skb-&gt;data 为数据包的数据部分</span></span><br><span class="line">    <span class="built_in">ei_block_output</span>(dev, length, skb-&gt;data, ei_local-&gt;tx_start_page);</span><br><span class="line">    ...</span><br><span class="line">    <span class="built_in">spin_unlock</span>(&amp;ei_local-&gt;page_lock); <span class="comment">// 对设备进行解锁</span></span><br><span class="line">    <span class="built_in">enable_irq</span>(dev-&gt;irq);              <span class="comment">// 打开硬件中断</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>删减了硬件相关的操作后，<code>ei_start_xmit</code> 函数的实现就非常简单：</p>
+<ul>
+<li>首先关闭网卡的硬件中断，防止发送过程中受到硬件中断的干扰。</li>
+<li>调用 <code>ei_block_output</code> 函数把数据包的数据发送出去，此函数由网卡驱动实现，这里不作详细分析。</li>
+<li>打开网卡的硬件中断，让网卡能够继续通知内核。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文主要简单的介绍了网卡设备接收和发送数据包的过程，而网卡设备的初始化过程并没有涉及。当然网卡设备的初始化过程也非常重要，可能会在后面的文章继续分析。</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

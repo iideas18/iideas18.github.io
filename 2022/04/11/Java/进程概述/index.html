@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>进程与线程 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="进程与线程">
+<meta property="og:url" content="https://iideas18.github.io/2022/04/11/Java/进程概述/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-04-11T07:48:48.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.204Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/04/11/Java/进程概述/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '进程与线程',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div><div class="menus_item"><a class="site-page" href="/wiki_repo/"><i class="fa-fw fas fa-book"></i><span> Wiki</span></a></div><div class="menus_item"><a class="site-page" href="/LLM_RoadMap/"><i class="fa-fw fas fa-road"></i><span> LLM RoadMap</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">进程与线程</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-04-11T07:48:48.000Z" title="发表于 2022-04-11 15:48:48">2022-04-11</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.204Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Java/">Java</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="进程与线程"><a href="#进程与线程" class="headerlink" title="进程与线程"></a>进程与线程</h1><h2 id="1-进程概述"><a href="#1-进程概述" class="headerlink" title="1. 进程概述"></a>1. 进程概述</h2><p>一般来说，一个进程由<strong>程序段</strong>、<strong>数据段</strong>和<strong>进程控制块</strong>三部分组成。进程的大致结构如图所示：</p>
+<p><img src="/image-20220411153156364.png" alt="image-20220411153156364"></p>
+<ul>
+<li>进程的大致结构程序段一般也被称为代码段。代码段是进程的程序指令在内存中的位置，包含需要执行的指令集合；</li>
+<li>数据段是进程的操作数据在内存中的位置，包含需要操作的数据集合；</li>
+<li>程序控制块（Program Control Block，PCB）包含进程的描述信息和控制信息，是进程存在的唯一标志。</li>
+</ul>
+<p>PCB主要由四大部分组成：</p>
+<ol>
+<li><strong>进程的描述信息</strong>：进程ID和进程名称，进程ID是唯一的，代表进程的身份；进程状态，比如运行、就绪、阻塞；进程优先级，是进程调度的重要依据。</li>
+<li><strong>进程的调度信息</strong>：程序起始地址，程序的第一行指令的内存地址，从这里开始程序的执行；通信信息，进程间通信时的消息队列。</li>
+<li><strong>进程的资源信息</strong>：内存信息，内存占用情况和内存管理所用的数据结构；I&#x2F;O设备信息，所用的I&#x2F;O设备编号及相应的数据结构；文件句柄，所打开文件的信息。</li>
+<li><strong>进程上下文</strong>：执行时各种CPU寄存器的值、当前程序计数器（PC）的值以及各种栈的值等，即进程的环境。在操作系统切换进程时，当前进程被迫让出CPU，当前进程的上下文就保存在PCB结构中，供下次恢复运行时使用。</li>
+</ol>
+<p>进程是并发执行的，任何进程都可以同其他进程一起执行。在进程内部，代码段和数据段有自己的独立地址空间，不同进程的地址空间是相互隔离的。</p>
+<p>Java编写的程序都运行在Java虚拟机（JVM）中，每当使用Java命令启动一个Java应用程序时，就会启动一个JVM进程。在这个JVM进程内部，所有Java程序代码都是以线程来运行的。JVM找到程序的入口点main()方法，然后运行main()方法，这样就产生了一个线程，这个线程被称为<strong>主线程</strong>。当main()方法结束后，主线程运行完成，JVM进程也随即退出。</p>
+<h2 id="2-线程概述"><a href="#2-线程概述" class="headerlink" title="2. 线程概述"></a>2. 线程概述</h2><p><strong>线程是指“进程代码段”的一次顺序执行流程</strong>。</p>
+<p>线程是CPU调度的最小单位。一个进程可以有一个或多个线程，各个线程之间共享进程的内存空间、系统资源，进程仍然是操作系统资源分配的最小单位。</p>
+<p>Java程序的进程执行过程就是标准的多线程的执行过程。每当使用Java命令执行一个class类时，实际上就是启动了一个JVM进程。理论上，在该进程的内部至少会启动两个线程，一个是main线程，另一个是GC（垃圾回收）线程。实际上，执行一个Java程序后，通过Process Explorer来观察，线程数量远远不止两个，达到了18个之多。一个标准的线程主要由三部分组成，即线程描述信息、程序计数器（Program Counter，PC）和栈内存，如图所示。</p>
+<p><img src="/image-20220411153956113.png" alt="image-20220411153956113"></p>
+<p>在线程的结构中，线程描述信息即线程的基本信息，主要包括：</p>
+<ol>
+<li>线程ID（Thread ID，线程标识符）。线程的唯一标识，同一个进程内不同线程的ID不会重叠。</li>
+<li>线程名称。主要是方便用户识别，用户可以指定线程的名字，如果没有指定，系统就会自动分配一个名称。</li>
+<li>线程优先级。表示线程调度的优先级，优先级越高，获得CPU的执行机会就越大。</li>
+<li>线程状态。表示当前线程的执行状态，为新建、就绪、运行、阻塞、结束等状态中的一种。</li>
+<li>其他。例如是否为守护线程等。</li>
+</ol>
+<p>在线程的结构中，程序计数器很重要，它记录着线程下一条指令的代码段内存地址。在线程的结构中，栈内存是代码段中局部变量的存储空间，为线程所独立拥有，在线程之间不共享。在JDK 1.8中，每个线程在创建时默认被分配1MB大小的栈内存。栈内存和堆内存不同，栈内存不受垃圾回收器管理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.crazymakercircle.mutithread.basic.create;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.crazymakercircle.util.Print;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StackAreaDemo</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String args[])</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">        Print.cfo(<span class="string">&quot;当前线程名称：&quot;</span> + Thread.currentThread().getName());</span><br><span class="line">        Print.cfo(<span class="string">&quot;当前线程ID：&quot;</span> + Thread.currentThread().getId());</span><br><span class="line">        Print.cfo(<span class="string">&quot;当前线程状态：&quot;</span> + Thread.currentThread().getState());</span><br><span class="line">        Print.cfo(<span class="string">&quot;当前线程优先级：&quot;</span> + Thread.currentThread().getPriority());</span><br><span class="line">        <span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>, b = <span class="number">1</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">c</span> <span class="operator">=</span> a / b;</span><br><span class="line">        anotherFun();</span><br><span class="line">        Thread.sleep(<span class="number">10000000</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">anotherFun</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>, b = <span class="number">1</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">c</span> <span class="operator">=</span> a / b;</span><br><span class="line">        anotherFun2();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">anotherFun2</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>, b = <span class="number">1</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">c</span> <span class="operator">=</span> a / b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在Java中，执行程序流程的重要单位是“方法”，而栈内存的分配单位是“栈帧”（或者叫“方法帧”）。方法的每一次执行都需要为其分配一个栈帧（方法帧），栈帧主要保存该方法中的局部变量、方法的返回地址以及其他方法的相关信息。当线程的执行流程进入方法时，JVM就会为方法分配一个对应的栈帧压入栈内存；当线程的执行流程跳出方法时，JVM就从栈内存弹出该方法的栈帧，此时方法帧的局部变量的内存空间就会被回收。</p>
+<p><img src="/image-20220411154602995.png" alt="image-20220411154602995"></p>
+<h2 id="3-区别"><a href="#3-区别" class="headerlink" title="3. 区别"></a>3. 区别</h2><ol>
+<li>线程是“进程代码段”的一次顺序执行流程。一个进程由一个或多个线程组成，一个进程至少有一个线程。</li>
+<li>线程是CPU调度的最小单位，进程是操作系统分配资源的最小单位。线程的划分尺度小于进程，使得多线程程序的并发性高。</li>
+<li>线程是出于高并发的调度诉求从进程内部演进而来的。线程的出现既充分发挥了CPU的计算性能，又弥补了进程调度过于笨重的问题。</li>
+<li>进程之间是相互独立的，但进程内部的各个线程之间并不完全独立。各个线程之间共享进程的方法区内存、堆内存、系统资源（文件句柄、系统信号等）。</li>
+<li>切换速度不同：线程上下文切换比进程上下文切换要快得多。所以，有的时候，线程也称为轻量级进程。</li>
+</ol>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

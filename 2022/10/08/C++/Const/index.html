@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Const | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Const">
+<meta property="og:url" content="https://iideas18.github.io/2022/10/08/C++/Const/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-10-08T06:44:20.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.158Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2022/10/08/C++/Const/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Const',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div><div class="menus_item"><a class="site-page" href="/wiki_repo/"><i class="fa-fw fas fa-book"></i><span> Wiki</span></a></div><div class="menus_item"><a class="site-page" href="/LLM_RoadMap/"><i class="fa-fw fas fa-road"></i><span> LLM RoadMap</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">Const</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2022-10-08T06:44:20.000Z" title="发表于 2022-10-08 14:44:20">2022-10-08</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.158Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/C++/">C++</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="Const"><a href="#Const" class="headerlink" title="Const"></a>Const</h1><h2 id="1-const修饰变量"><a href="#1-const修饰变量" class="headerlink" title="1. const修饰变量"></a>1. const修饰变量</h2><h3 id="1-1-const常量的作用"><a href="#1-1-const常量的作用" class="headerlink" title="1.1 const常量的作用"></a>1.1 const常量的作用</h3><p>1.<strong>将变量定义为常量，防止意外的修改，增强程序的健壮性</strong></p>
+<blockquote>
+<p>const常量和宏定义的区别：</p>
+<ol>
+<li>const常量会进行类型检查<br>编译器可以对const常量进行类型安全检查，而对define只进行字符替换，没有类型安全检查，在字符替换时可能会产生意料不到的错误。</li>
+<li>const常量更节省空间，避免不必要的内存分配<br>const常量从汇编的角度来看，只是给出了对应的内存地址，而不是像#define一样给出的是立即数，所以，const定义的常量在程序运行过程中只有一份拷贝，而#define宏定义的常量在内存中有若干个拷贝</li>
+</ol>
+</blockquote>
+<p>2.<strong>和static一样，修饰全局变量使其可见范围为当前文件</strong><br>普通全局变量的作用域是当前文件，但是在其他文件中也是可见的，使用extern声明后就可以使用</p>
+<p><strong>const全局变量在其他文件中是不可见的，这和添加了static关键字的效果类似。</strong></p>
+<h3 id="1-2-const和引用"><a href="#1-2-const和引用" class="headerlink" title="1.2  const和引用"></a>1.2  const和引用</h3><p>可以把引用绑定到const对象上，就像绑定到其他对象上一样，我们称之为<strong>对常量的引用</strong>（reference to const）。与普通引用不同的是，对常量的引用不能被用作修改它所绑定的对象</p>
+<p><img src="/82f80adb5e9a47aea77322cf5e2202b7.png" alt="在这里插入图片描述"></p>
+<p>因为不允许直接为ci赋值，当然也就不能通过引用去改变ci。因此，对r2的初始化是错误的。假设该初始化合法，则可以通过r2来改变它引用对象的值，这显然是不正确的。</p>
+<h3 id="1-2-1-初始化和对const的引用"><a href="#1-2-1-初始化和对const的引用" class="headerlink" title="1.2.1 初始化和对const的引用"></a>1.2.1 初始化和对const的引用</h3><p>我们知道，引用的类型必须与其所引用对象的类型一致，但是有两个例外：<br>在初始化常量引用时允许用任意表达式作为初始值，只要该表达式的结果能转换成引用的类型即可。<br>尤其，允许为一个常量引用绑定<strong>非常量的对象、字面值，甚至是个一般表达式</strong>：</p>
+<p><img src="https://img-blog.csdnimg.cn/6e5b617dd747452488a23f8f3aa84418.png" alt="在这里插入图片描述"></p>
+<p><strong>对const的引用可能引用一个并非const的对象</strong><br>必须认识到，常量引用仅对引用可参与的操作做出了限定，对于引用的对象本身是不是一个常量未作限定。因为对象也可能是个非常量，所以允许通过其他途径改变它的值：</p>
+<p><img src="/image-20221008102822824.png" alt="image-20221008102822824"></p>
+<p>r2绑定（非常量）整数i是合法的行为。然而，不允许通过r2修改i的值。尽管如此，i的值仍然允许通过其他途径修改，既可以直接给i赋值，也可以通过像r1一样绑定到i的其他引用来修改。</p>
+<h3 id="1-3-const和指针"><a href="#1-3-const和指针" class="headerlink" title="1.3 const和指针"></a>1.3 const和指针</h3><p>与引用一样，也可以令指针指向常量或非常量。类似于常量引用，指向常量的指针（pointer to const）不能用于改变其所指对象的值。<br><strong>要想存放常量对象的地址，只能使用指向常量的指针</strong>：</p>
+<p><img src="/image-20221008102920258.png" alt="image-20221008102920258"></p>
+<p>指针的类型必须与其所指对象的类型一致，但也不绝对，因为允许令一个指向常量的指针指向一个非常量对象：</p>
+<p><img src="/image-20221008102936707.png" alt="image-20221008102936707"></p>
+<p><strong>和常量引用一样，指向常量的指针也没有规定其所指的对象必须是一个常量。所谓指向常量的指针仅仅要求不能通过该指针改变对象的值，而没有规定那个对象的值不能通过其他途径改变。</strong></p>
+<h2 id="2-const修饰函数"><a href="#2-const修饰函数" class="headerlink" title="2. const修饰函数"></a>2. const修饰函数</h2><p>1、const修饰函数参数，表示参数不可变，若参数为引用，可以增加效率(引用传递而不用值拷贝)</p>
+<p>2、const 修饰函数返回值，避免返回值被修改</p>
+<p>3、const修饰类的成员函数本身(不能修饰全局函数，因为全局函数没有this指针)</p>
+<ul>
+<li>该函数不能修改成员变量</li>
+<li>不能调用非const成员函数，因为任何非const成员函数会有修改成员变量的企图</li>
+</ul>
+<p>默认的this指针是顶层const，形如 A* const this，是指向类类型非常量版本的常量指针，</p>
+<p>因为this是隐式的，所以它需要遵循初始化规则，意味着（在默认情况下）我们不能把this绑定到一个常量对象上，这一情况也就使得我们不能在一个常量对象上调用普通的成员函数。</p>
+<p>如果我们想让this绑定到常量对象上怎么做呢？<br>由于this是隐式的并且不会出现在参数列表中，所以无法显示的将this声明成指向常量的指针。<br>C++的做法是允许把const关键字放在成员函数的参数列表之后，表示this是一个指向常量的指针。<br>像这样使用const的成员函数被称作常量成员函数（常量对象，以及常量对象的引用或指针都只能调用常量成员函数）</p>
+<p>现在的this也成了底层const，所以属性值不能改变。<br>形如：<code>const A* const this</code></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 修饰函数参数</span></span><br><span class="line"> <span class="function"><span class="type">int</span> <span class="title">get_data</span><span class="params">(<span class="type">const</span> <span class="type">int</span> a)</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 修饰返回值</span></span></span><br><span class="line"><span class="function"><span class="type">const</span> <span class="type">int</span> <span class="title">get_data</span><span class="params">(<span class="comment">/*A*  const this*/</span>)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>-&gt;data;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">// 修饰成员函数</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">get_data</span><span class="params">(<span class="comment">/*const A*  const this*/</span>)</span>  <span class="type">const</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>-&gt;data;</span><br><span class="line"> <span class="comment">//因为this是指向常量的指针，所以常量成员函数不能改变调用它的对象的内容。即不能修改data</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>const修饰类成员<br>1、const修饰类的成员变量<br>表示成员变量不能被修改，同时只能在初始化列表中赋值</p>
+<p>2、const修饰类的成员函数<br>见上面修饰函数</p>
+<p>3、const修饰类对象<br>对象的任何成员都不能被修改<br>const类对象只能调用const成员函数</p>
+<p>类中的所有函数都可以声明为const函数吗。哪些函数不能？<br>1、构造函数不能<br>因为const修饰的成员函数不能修改成员变量。构造函数也属于类的成员函数，但是构造函数需要修改类的成员变量，所以类的构造函数不能申明成const类型的。<br>2、static静态成员函数不行<br>static静态成员是属于类的，而不属于某个具体的对象，所有的对象共用static成员。this指针是某个具体对象的地址，因此static成员函数没有this指针。而函数中的const其实就是用来修饰this指针的，表示this指向的内容不可变，static静态成员却没有this指针，所以const不能用来修饰static成员函数</p>
+<h2 id="3-const代码举例"><a href="#3-const代码举例" class="headerlink" title="3. const代码举例"></a>3. const代码举例</h2><p>const修饰的变量、函数、对象 分别成为：常变量、常函数、常对象</p>
+<p>常函数只能访问常变量，常对象只能访问常变量和常函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Student</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Student</span>(<span class="type">char</span> *name, <span class="type">int</span> age, <span class="type">float</span> score);</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">show</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="comment">//三个常函数</span></span><br><span class="line">    <span class="function"><span class="type">char</span> *<span class="title">getname</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">getage</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line">    <span class="function"><span class="type">float</span> <span class="title">getscore</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line"><span class="keyword">private</span>:<span class="comment">//三个常变量</span></span><br><span class="line">    <span class="type">char</span> *m_name;</span><br><span class="line">    <span class="type">int</span> m_age;</span><br><span class="line">    <span class="type">float</span> m_score;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//常变量的赋值方式：参数列表</span></span><br><span class="line">Student::<span class="built_in">Student</span>(<span class="type">char</span> *name, <span class="type">int</span> age, <span class="type">float</span> score): <span class="built_in">m_name</span>(name), <span class="built_in">m_age</span>(age), <span class="built_in">m_score</span>(score)&#123; &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//常函数的作用就是获取常变量的值，但是又不能修改它们的值，这种措施主要还是为了保护数据而设置的</span></span><br><span class="line"><span class="function"><span class="type">char</span> * <span class="title">Student::getname</span><span class="params">()</span> <span class="type">const</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> m_name;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Student::getage</span><span class="params">()</span> <span class="type">const</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> m_age;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">float</span> <span class="title">Student::getscore</span><span class="params">()</span> <span class="type">const</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> m_score;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//stu、pstu 分别是常对象以及常对象指针，它们都只能调用 const 成员函数。</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="type">const</span> Student <span class="title">stu</span><span class="params">(<span class="string">&quot;小明&quot;</span>, <span class="number">15</span>, <span class="number">90.6</span>)</span></span>;</span><br><span class="line">    <span class="comment">//stu.show();  //error</span></span><br><span class="line">    cout&lt;&lt;stu.<span class="built_in">getname</span>()&lt;&lt;<span class="string">&quot;的年龄是&quot;</span>&lt;&lt;stu.<span class="built_in">getage</span>()&lt;&lt;<span class="string">&quot;，成绩是&quot;</span>&lt;&lt;stu.<span class="built_in">getscore</span>()&lt;&lt;endl;</span><br><span class="line">    <span class="type">const</span> Student *pstu = <span class="keyword">new</span> <span class="built_in">Student</span>(<span class="string">&quot;李磊&quot;</span>, <span class="number">16</span>, <span class="number">80.5</span>);</span><br><span class="line">    <span class="comment">//pstu -&gt; show();  //error</span></span><br><span class="line">    cout&lt;&lt;pstu-&gt;<span class="built_in">getname</span>()&lt;&lt;<span class="string">&quot;的年龄是&quot;</span>&lt;&lt;pstu-&gt;<span class="built_in">getage</span>()&lt;&lt;<span class="string">&quot;，成绩是&quot;</span>&lt;&lt;pstu-&gt;<span class="built_in">getscore</span>()&lt;&lt;endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-constexpr"><a href="#4-constexpr" class="headerlink" title="4. constexpr"></a>4. constexpr</h2><p>constexpr：constant expression，常量表达式</p>
+<p>实际开发中，我们经常会用到常量表达式。以定义数组为例，数组的长度就必须是一个常量表达式：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1)</span></span><br><span class="line"><span class="type">int</span> url[<span class="number">10</span>];<span class="comment">//正确</span></span><br><span class="line"><span class="comment">// 2)</span></span><br><span class="line"><span class="type">int</span> url[<span class="number">6</span> + <span class="number">4</span>];<span class="comment">//正确</span></span><br><span class="line"><span class="comment">// 3)</span></span><br><span class="line"><span class="type">int</span> length = <span class="number">6</span>;</span><br><span class="line"><span class="type">int</span> url[length];<span class="comment">//错误，length是变量</span></span><br></pre></td></tr></table></figure>
+
+<p>下面的代码是正确的：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">constexpr</span> <span class="type">int</span> num = <span class="number">1</span> + <span class="number">2</span> + <span class="number">3</span>;</span><br><span class="line"><span class="type">int</span> url[num] = &#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>为什么需要constexpr ？</p>
+<p>我们知道，C++ 程序的执行过程大致要经历编译、链接、运行这 3 个阶段。<br>常量表达式和非常量表达式的计算时机不同：</p>
+<p>非常量表达式只能在程序运行阶段计算出结果；<br>而常量表达式的计算往往发生在程序的编译阶段，这可以极大提高程序的执行效率，因为表达式只需要在编译阶段计算一次，而不再需要每次运行时都计算一次。对于用 C++ 编写的程序，性能往往是永恒的追求。<br>所以，constexpr 使常量表达式获得在程序编译阶段计算出结果的能力，而不必等到程序运行阶段。</p>
+<p>const vs constexpr<br>const 强调 只读<br>constexpr 强调 常量<br>即凡是表达“只读”语义的场景都使用 const，表达“常量”语义的场景都使用 constexpr。</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>
