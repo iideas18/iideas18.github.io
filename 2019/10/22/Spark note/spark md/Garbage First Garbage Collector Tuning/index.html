@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Garbage First Garbage Collector Tuning | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Garbage First Garbage Collector Tuning">
+<meta property="og:url" content="https://iideas18.github.io/2019/10/22/Spark note/spark md/Garbage First Garbage Collector Tuning/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2019-10-21T18:22:18.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.248Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2019/10/22/Spark note/spark md/Garbage First Garbage Collector Tuning/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Garbage First Garbage Collector Tuning',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div><div class="menus_item"><a class="site-page" href="/wiki_repo/"><i class="fa-fw fas fa-book"></i><span> Wiki</span></a></div><div class="menus_item"><a class="site-page" href="/LLM_RoadMap/"><i class="fa-fw fas fa-road"></i><span> LLM RoadMap</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">Garbage First Garbage Collector Tuning</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2019-10-21T18:22:18.000Z" title="发表于 2019-10-22 02:22:18">2019-10-22</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.248Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Spark note/">Spark note</a>
+            
+            <a class="post-meta-categories" href="/categories/spark md/">spark md</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="Garbage-First-Garbage-Collector-Tuning"><a href="#Garbage-First-Garbage-Collector-Tuning" class="headerlink" title="Garbage First Garbage Collector Tuning"></a>Garbage First Garbage Collector Tuning</h1><p><em>by Monica Beckwith</em><br>Published August 2013</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.oracle.com/java/">Java</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.oracle.com/java/technologies/">Technical Details</a></li>
+</ul>
+<h1 id="Technical-Article"><a href="#Technical-Article" class="headerlink" title="Technical Article"></a>Technical Article</h1><p><strong>Learn about how to adapt and tune the G1 GC for evaluation, analysis and performance.</strong></p>
+<p>The <a target="_blank" rel="noopener" href="https://www.oracle.com/technetwork/java/javase/tech/g1-intro-jsp-135488.html">Garbage First Garbage Collector (G1 GC)</a> is the low-pause, server-style generational garbage collector for Java HotSpot VM. The G1 GC uses concurrent and parallel phases to achieve its target pause time and to maintain good throughput. When G1 GC determines that a garbage collection is necessary, it collects the regions with the least live data first (garbage first).</p>
+<p>A <strong>garbage collector</strong> (GC) is a memory management tool. The G1 GC achieves automatic memory management through the following operations:</p>
+<ul>
+<li>Allocating objects to a young generation and promoting aged objects into an old generation.</li>
+<li>Finding live objects in the old generation through a concurrent (parallel) marking phase. The Java HotSpot VM triggers the marking phase when the total Java heap occupancy exceeds the default threshold.</li>
+<li>Recovering free memory by compacting live objects through parallel copying.</li>
+</ul>
+<p>Here, we look at how to adapt and tune the G1 GC for evaluation, analysis and performance—we assume a basic understanding of Java garbage collection.</p>
+<p>The G1 GC is a regionalized and generational garbage collector, which means that the Java object heap (heap) is divided into a number of equally sized regions. Upon startup, the Java Virtual Machine (JVM) sets the region size. The region sizes can vary from 1 MB to 32 MB depending on the heap size. The goal is to have no more than 2048 regions. The eden, survivor, and old generations are logical sets of these regions and are not contiguous.</p>
+<p>The G1 GC has a pause time-target that it tries to meet (soft real time). During young collections, the G1 GC adjusts its young generation (eden and survivor sizes) to meet the soft real-time target. During mixed collections, the G1 GC adjusts the number of old regions that are collected based on a target number of mixed garbage collections, the percentage of live objects in each region of the heap, and the overall acceptable heap waste percentage.</p>
+<p>The G1 GC reduces heap fragmentation by incremental parallel copying of live objects from one or more sets of regions (called Collection Set (CSet)) into different new region(s) to achieve compaction. The goal is to reclaim as much heap space as possible, starting with those regions that contain the most reclaimable space, while attempting to not exceed the pause time goal (garbage first).</p>
+<p>The G1 GC uses independent Remembered Sets (RSets) to track references into regions. Independent RSets enable parallel and independent collection of regions because only a region’s RSet must be scanned for references into that region, instead of the whole heap. The G1 GC uses a post-write barrier to record changes to the heap and update the RSets.</p>
+<h4 id="Garbage-Collection-Phases"><a href="#Garbage-Collection-Phases" class="headerlink" title="Garbage Collection Phases"></a>Garbage Collection Phases</h4><p>Apart from evacuation pauses (described below) that compose the stop-the-world (STW) young and mixed garbage collections, the G1 GC also has parallel, concurrent, and multiphase marking cycles. G1 GC uses the Snapshot-At-The-Beginning (SATB) algorithm, which takes a snapshot of the set of live objects in the heap at the start of a marking cycle. The set of live objects is composed of the live objects in the snapshot, and the objects allocated since the start of the marking cycle. The G1 GC marking algorithm uses a pre-write barrier to record and mark objects that are part of the logical snapshot.</p>
+<h4 id="Young-Garbage-Collections"><a href="#Young-Garbage-Collections" class="headerlink" title="Young Garbage Collections"></a>Young Garbage Collections</h4><p>The G1 GC satisfies most allocation requests from regions added to the eden set of regions. During a young garbage collection, the G1 GC collects both the eden regions and the survivor regions from the previous garbage collection. The live objects from the eden and survivor regions are copied, or evacuated, to a new set of regions. The destination region for a particular object depends upon the object’s age; an object that has aged sufficiently evacuates to an old generation region (that is, promoted); otherwise, the object evacuates to a survivor region and will be included in the CSet of the next young or mixed garbage collection.</p>
+<h4 id="Mixed-Garbage-Collections"><a href="#Mixed-Garbage-Collections" class="headerlink" title="Mixed Garbage Collections"></a>Mixed Garbage Collections</h4><p>Upon successful completion of a concurrent marking cycle, the G1 GC switches from performing young garbage collections to performing mixed garbage collections. In a mixed garbage collection, the G1 GC optionally adds some old regions to the set of eden and survivor regions that will be collected. The exact number of old regions added is controlled by a number of flags that will be discussed later (see “<a target="_blank" rel="noopener" href="https://www.oracle.com/technical-resources/articles/java/g1gc.html#Taming">Taming Mixed GCs</a>“). After the G1 GC collects a sufficient number of old regions (over multiple mixed garbage collections), G1 reverts to performing young garbage collections until the next marking cycle completes.</p>
+<h4 id="Phases-of-the-Marking-Cycle"><a href="#Phases-of-the-Marking-Cycle" class="headerlink" title="Phases of the Marking Cycle"></a>Phases of the Marking Cycle</h4><p>The marking cycle has the following phases:</p>
+<ul>
+<li><strong>Initial mark phase</strong>: The G1 GC marks the roots during this phase. This phase is piggybacked on a normal (STW) young garbage collection.</li>
+<li><strong>Root region scanning phase</strong>: The G1 GC scans survivor regions of the initial mark for references to the old generation and marks the referenced objects. This phase runs concurrently with the application (not STW) and must complete before the next STW young garbage collection can start.</li>
+<li><strong>Concurrent marking phase</strong>: The G1 GC finds reachable (live) objects across the entire heap. This phase happens concurrently with the application, and can be interrupted by STW young garbage collections.</li>
+<li><strong>Remark phase</strong>: This phase is STW collection and helps the completion of the marking cycle. G1 GC drains SATB buffers, traces unvisited live objects, and performs reference processing.</li>
+<li><strong>Cleanup phase</strong>: In this final phase, the G1 GC performs the STW operations of accounting and RSet scrubbing. During accounting, the G1 GC identifies completely free regions and mixed garbage collection candidates. The cleanup phase is partly concurrent when it resets and returns the empty regions to the free list.</li>
+</ul>
+<h4 id="Important-Defaults"><a href="#Important-Defaults" class="headerlink" title="Important Defaults"></a>Important Defaults</h4><p>The G1 GC is an adaptive garbage collector with defaults that enable it to work efficiently without modification. Here is a list of important options and their default values. This list applies to the latest Java HotSpot VM, build 24. You can adapt and tune the G1 GC to your application performance needs by entering the following options with changed settings on the JVM command line.</p>
+<ul>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:G1HeapRegionSize=n</span><br></pre></td></tr></table></figure>
+
+<p>Sets the size of a G1 region. The value will be a power of two and can range from 1MB to 32MB. The goal is to have around 2048 regions based on the minimum Java heap size.</p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:MaxGCPauseMillis=200</span><br></pre></td></tr></table></figure>
+
+<p>Sets a target value for desired maximum pause time. The default value is 200 milliseconds. The specified value does not adapt to your heap size.</p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:G1NewSizePercent=5</span><br></pre></td></tr></table></figure>
+
+<p>Sets the percentage of the heap to use as the minimum for the young generation size. The default value is 5 percent of your Java heap. This is an experimental flag. See “<a target="_blank" rel="noopener" href="https://www.oracle.com/technical-resources/articles/java/g1gc.html#Unlock">How to unlock experimental VM flags</a>“ for an example. This setting replaces the <code>-XX:DefaultMinNewGenPercent</code> setting. This setting is not available in Java HotSpot VM, build 23.</p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:G1MaxNewSizePercent=60</span><br></pre></td></tr></table></figure>
+
+<p>Sets the percentage of the heap size to use as the maximum for young generation size. The default value is 60 percent of your Java heap. This is an experimental flag. See “<a target="_blank" rel="noopener" href="https://www.oracle.com/technical-resources/articles/java/g1gc.html#Unlock">How to unlock experimental VM flags</a>“ for an example. This setting replaces the <code>-XX:DefaultMaxNewGenPercent</code> setting. This setting is not available in Java HotSpot VM, build 23.</p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:ParallelGCThreads=n</span><br></pre></td></tr></table></figure>
+
+<p>Sets the value of the STW worker threads. Sets the value of n to the number of logical processors. The value of <code>n</code> is the same as the number of logical processors up to a value of 8.</p>
+<p>If there are more than eight logical processors, sets the value of <code>n</code> to approximately 5&#x2F;8 of the logical processors. This works in most cases except for larger SPARC systems where the value of <code>n</code> can be approximately 5&#x2F;16 of the logical processors.</p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:ConcGCThreads=n</span><br></pre></td></tr></table></figure>
+
+<p>Sets the number of parallel marking threads. Sets <code>n</code> to approximately 1&#x2F;4 of the number of parallel garbage collection threads (<code>ParallelGCThreads</code>).</p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:InitiatingHeapOccupancyPercent=45</span><br></pre></td></tr></table></figure>
+
+<p>Sets the Java heap occupancy threshold that triggers a marking cycle. The default occupancy is 45 percent of the entire Java heap.</p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:G1MixedGCLiveThresholdPercent=65</span><br></pre></td></tr></table></figure>
+
+<p>Sets the occupancy threshold for an old region to be included in a mixed garbage collection cycle. The default occupancy is 65 percent. This is an experimental flag. See “<a target="_blank" rel="noopener" href="https://www.oracle.com/technical-resources/articles/java/g1gc.html#Unlock">How to unlock experimental VM flags</a>“ for an example. This setting replaces the <code>-XX:G1OldCSetRegionLiveThresholdPercent</code> setting. This setting is not available in Java HotSpot VM, build 23.</p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:G1HeapWastePercent=10</span><br></pre></td></tr></table></figure>
+
+<p>Sets the percentage of heap that you are willing to waste. The Java HotSpot VM does not initiate the mixed garbage collection cycle when the reclaimable percentage is less than the heap waste percentage. The default is 10 percent. This setting is not available in Java HotSpot VM, build 23.</p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:G1MixedGCCountTarget=8</span><br></pre></td></tr></table></figure>
+
+<p>Sets the target number of mixed garbage collections after a marking cycle to collect old regions with at most <code>G1MixedGCLIveThresholdPercent</code> live data. The default is 8 mixed garbage collections. The goal for mixed collections is to be within this target number. This setting is not available in Java HotSpot VM, build 23.</p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:G1OldCSetRegionThresholdPercent=10</span><br></pre></td></tr></table></figure>
+
+<p>Sets an upper limit on the number of old regions to be collected during a mixed garbage collection cycle. The default is 10 percent of the Java heap. This setting is not available in Java HotSpot VM, build 23.</p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:G1ReservePercent=10</span><br></pre></td></tr></table></figure>
+
+<p>Sets the percentage of reserve memory to keep free so as to reduce the risk of to-space overflows. The default is 10 percent. When you increase or decrease the percentage, make sure to adjust the total Java heap by the same amount. This setting is not available in Java HotSpot VM, build 23.</p>
+</li>
+</ul>
+<h4 id="How-to-Unlock-Experimental-VM-Flags"><a href="#How-to-Unlock-Experimental-VM-Flags" class="headerlink" title="How to Unlock Experimental VM Flags"></a>How to Unlock Experimental VM Flags</h4><p>To change the value of experimental flags, you must unlock them first. You can do this by setting <code>-XX:+UnlockExperimentalVMOptions</code> explicitly on the command line before any experimental flags. For example:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; java -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=10 -XX:G1MaxNewSizePercent=75 G1test.jar</span><br></pre></td></tr></table></figure>
+
+<h4 id="Recommendations"><a href="#Recommendations" class="headerlink" title="Recommendations"></a>Recommendations</h4><p>When you evaluate and fine-tune G1 GC, keep the following recommendations in mind:</p>
+<ul>
+<li><strong>Young Generation Size</strong>: Avoid explicitly setting young generation size with the <code>-Xmn</code> option or any or other related option such as <code>-XX:NewRatio</code>. Fixing the size of the young generation overrides the target pause-time goal.</li>
+<li><strong>Pause Time Goals</strong>: When you evaluate or tune any garbage collection, there is always a latency versus throughput trade-off. The G1 GC is an incremental garbage collector with uniform pauses, but also more overhead on the application threads. The throughput goal for the G1 GC is 90 percent application time and 10 percent garbage collection time. When you compare this to Java HotSpot VM’s throughput collector, the goal there is 99 percent application time and 1 percent garbage collection time. Therefore, when you evaluate the G1 GC for throughput, relax your pause-time target. Setting too aggressive a goal indicates that you are willing to bear an increase in garbage collection overhead, which has a direct impact on throughput. When you evaluate the G1 GC for latency, you set your desired (soft) real-time goal, and the G1 GC will try to meet it. As a side effect, throughput may suffer.</li>
+<li><strong>Taming Mixed Garbage Collections</strong>: Experiment with the following options when you tune mixed garbage collections. See “ Important Defaults “ for information about these options:<ul>
+<li><code>-XX:InitiatingHeapOccupancyPercent</code><br>For changing the marking threshold.</li>
+<li><code>-XX:G1MixedGCLiveThresholdPercent</code> and <code>-XX:G1HeapWastePercent</code><br>When you want to change the mixed garbage collections decisions.</li>
+<li><code>-XX:G1MixedGCCountTarget</code> and <code>-XX:G1OldCSetRegionThresholdPercent</code><br>When you want to adjust the CSet for old regions.</li>
+</ul>
+</li>
+</ul>
+<h4 id="Overflow-and-Exhausted-Log-Messages"><a href="#Overflow-and-Exhausted-Log-Messages" class="headerlink" title="Overflow and Exhausted Log Messages"></a>Overflow and Exhausted Log Messages</h4><p>When you see to-space overflow&#x2F;exhausted messages in your logs, the G1 GC does not have enough memory for either survivor or promoted objects, or for both. The Java heap cannot expand since it is already at its max. Example messages:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">924.897: [GC pause (G1 Evacuation Pause) (mixed) (to-space exhausted), 0.1957310 secs]</span><br></pre></td></tr></table></figure>
+
+<p>OR</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">924.897: [GC pause (G1 Evacuation Pause) (mixed) (to-space overflow), 0.1957310 secs]</span><br></pre></td></tr></table></figure>
+
+<p>To alleviate the problem, try the following adjustments:</p>
+<p>Increase the value of the <code>-XX:G1ReservePercent</code> option (and the total heap accordingly) to increase the amount of reserve memory for “to-space”.</p>
+<p>Start the marking cycle earlier by reducing the <code>-XX:InitiatingHeapOccupancyPercent</code>.</p>
+<p>You can also increase the value of the <code>-XX:ConcGCThreads</code> option to increase the number of parallel marking threads.</p>
+<p>See “<a target="_blank" rel="noopener" href="https://www.oracle.com/technical-resources/articles/java/g1gc.html#Imp">Important Defaults</a>“ for a description of these options.</p>
+<h4 id="Humongous-Objects-and-Humongous-Allocations"><a href="#Humongous-Objects-and-Humongous-Allocations" class="headerlink" title="Humongous Objects and Humongous Allocations"></a>Humongous Objects and Humongous Allocations</h4><p>For G1 GC, any object that is more than half a region size is considered a “Humongous object”. Such an object is allocated directly in the old generation into “Humongous regions”. These Humongous regions are a contiguous set of regions. <code>StartsHumongous</code> marks the start of the contiguous set and <code>ContinuesHumongous</code> marks the continuation of the set.</p>
+<p>Before allocating any Humongous region, the marking threshold is checked, initiating a concurrent cycle, if necessary.</p>
+<p>Dead Humongous objects are freed at the end of the marking cycle during the cleanup phase also during a full garbage collection cycle.</p>
+<p>In-order to reduce copying overhead, the Humongous objects are not included in any evacuation pause. A full garbage collection cycle compacts Humongous objects in place.</p>
+<p>Since each individual set of StartsHumongous and ContinuesHumongous regions contains just one humongous object, the space between the end of the humongous object and the end of the last region spanned by the object is unused. For objects that are just slightly larger than a multiple of the heap region size, this unused space can cause the heap to become fragmented.</p>
+<p>If you see back-to-back concurrent cycles initiated due to Humongous allocations and if such allocations are fragmenting your old generation, please increase your <code>-XX:G1HeapRegionSize</code> such that previous Humongous objects are no longer Humongous and will follow the regular allocation path.</p>
+<h4 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h4><p>G1 GC is a regionalized, parallel-concurrent, incremental garbage collector that provides more predictable pauses compared to other HotSpot GCs. The incremental nature lets G1 GC work with larger heaps and still provide reasonable worst-case response times. The adaptive nature of G1 GC just needs a maximum soft-real time pause-time goal along-with the desired maximum and minimum size for the Java heap on the JVM command line.</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

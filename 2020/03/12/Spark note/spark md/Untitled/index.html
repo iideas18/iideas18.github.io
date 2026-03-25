@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spark executor中task的数量与最大并发数 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark executor中task的数量与最大并发数">
+<meta property="og:url" content="https://iideas18.github.io/2020/03/12/Spark note/spark md/Untitled/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2020-03-12T10:17:24.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.263Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2020/03/12/Spark note/spark md/Untitled/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Spark executor中task的数量与最大并发数',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div><div class="menus_item"><a class="site-page" href="/wiki_repo/"><i class="fa-fw fas fa-book"></i><span> Wiki</span></a></div><div class="menus_item"><a class="site-page" href="/LLM_RoadMap/"><i class="fa-fw fas fa-road"></i><span> LLM RoadMap</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">Spark executor中task的数量与最大并发数</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2020-03-12T10:17:24.000Z" title="发表于 2020-03-12 18:17:24">2020-03-12</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.263Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Spark note/">Spark note</a>
+            
+            <a class="post-meta-categories" href="/categories/spark md/">spark md</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="Spark-executor中task的数量与最大并发数"><a href="#Spark-executor中task的数量与最大并发数" class="headerlink" title="Spark executor中task的数量与最大并发数"></a>Spark executor中task的数量与最大并发数</h1><p>2016.09.30 12:08:43字数 283阅读 9913</p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/7c9b08a74de1">https://www.jianshu.com/p/7c9b08a74de1</a></p>
+<p>关于executor和task的概念可以参考<a target="_blank" rel="noopener" href="https://link.jianshu.com/?t=http://spark.apache.org/docs/latest/cluster-overview.html">官方文档</a><br>本文使用的源码是spark 2.0.0版本</p>
+<h2 id="Task的数量-iWd34s-vxcs"><a href="#Task的数量-iWd34s-vxcs" class="headerlink" title="Task的数量 iWd34s?vxcs"></a>Task的数量 iWd34s?vxcs</h2><p>根据类<code>DAGScheduler</code>中的<code>submitMissingTasks</code>方法可以知道，在stage中会为每个需要计算的partition生成一个task，换句话说也就是每个task处理一个partition。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//From submitMissingTasks</span></span><br><span class="line">......   </span><br><span class="line"><span class="keyword">val</span> tasks: <span class="type">Seq</span>[<span class="type">Task</span>[_]] = <span class="keyword">try</span> &#123;</span><br><span class="line">      stage <span class="keyword">match</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> stage: <span class="type">ShuffleMapStage</span> =&gt;</span><br><span class="line">          partitionsToCompute.map &#123; id =&gt;</span><br><span class="line">            <span class="keyword">val</span> locs = taskIdToLocations(id)</span><br><span class="line">            <span class="keyword">val</span> part = stage.rdd.partitions(id)</span><br><span class="line">            <span class="keyword">new</span> <span class="type">ShuffleMapTask</span>(stage.id, stage.latestInfo.attemptId,</span><br><span class="line">              taskBinary, part, locs, stage.latestInfo.taskMetrics, properties)</span><br><span class="line">          &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">case</span> stage: <span class="type">ResultStage</span> =&gt;</span><br><span class="line">          <span class="keyword">val</span> job = stage.activeJob.get</span><br><span class="line">          partitionsToCompute.map &#123; id =&gt;</span><br><span class="line">            <span class="keyword">val</span> p: <span class="type">Int</span> = stage.partitions(id)</span><br><span class="line">            <span class="keyword">val</span> part = stage.rdd.partitions(p)</span><br><span class="line">            <span class="keyword">val</span> locs = taskIdToLocations(id)</span><br><span class="line">            <span class="keyword">new</span> <span class="type">ResultTask</span>(stage.id, stage.latestInfo.attemptId,</span><br><span class="line">              taskBinary, part, locs, id, properties, stage.latestInfo.taskMetrics)</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<h2 id="Task的最大并发数"><a href="#Task的最大并发数" class="headerlink" title="Task的最大并发数"></a>Task的最大并发数</h2><p>当task被提交到executor之后，会根据executor可用的cpu核数，决定一个executor中最多同时运行多少个task。在类<code>TaskSchedulerImpl</code>的<code>resourceOfferSingleTaskSet</code>方法中，<code>CPUS_PER_TASK</code>的定义为<code>val CPUS_PER_TASK = conf.getInt(&quot;spark.task.cpus&quot;, 1)</code>，也就是说默认情况下一个task对应cpu的一个核。如果一个executor可用cpu核数为8，那么一个executor中最多同是并发执行8个task；假如设置<code>spark.task.cpus</code>为2，那么同时就只能运行4个task。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//From resourceOfferSingleTaskSet</span></span><br><span class="line">......</span><br><span class="line">      <span class="keyword">if</span> (availableCpus(i) &gt;= <span class="type">CPUS_PER_TASK</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          <span class="keyword">for</span> (task &lt;- taskSet.resourceOffer(execId, host, maxLocality)) &#123;</span><br><span class="line">            tasks(i) += task</span><br><span class="line">            <span class="keyword">val</span> tid = task.taskId</span><br><span class="line">            taskIdToTaskSetManager(tid) = taskSet</span><br><span class="line">            taskIdToExecutorId(tid) = execId</span><br><span class="line">            executorIdToTaskCount(execId) += <span class="number">1</span></span><br><span class="line">            executorsByHost(host) += execId</span><br><span class="line">            availableCpus(i) -= <span class="type">CPUS_PER_TASK</span></span><br><span class="line">            assert(availableCpus(i) &gt;= <span class="number">0</span>)</span><br><span class="line">            launchedTask = <span class="literal">true</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> &#123;</span><br><span class="line">          <span class="keyword">case</span> e: <span class="type">TaskNotSerializableException</span> =&gt;</span><br><span class="line">            logError(<span class="string">s&quot;Resource offer failed, task set <span class="subst">$&#123;taskSet.name&#125;</span> was not serializable&quot;</span>)</span><br><span class="line">            <span class="comment">// Do not offer resources for this task, but don&#x27;t throw an error to allow other</span></span><br><span class="line">            <span class="comment">// task sets to be submitted.</span></span><br><span class="line">            <span class="keyword">return</span> launchedTask</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<h2 id="Yarn的task与Spark中task的区别"><a href="#Yarn的task与Spark中task的区别" class="headerlink" title="Yarn的task与Spark中task的区别"></a>Yarn的task与Spark中task的区别</h2><p>在Yarn的NodeManager节点上启动一个map task或者reduce task，在物理上启动的是一个<strong>jvm进程</strong>；而Spark的task是Executor进程中的一个<strong>线程</strong>。</p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

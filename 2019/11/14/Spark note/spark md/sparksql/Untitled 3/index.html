@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SQL之nvl()函数 | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL之nvl()函数">
+<meta property="og:url" content="https://iideas18.github.io/2019/11/14/Spark note/spark md/sparksql/Untitled 3/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2019-11-14T15:40:50.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.274Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2019/11/14/Spark note/spark md/sparksql/Untitled 3/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'SQL之nvl()函数',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div><div class="menus_item"><a class="site-page" href="/wiki_repo/"><i class="fa-fw fas fa-book"></i><span> Wiki</span></a></div><div class="menus_item"><a class="site-page" href="/LLM_RoadMap/"><i class="fa-fw fas fa-road"></i><span> LLM RoadMap</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">SQL之nvl()函数</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2019-11-14T15:40:50.000Z" title="发表于 2019-11-14 23:40:50">2019-11-14</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.274Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Spark note/">Spark note</a>
+            
+            <a class="post-meta-categories" href="/categories/spark md/">spark md</a>
+            
+            <a class="post-meta-categories" href="/categories/sparksql/">sparksql</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="SQL之nvl-函数"><a href="#SQL之nvl-函数" class="headerlink" title="SQL之nvl()函数"></a>SQL之nvl()函数</h1><p>2017-07-27 14:28:41 更多</p>
+<p>版权声明：本文为博主原创文章，遵循<a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-sa/4.0/"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。本文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_20989105/article/details/76187548">https://blog.csdn.net/qq_20989105/article/details/76187548</a></p>
+<p>如果你某个字段为空，但是你想让这个字段显示0，而不是空，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nvl(字段名,0)1</span><br></pre></td></tr></table></figure>
+
+<p>就是当你选出来的时候，这个字段虽然为空，但是显示的是0，当然这个0也可以换成其他东西，如：1，2，3……</p>
+<h1 id="SQL中的cast-函数"><a href="#SQL中的cast-函数" class="headerlink" title="SQL中的cast()函数"></a>SQL中的cast()函数</h1><p>2017-11-27 10:46:16 更多</p>
+<p>版权声明：本文为博主原创文章，遵循<a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-sa/4.0/"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。本文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_21101587/article/details/78642423">https://blog.csdn.net/qq_21101587/article/details/78642423</a></p>
+<p>CAST函数用于将某种数据类型的表达式显式转换为另一种数据类型。CAST()函数的参数是一个表达式，它包括用AS关键字分隔的源值和目标数据类型。</p>
+<p>语法：CAST (expression AS data_type)</p>
+<p>expression：任何有效的SQServer表达式。<br>AS：用于分隔两个参数，在AS之前的是要处理的数据，在AS之后是要转换的数据类型。<br>data_type：目标系统所提供的数据类型，包括bigint和sql_variant，不能使用用户定义的数据类型。</p>
+<p>可以转换的类型是有限制的。这个类型可以是以下值其中的一个：</p>
+<ul>
+<li>二进制，同带binary前缀的效果 : BINARY   </li>
+<li>字符型，可带参数 : CHAR()   </li>
+<li>日期 : DATE   </li>
+<li>时间: TIME   </li>
+<li>日期时间型 : DATETIME   </li>
+<li>浮点数 : DECIMAL    </li>
+<li>整数 : SIGNED   </li>
+<li>无符号整数 : UNSIGNED</li>
+</ul>
+<p>例子：</p>
+<p>1.SELECT CAST(‘9.0’ AS decimal) 结果：9</p>
+<p><img src="https://img-blog.csdn.net/20171127103446534?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjExMDE1ODc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="img"></p>
+<p>2.SELECT CAST(‘9.5’ AS decimal(10,2)) 结果：9.5(精度与小数位数分别为10与2。精度是总的数字位数，包括小数点左边和右边位数的总和。而小数位数是小数点右边的位数)</p>
+<p><img src="https://img-blog.csdn.net/20171127103339347?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjExMDE1ODc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="img"></p>
+<p>3.SELECT CAST(NOW() AS  DATE) 结果：2017-11-27</p>
+<p>now() 2017-11-27 10:43:22</p>
+<p><img src="https://img-blog.csdn.net/20171127104510404?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjExMDE1ODc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="img"></p>
+<h1 id="SQL-Server-DATEDIFF-函数"><a href="#SQL-Server-DATEDIFF-函数" class="headerlink" title="SQL Server DATEDIFF() 函数"></a>SQL Server DATEDIFF() 函数</h1><p><a target="_blank" rel="noopener" href="https://www.w3school.com.cn/sql/sql_dates.asp">SQL Server Date 函数</a></p>
+<h2 id="定义和用法"><a href="#定义和用法" class="headerlink" title="定义和用法"></a>定义和用法</h2><p>DATEDIFF() 函数返回两个日期之间的时间。</p>
+<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DATEDIFF(datepart,startdate,enddate)</span><br></pre></td></tr></table></figure>
+
+<p><em>startdate</em> 和 <em>enddate</em> 参数是合法的日期表达式。</p>
+<p><em>datepart</em> 参数可以是下列的值：</p>
+<table>
+<thead>
+<tr>
+<th align="left">datepart</th>
+<th align="left">缩写</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">年</td>
+<td align="left">yy, yyyy</td>
+</tr>
+<tr>
+<td align="left">季度</td>
+<td align="left">qq, q</td>
+</tr>
+<tr>
+<td align="left">月</td>
+<td align="left">mm, m</td>
+</tr>
+<tr>
+<td align="left">年中的日</td>
+<td align="left">dy, y</td>
+</tr>
+<tr>
+<td align="left">日</td>
+<td align="left">dd, d</td>
+</tr>
+<tr>
+<td align="left">周</td>
+<td align="left">wk, ww</td>
+</tr>
+<tr>
+<td align="left">星期</td>
+<td align="left">dw, w</td>
+</tr>
+<tr>
+<td align="left">小时</td>
+<td align="left">hh</td>
+</tr>
+<tr>
+<td align="left">分钟</td>
+<td align="left">mi, n</td>
+</tr>
+<tr>
+<td align="left">秒</td>
+<td align="left">ss, s</td>
+</tr>
+<tr>
+<td align="left">毫秒</td>
+<td align="left">ms</td>
+</tr>
+<tr>
+<td align="left">微妙</td>
+<td align="left">mcs</td>
+</tr>
+<tr>
+<td align="left">纳秒</td>
+<td align="left">ns</td>
+</tr>
+</tbody></table>
+<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><h3 id="例子-1"><a href="#例子-1" class="headerlink" title="例子 1"></a>例子 1</h3><p>使用如下 SELECT 语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT DATEDIFF(day,&#x27;2008-12-29&#x27;,&#x27;2008-12-30&#x27;) AS DiffDate</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<table>
+<thead>
+<tr>
+<th align="left">DiffDate</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">1</td>
+</tr>
+</tbody></table>
+<h3 id="例子-2"><a href="#例子-2" class="headerlink" title="例子 2"></a>例子 2</h3><p>使用如下 SELECT 语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT DATEDIFF(day,&#x27;2008-12-30&#x27;,&#x27;2008-12-29&#x27;) AS DiffDate</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<table>
+<thead>
+<tr>
+<th align="left">DiffDate</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">-1</td>
+</tr>
+</tbody></table>
+<h1 id="scala-spark-withColumn-when-计算添加新列"><a href="#scala-spark-withColumn-when-计算添加新列" class="headerlink" title="scala spark withColumn when 计算添加新列"></a>scala spark withColumn when 计算添加新列</h1><p>spark 可以使用withColumn 结合 when 很方便的 根据原有列，来计算出新列，当然较复杂的计算还是要使用udf。</p>
+<p>&#x2F;&#x2F;when 所在包</p>
+<p>scala&gt; import org.apache.spark.sql.functions._</p>
+<p>&#x2F;&#x2F;创建加新的dataset</p>
+<p>scala&gt; spark.sql(“create table itxw(id int)”)</p>
+<p>scala&gt; spark.sql(“insert into itxw values(1),(0)”)</p>
+<p>scala&gt; spark.sql(“select * from itxw”).show</p>
+<p>scala&gt; var ds&#x3D;spark.table(“itxw”)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+---+                                                                           | id|+---+|  1||  0|+---+</span><br></pre></td></tr></table></figure>
+
+<p>&#x2F;&#x2F;$美元符号需要使用</p>
+<p>scala&gt; import spark.sqlContext.implicits._ </p>
+<p>&#x2F;&#x2F;计算出新列</p>
+<p><strong>scala&gt; ds&#x3D;ds.withColumn(“newColumn”,when($”id” &#x3D;&#x3D;&#x3D; 1,”true”).otherwise(“false”))</strong></p>
+<p>scala&gt; ds.show</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+---+---------+| id|newColumn|+---+---------+|  1|     true||  0|    false|+---+---------+</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h1 id="python-spark-RDD-randomSplit-参数解释与使用详解"><a href="#python-spark-RDD-randomSplit-参数解释与使用详解" class="headerlink" title="python spark RDD randomSplit 参数解释与使用详解"></a>python spark RDD randomSplit 参数解释与使用详解</h1><p>2018-05-04 14:56:19 <a target="_blank" rel="noopener" href="https://me.csdn.net/dangsh_">dangsh_</a> 阅读数 3750</p>
+<p>版权声明：本文为博主原创文章，遵循<a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-sa/4.0/"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。本文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/dangsh_/article/details/80193051">https://blog.csdn.net/dangsh_/article/details/80193051</a></p>
+<p>randomSplit(weigh , *seed):</p>
+<h2 id="参数："><a href="#参数：" class="headerlink" title="参数："></a>参数：</h2><p><strong>1. weights: 是一个数组</strong><br>根据weight（权重值）将一个RDD划分成多个RDD,权重越高划分得到的元素较多的几率就越大。数组的长度即为划分成RDD的数量,如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rdd1 = rdd.randomSplit([0.25,0.25,0.25,0.25])</span><br></pre></td></tr></table></figure>
+
+<p>作用是把原本的RDD尽可能的划分成4个相同大小的RDD<br><strong>需要注意的是weight数组内数据的加和应为1</strong></p>
+<p><strong>2. seed: 是可选参数 ，作为random的种子</strong><br>根据种子构造出一个Random类。<br>seed 是种子的意思，因为在电脑中实际上是无法产生真正的随机数的，<br>都是根据给定的种子（通常是当前时间、上几次运算的结果等），通过一个固定的计算公式来得到 下一个随机数<br>seed就是要求使用固定的种子来开始生成随机数。在给定相同的种子下，生成的随机数序列总是相同的</p>
+<h2 id="返回值："><a href="#返回值：" class="headerlink" title="返回值："></a>返回值：</h2><p>返回一个rdd数组</p>
+<h2 id="代码测试"><a href="#代码测试" class="headerlink" title="代码测试"></a>代码测试</h2><p>首先打开pyspark<br><img src="https://img-blog.csdn.net/20180504142447320?watermark/2/text/Ly9ibG9nLmNzZG4ubmV0L2RhbmdzaF8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>创建一个rdd，内容是数字0-19构成的list</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; rdd = sc.parallelize(range(20))</span><br><span class="line">&gt;&gt;&gt; rdd.collect()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdn.net/20180504142712192?watermark/2/text/Ly9ibG9nLmNzZG4ubmV0L2RhbmdzaF8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<p>接下来测试一下randomsplit方法<br><img src="https://img-blog.csdn.net/20180504144634552?watermark/2/text/Ly9ibG9nLmNzZG4ubmV0L2RhbmdzaF8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; rdd1 = rdd.randomSplit([0.25,0.25,0.25,0.25])</span><br><span class="line">&gt;&gt;&gt; rdd1[0].collect()</span><br><span class="line">[3, 4, 9, 10, 15]</span><br><span class="line">&gt;&gt;&gt; rdd1[1].collect()</span><br><span class="line">[2, 8]</span><br><span class="line">&gt;&gt;&gt; rdd1[2].collect()</span><br><span class="line">[0, 6, 7, 12, 13, 14, 16, 17, 19]</span><br><span class="line">&gt;&gt;&gt; rdd1[3].collect()</span><br><span class="line">[1, 5, 11, 18]</span><br></pre></td></tr></table></figure>
+
+<p>可以看到将rdd1按照权重分为了4个RDD</p>
+<p><strong>接下来看seed的作用</strong><br>两次的seed都设置为1，发现分割的结果完全相同</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; rdd1 = rdd.randomSplit([0.5,0.5],1)</span><br><span class="line">&gt;&gt;&gt; rdd1[0].collect()</span><br><span class="line">[6, 7, 8, 9, 10, 11, 14, 15, 17, 18]</span><br><span class="line">&gt;&gt;&gt; rdd1[1].collect()</span><br><span class="line">[0, 1, 2, 3, 4, 5, 12, 13, 16, 19]</span><br><span class="line">123456</span><br><span class="line">&gt;&gt;&gt; rdd2 = rdd.randomSplit([0.5,0.5],1)</span><br><span class="line">&gt;&gt;&gt; rdd2[0].collect()</span><br><span class="line">[6, 7, 8, 9, 10, 11, 14, 15, 17, 18]                                            </span><br><span class="line">&gt;&gt;&gt; rdd2[1].collect()</span><br><span class="line">[0, 1, 2, 3, 4, 5, 12, 13, 16, 19]</span><br></pre></td></tr></table></figure>
+
+<p>将seed设置为2，结果就不同了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; rdd3 = rdd.randomSplit([0.5,0.5],2)</span><br><span class="line">&gt;&gt;&gt; rdd3[0].collect()</span><br><span class="line">[4, 5, 8, 9, 10, 11, 12, 13, 17, 18]</span><br><span class="line">&gt;&gt;&gt; rdd3[1].collect()</span><br><span class="line">[0, 1, 2, 3, 6, 7, 14, 15, 16, 19]</span><br></pre></td></tr></table></figure>
+
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>idea远程调试 spark | iideas&#39;s Blog</title>
+
+<meta name="author" content="哎呦，好烦！">
+<meta name="copyright" content="哎呦，好烦！">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="idea远程调试 spark">
+<meta property="og:url" content="https://iideas18.github.io/2019/09/30/Spark note/spark md/spark remote debug/">
+<meta property="og:site_name" content="iideas&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2019-09-30T09:25:38.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:54:38.270Z">
+<meta property="article:author" content="哎呦，好烦！">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<link rel="shortcut icon" href="/img/favicon.png">
+<link rel="canonical" href="https://iideas18.github.io/2019/09/30/Spark note/spark md/spark remote debug/">
+<link rel="preconnect" href="//cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'">
+<script src="/js/global-config.js"></script>
+<script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'idea远程调试 spark',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-13 15:54:38'
+}</script>
+<noscript><style type="text/css">
+  #nav { opacity: 1 }
+  .justified-gallery img { opacity: 1 }
+  #recent-posts time, #post-meta time { display: inline !important }
+</style></noscript>
+<script src="/js/theme-bootstrap.js"></script>
+<link rel="preload" as="script" href="/js/partials.js">
+<script defer src="/js/partials.js"></script>
+<meta name="generator" content="Hexo 8.1.1"></head>
+<body>
+<div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div>
+<div id="sidebar"></div>
+<div class="post" id="body-wrap">
+  <header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')">
+    <nav id="nav">
+      <span id="blog_name"><a id="site-name" href="/">iideas&#39;s Blog</a></span>
+      <div id="menus">
+        <div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div>
+        <div class="menus_items">
+          <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-code-branch"></i><span> Projects</span></a></div>
+          <div class="menus_item"><a class="site-page" href="/trending/"><i class="fa-fw fas fa-fire"></i><span> Trending</span></a></div><div class="menus_item"><a class="site-page" href="/wiki_repo/"><i class="fa-fw fas fa-book"></i><span> Wiki</span></a></div><div class="menus_item"><a class="site-page" href="/LLM_RoadMap/"><i class="fa-fw fas fa-road"></i><span> LLM RoadMap</span></a></div>
+        </div>
+        <div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div>
+      </div>
+    </nav>
+    <div id="post-info">
+      <h1 class="post-title">idea远程调试 spark</h1>
+      <div id="post-meta">
+        <div class="meta-firstline">
+          <span class="post-meta-date">
+            <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">发表于</span>
+            <time class="post-meta-date-created" datetime="2019-09-30T09:25:38.000Z" title="发表于 2019-09-30 17:25:38">2019-09-30</time>
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-history fa-fw post-meta-icon"></i>
+            <span class="post-meta-label">更新于</span>
+            <time class="post-meta-date-updated" datetime="2026-03-13T07:54:38.270Z" title="更新于 2026-03-13 15:54:38">2026-03-13</time>
+          </span>
+          
+          <span class="post-meta-categories">
+            <span class="post-meta-separator">|</span>
+            <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+            
+            <a class="post-meta-categories" href="/categories/Spark note/">Spark note</a>
+            
+            <a class="post-meta-categories" href="/categories/spark md/">spark md</a>
+            
+          </span>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="layout" id="content-inner">
+    <div id="post">
+      <article class="post-content" id="article-container">
+        <h1 id="idea远程调试-spark"><a href="#idea远程调试-spark" class="headerlink" title="idea远程调试 spark"></a>idea远程调试 spark</h1><p>2017-12-25 22:18:10  更多</p>
+<p>版权声明：本文为博主原创文章，遵循<a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-sa/4.0/"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。本文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/u012373815/article/details/78897556">https://blog.csdn.net/u012373815/article/details/78897556</a></p>
+<h2 id="spark-远端调试"><a href="#spark-远端调试" class="headerlink" title="spark 远端调试"></a>spark 远端调试</h2><p>本地调试远端集群运行的spark项目，当spark项目在集群上报错，但是本地又查不出问题时，最好的方式就是调试一步一步跟踪代码。但是在集群上的代码又不能像本地一样的调试。那么就试试这个调试方法吧。</p>
+<p>远程调试spark其实就四步：<br>* 第一步jar包拷贝到集群master节点。<br>* 第二步在 idea 中配置远程机器的IP 和调试端口号。<br>* 第三步：启动远端的spark项目。<br>* 第四步 启动idea 进行调试。</p>
+<h4 id="首先"><a href="#首先" class="headerlink" title="首先"></a><strong>首先</strong></h4><p>首先了解jvm一些参数属性</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8888</span><br></pre></td></tr></table></figure>
+
+<p>这里对上面的几个参数进行说明：</p>
+<blockquote>
+<p>-Xdebug 启用调试特性<br>-Xrunjdwp 启用JDWP实现，包含若干子选项：<br>transport&#x3D;dt_socket JPDA front-end和back-end之间的传输方法。dt_socket表示使用套接字传输。<br>address&#x3D;8888 JVM在8888端口上监听请求，这个设定为一个不冲突的端口即可。<br>server&#x3D;y y表示启动的JVM是被调试者。如果为n，则表示启动的JVM是调试器。<br>suspend&#x3D;y y表示启动的JVM会暂停等待，直到调试器连接上才继续执行。suspend&#x3D;n，则JVM不会暂停等待。</p>
+</blockquote>
+<h3 id="第一步-将jar包拷贝到集群"><a href="#第一步-将jar包拷贝到集群" class="headerlink" title="第一步 将jar包拷贝到集群"></a>第一步 将jar包拷贝到集群</h3><p>将spark 项目打jar包， 将jar包放到集群master节点上；</p>
+<h3 id="第二步-配置idea"><a href="#第二步-配置idea" class="headerlink" title="第二步 配置idea"></a>第二步 配置idea</h3><p>编辑idea配置：<br>点击小三角，选择：edit Configurations 如图<br><img src="https://img-blog.csdn.net/20171225221929030?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMjM3MzgxNQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>添加一个remote 配置<br><img src="https://img-blog.csdn.net/20171225222040578?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMjM3MzgxNQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<p>配置远端地址和端口 （此处配置的是 远端master 节点的地址）<br><img src="https://img-blog.csdn.net/20171225222053975?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMjM3MzgxNQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<h3 id="第三步-远端启动spark项目"><a href="#第三步-远端启动spark项目" class="headerlink" title="第三步 远端启动spark项目"></a>第三步 远端启动spark项目</h3><p>在集群启动要调试的spark项目。命令如下：<br>&#x2F;tmp&#x2F;mySpark.jar 为你sprak 项目在集群master上的位置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spark-submit --class WordCount --master spark://192.168.100.xx:7077  --driver-java-options &quot;-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8888&quot; /tmp/mySpark.jar</span><br></pre></td></tr></table></figure>
+
+<p>也可在conf&#x2F;spark-env.sh这个文件最后加入（不过没有进行实际测试）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export SPARK_JAVA_OPTS+=&quot;-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8888&quot;</span><br></pre></td></tr></table></figure>
+
+<p>如图进入监听：<br><img src="https://img-blog.csdn.net/20171225222321259?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMjM3MzgxNQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<h3 id="第四步-启动idea"><a href="#第四步-启动idea" class="headerlink" title="第四步 启动idea"></a>第四步 启动idea</h3><p>启动idea 的debug 模式就会进入断点。<br><img src="https://img-blog.csdn.net/20171225222354261?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMjM3MzgxNQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spark-submit --class SparkWordCountWithScala --master yarn  --driver-java-options &quot;-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8887&quot; spark_hello.jar</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://mopheiok.github.io/Tools/idea-spark/">https://mopheiok.github.io/Tools/idea-spark/</a></p>
+
+      </article>
+      
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="footer-wrap">
+      <div class="copyright">&copy;2020 - 2026 By 哎呦，好烦！</div>
+    </div>
+  </footer>
+</div>
+<div id="rightside">
+  <div id="rightside-config-hide">
+    <button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button>
+    <button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button>
+    <button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button>
+  </div>
+  <div id="rightside-config-show">
+    <button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+    <button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button>
+    <button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+<div id="local-search">
+  <div class="search-dialog">
+    <div class="search-dialog__title" id="local-search-title">本地搜索</div>
+    <div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div>
+    <hr/>
+    <div id="local-search-results"></div>
+    <span class="search-close-button"><i class="fas fa-times"></i></span>
+  </div>
+  <div id="search-mask"></div>
+</div>
+<script src="/js/utils.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script>
+<script src="/js/search/local-search.js"></script>
+<script src="/js/page-common.js"></script>
+</body>
+</html>
