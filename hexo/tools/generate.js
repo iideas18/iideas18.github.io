@@ -213,6 +213,36 @@ function syncPublicToRoot(hexoRoot) {
   execFileSync('rsync', args, { stdio: 'inherit' });
 }
 
+function ensureIndexPage(hexo) {
+  const hexoRoot = hexo.base_dir;
+  const publicDir = path.join(hexoRoot, 'public');
+  const indexPath = path.join(publicDir, 'index.html');
+  if (fs.existsSync(indexPath)) return;
+
+  // hexo-generator-index produces zero pages when there are zero posts
+  // (Math.ceil(0 / perPage) === 0).  Render the theme template directly so
+  // the homepage is never missing.
+  const ejs = require('ejs');
+  const themeName = hexo.config.theme || 'reconstructed';
+  const tplPath = path.join(hexoRoot, 'themes', themeName, 'layout', 'index.ejs');
+
+  if (!fs.existsSync(tplPath)) {
+    console.warn('  WARNING: index.ejs not found – cannot create fallback index.html');
+    return;
+  }
+
+  const template = fs.readFileSync(tplPath, 'utf8');
+
+  const html = ejs.render(template, {
+    config: hexo.config,
+    page: { posts: null, prev: 0, next: 0, total: 0, current: 1 }
+  }, { filename: tplPath });
+
+  fs.mkdirSync(publicDir, { recursive: true });
+  fs.writeFileSync(indexPath, html, 'utf8');
+  console.log('  index.html generated (fallback – 0 posts)');
+}
+
 async function main() {
   const hexoRoot = path.resolve(__dirname, '..');
   const shouldSyncRoot = process.argv.includes('--sync-root');
@@ -221,6 +251,7 @@ async function main() {
   await hexo.init();
   await hexo.call('clean', {});
   await hexo.call('generate', {});
+  ensureIndexPage(hexo);
   copySourceIntoPublic(hexoRoot);
   buildPartials(hexo, path.join(hexoRoot, 'public'));
 
