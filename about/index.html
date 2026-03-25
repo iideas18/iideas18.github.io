@@ -86,14 +86,84 @@
   <div class="rv-sec">
     <div class="rv-sec-h"><i class="fas fa-user"></i>Professional Summary</div>
     <div class="rv-card accent">
-      <p class="summary-p">Over <strong>six years</strong> of software engineering experience at <strong>Intel Asia-Pacific R&amp;D</strong>, specialising in CPU microarchitecture simulation, distributed system optimisation, and cloud/big-data cluster performance analysis. Strong proficiency in <strong>C++ / SystemC</strong> for high-performance development alongside deep expertise in automation, big-data frameworks, and Kubernetes infrastructure.</p>
+      <p class="summary-p">Over <strong>six years</strong> of software engineering experience at <strong>Intel Asia-Pacific R&amp;D</strong>, specialising in CPU microarchitecture simulation, distributed system optimisation, and cloud/big-data cluster performance analysis. Strong proficiency in <strong>C++ / SystemC</strong> for high-performance development alongside deep expertise in automation, big-data frameworks, and Kubernetes infrastructure. Consistent top performer — Exceeds Expectations two years running (top 30%).</p>
     </div>
   </div>
 
   <div class="rv-sec">
     <div class="rv-sec-h"><i class="fas fa-briefcase"></i>Professional Experience</div>
 
+    <div class="rv-card accent">
+      <div class="jh">
+        <p class="jt">Microarchitecture Simulation Development</p>
+        <span class="jp">Jun 2022 – Present</span>
+      </div>
+      <p class="jc"><i class="fas fa-building"></i>Intel Asia-Pacific R&amp;D Ltd.</p>
+      <p class="sub-role">1. Next-Gen Xeon (Diamond Rapids) — Uncore Modeling</p>
+      <ul class="jb">
+        <li>Designed and implemented fabric modules: <strong>Mesh Fabric</strong>, <strong>Ring Fabric</strong>, and <strong>Dual Ring</strong>.</li>
+        <li>Developed IP and fabric clock systems, global logging, statistical analysis, and post-processing modules.</li>
+        <li>Built workload, topology, and trace generators as well as parser modules; conducted hotspot analysis (packets/cycle and bandwidth).</li>
+      </ul>
+      <p class="sub-role">2. Next-Gen Xeon — Distributed Regression Framework</p>
+      <ul class="jb">
+        <li>Developed a distributed regression framework handling <strong>~10,000 nightly jobs</strong>, used by global teams.</li>
+        <li>Built a multi-layer testing stack (UT / IT / ST) achieving <strong>99% code coverage</strong> and <strong>90% automation</strong> on critical paths.</li>
+      </ul>
+      <p class="sub-role">3. Next-Gen Xeon — Performance Analysis &amp; Optimisation</p>
+      <ul class="jb">
+        <li>Profiled with VTune Amplifier, Valgrind, and code coverage tools to identify simulation model hotspots.</li>
+        <li>Achieved a <strong>35% improvement</strong> in critical-path execution efficiency; throughput <strong>1.2× industry benchmark</strong>.</li>
+      </ul>
+      <p class="sub-role">4. GPGPU Model Simulation</p>
+      <ul class="jb">
+        <li>Modelled GPGPU computing units, memory controllers, and task schedulers for CUDA workload simulation.</li>
+        <li>Focused on verifying resource scheduling strategies in heterogeneous computing scenarios.</li>
+      </ul>
+    </div>
 
+    <div class="rv-card">
+      <div class="jh">
+        <p class="jt">Microservices Cloud Architecture — Performance Analysis &amp; Simulation</p>
+        <span class="jp">Aug 2021 – Jun 2022</span>
+      </div>
+      <p class="jc"><i class="fas fa-building"></i>Intel Asia-Pacific R&amp;D Ltd.</p>
+      <p class="sub-role">1. Kubernetes Cluster Performance Optimisation</p>
+      <ul class="jb">
+        <li>Used DeathStarBench to stress-test microservices under CPU/memory quota limits.</li>
+        <li>Optimised Kubernetes scheduler policies: <strong>28% reduction</strong> in average response time, <strong>40% decrease</strong> in Pod eviction rate.</li>
+        <li>Built hierarchical monitoring — Prometheus/Grafana (infra), OpenTelemetry (service traces), ELK Stack (log analysis).</li>
+      </ul>
+      <p class="sub-role">2. Distributed Microservices Simulation Framework</p>
+      <ul class="jb">
+        <li>Modelled dynamic service mesh including REST/gRPC calls, Consul/Eureka service discovery, and advanced load-balancing.</li>
+        <li>Integrated K-means workload clustering; validated at <strong>1,000+ service node</strong> scale across horizontal, vertical, and hybrid scaling strategies.</li>
+      </ul>
+    </div>
+
+    <div class="rv-card">
+      <div class="jh">
+        <p class="jt">Distributed System Performance Analysis, Acceleration &amp; Simulation</p>
+        <span class="jp">Apr 2019 – Aug 2021</span>
+      </div>
+      <p class="jc"><i class="fas fa-building"></i>Intel Asia-Pacific R&amp;D Ltd.</p>
+      <p class="sub-role">1. Optane™ Memory &amp; Big Data Toolset Optimisation</p>
+      <ul class="jb">
+        <li>Implemented hybrid Optane™ / SSD/HDD cache architecture for Spark hot data: <strong>45% reduction</strong> in avg. job time, <strong>30% less memory</strong>.</li>
+        <li>Deep FSI tool integration with Spark: <strong>60% throughput increase</strong>, <strong>25% CPU utilisation improvement</strong>.</li>
+      </ul>
+      <p class="sub-role">2. Benchmark Testing &amp; Performance Tuning</p>
+      <ul class="jb">
+        <li>Diagnosed distributed bottlenecks via flame graphs and lock contention analysis (Shuffle, HDFS write).</li>
+        <li>Tuned 30+ Spark parameters; raised job success rate from <strong>82% → 98%</strong>.</li>
+      </ul>
+      <p class="sub-role">3. Apache Spark Simulation Framework</p>
+      <ul class="jb">
+        <li>Built modular cluster topology simulator (single/multi-rack) with workload generators (WordCount, PageRank, FSI).</li>
+        <li>Calibrated models against 20-node / 100 TB real cluster data; prediction error <strong>±8% latency</strong>, <strong>±5% throughput</strong>.</li>
+        <li>Produced 20+ optimised resource configurations for horizontal (10→500 nodes) and vertical scaling scenarios.</li>
+      </ul>
+    </div>
   </div>
 
   <div class="rv-sec">
@@ -127,7 +197,27 @@
     </div>
   </div>
 
- 
+  <div class="rv-sec">
+    <div class="rv-sec-h"><i class="fas fa-graduation-cap"></i>Education</div>
+    <div class="rv-card accent">
+      <p class="edu-d">M.A. — Electrical Engineering</p>
+      <p class="edu-s"><i class="fas fa-university"></i>Shanghai Jiao Tong University</p>
+      <p class="edu-yr">2016 – 2019</p>
+      <ul class="edu-b">
+        <li>Graduated <strong>Magna Cum Laude</strong></li>
+        <li>Merit Student &amp; Outstanding Graduate</li>
+      </ul>
+    </div>
+    <div class="rv-card">
+      <p class="edu-d">B.A. — Electrical Engineering</p>
+      <p class="edu-s"><i class="fas fa-university"></i>Donghua University</p>
+      <p class="edu-yr">2012 – 2016</p>
+      <ul class="edu-b">
+        <li>Graduated <strong>Magna Cum Laude</strong></li>
+        <li>Outstanding Graduate</li>
+      </ul>
+    </div>
+  </div>
 
 </div>
 </div></div><div class="aside-content" id="aside-content"></div>/div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2021 By 哎呦，好烦！</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script>function panguFn () {
